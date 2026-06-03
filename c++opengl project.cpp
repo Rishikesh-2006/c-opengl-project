@@ -19,17 +19,64 @@ int scwidth = 800;
 
 	};*/
 
+	/*float vertices[] = {
+		0.25f,0.25f,0.0f,	1.0f, 0.0f, 0.0f,	1.0f,1.0f,
+		0.25f,-0.25f,0.0f,	0.0f, 1.0f, 0.0f,	1.0f,0.0f,
+		-0.25f,-0.25f,0.0f,	0.0f, 0.0f, 1.0f,	0.0f,0.0f,
+		-0.25f,0.25f,0.0f,	1.0f,0.0f,1.0f,		0.0f,1.0f
+	};*/
+
+
+	
+	
 	float vertices[] = {
-		0.5f,0.5f,0.0f,		1.0f, 0.0f, 0.0f,   1.0f,1.0f,
-		0.5f,-0.5f,0.0f,	0.0f, 1.0f, 0.0f,	1.0f,0.0f,
-		-0.5f,-0.5f,0.0f,	0.0f, 0.0f, 1.0f,	0.0f,0.0f,
-		-0.5f,0.5f,0.0f,	1.0f,0.0f,1.0f,		0.0f,1.0f
+	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,
+	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,
+	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,
+	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,
+	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,
+
+	-0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,
+	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,
+	-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,
+
+	-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,
+
+	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,
+	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,
+
+	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,
+	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,
+	-0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,
+	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,
+
+	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,
+	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f
 	};
 
-	unsigned int indices[] = {
+	/*unsigned int indices[] = {
 		0,1,3,
 		1,2,3
-	};
+	};*/
 
 	glfwInit();
 
@@ -57,12 +104,15 @@ int scwidth = 800;
 
 	shader.activateshader("default.vert", "default.frag");
 	
-	
+
+	//this ensures the faces on the front are shown and the back ones are hidden
+	glEnable(GL_DEPTH_TEST);
+
 	//vertex buffers , arrays
 
 	GLuint VAO, VBO;
-	GLuint EBO;
-
+	//GLuint EBO;
+	
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 
@@ -70,9 +120,9 @@ int scwidth = 800;
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	//glGenBuffers(1, &EBO);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 8 * sizeof(float),(void*)0);
 	glEnableVertexAttribArray(0);
@@ -127,13 +177,15 @@ int scwidth = 800;
 		glBindTexture(GL_TEXTURE_2D, textures);
 
 		shader.useshader();
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 		glBindVertexArray(VAO);
 
-		//glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
+		render1.make3d(width, height,45.0f);
+		render1.mattoshader(shaderid);
 		render1.rotateobject(shaderid, 0.4, 0.5, 0.7);
 
 		glfwSwapBuffers(window);
@@ -143,7 +195,7 @@ int scwidth = 800;
 	shader.deleteshader();
 	glDeleteTextures(1, &textures);
 	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
+	//glDeleteBuffers(1, &EBO);
 	glDeleteVertexArrays(1, &VAO);
 
 	glfwDestroyWindow(window);

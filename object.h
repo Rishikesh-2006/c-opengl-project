@@ -6,7 +6,15 @@
 #include <glad/glad.h>
 class object
 {
+	glm::mat4 mainmodel;
+	glm::mat4 mainview;
+	glm::mat4 mainprojection;
 public:
 	void rotateobject(unsigned int shaderprogram,float x, float y , float z);
+
+	void make3d(int width,int height,float fov);
+
+	void mattoshader(unsigned int shaderprogram);
+
 };
 

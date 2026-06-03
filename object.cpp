@@ -9,3 +9,26 @@ void object::rotateobject(unsigned int shaderprogram, float x, float y, float z)
 	unsigned int transformLoc = glGetUniformLocation(shaderprogram, "transform");
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 }
+
+void object::make3d(int width,int height,float fov)
+{
+	glm::mat4 model = glm::mat4(1.0f);
+	mainmodel = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+	glm::mat4 view = glm::mat4(1.0f);
+	mainview = glm::translate(view, glm::vec3(0.0f, 0.0f, -1.0f));
+
+	mainprojection = glm::perspective(glm::radians(fov), float(width / height), 0.1f, 100.0f);
+}
+
+void object::mattoshader(unsigned int shaderprogram)
+{
+	int modelloc = glGetUniformLocation(shaderprogram, "model");
+	glUniformMatrix4fv(modelloc, 1, GL_FALSE, glm::value_ptr(mainmodel));
+
+	int viewloc = glGetUniformLocation(shaderprogram, "view");
+	glUniformMatrix4fv(viewloc, 1, GL_FALSE, glm::value_ptr(mainview));
+
+	int projectionloc = glGetUniformLocation(shaderprogram, "projection");
+	glUniformMatrix4fv(projectionloc, 1, GL_FALSE, glm::value_ptr(mainprojection));
+}
