@@ -16,5 +16,7 @@ public:
 
 	void mattoshader(unsigned int shaderprogram);
 
+	void camera(unsigned int shaderprogram,glm::vec3 camerapos, glm::vec3 cameraup, glm::vec3 camerafront);
+
 };
 
