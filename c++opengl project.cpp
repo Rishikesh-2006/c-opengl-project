@@ -186,6 +186,8 @@ int main()
 	glViewport(0, 0, scheight, scwidth);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 	//shader class to initialize and combine vertex and fragement shader
 	Shader shader;
 
