@@ -12,10 +12,6 @@ glm::vec3 camerapos = { 0.0f, 0.0f ,5.0f };
 glm::vec3 camerafront = { 0.0f, 0.0f ,-3.0f };
 glm::vec3 cameraup = { 0.0f, 1.0f ,0.0f };
 
-glm::mat4 mainmodel = glm::mat4(1.0f);
-glm::mat4 mainview = glm::mat4(1.0f);
-glm::mat4 mainprojection = glm::mat4(1.0f);
-
 
 
 float deltatime = 0.0f;
@@ -293,44 +289,14 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 		glBindVertexArray(VAO);
 
-		//render1.camera(shaderid, camerapos, cameraup, camerafront);
+		render1.camera(shaderid, camerapos, cameraup, camerafront);
 		//glDrawArrays(GL_TRIANGLES, 0, 36);
 		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-		//render1.make3d(scwidth, scheight,45.0f);
-		//render1.multiple3d(shaderid,scwidth,scheight,45.0f);
-
-		//render1.mattoshader(shaderid);
-		//render1.rotateobject(shaderid, 0.4f, 0.5f, 0.7f);
-
 		//mutiple objects test
-		glm::mat4 view = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-		glm::mat4 projection = glm::mat4(1.0f);
-		projection = glm::perspective(glm::radians(45.0f), (float)scwidth / (float)scheight, 0.1f, 100.0f);
-		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+		render1.multiple3d(shaderid,scwidth,scheight,45.0f);
 
-		int projectionloc = glGetUniformLocation(shaderid, "projection");
-		glUniformMatrix4fv(projectionloc, 1, GL_FALSE, glm::value_ptr(projection));
 		
-		view = glm::lookAt(camerapos, camerapos + camerafront, cameraup);
-		int viewloc = glGetUniformLocation(shaderid, "view");
-		glUniformMatrix4fv(viewloc, 1, GL_FALSE, glm::value_ptr(view));
-
-		for (unsigned int i = 0;i < 10;i++)
-		{
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, cubePositions[i]);
-			float angle = 20.0f * i;
-			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-
-			int modelloc = glGetUniformLocation(shaderid, "model");
-			glUniformMatrix4fv(modelloc, 1, GL_FALSE, glm::value_ptr(model));
-
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
-
-		//Camera function
-
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
