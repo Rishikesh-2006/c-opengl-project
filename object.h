@@ -4,15 +4,21 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glad/glad.h>
+
+
 class object
 {
-	glm::mat4 mainmodel;
-	glm::mat4 mainview;
-	glm::mat4 mainprojection;
+	glm::mat4 mainmodel = glm::mat4(1.0f);
+	glm::mat4 mainview = glm::mat4(1.0f);
+	glm::mat4 mainprojection = glm::mat4(1.0f);
+
+
 public:
 	void rotateobject(unsigned int shaderprogram,float x, float y , float z);
 
 	void make3d(int width,int height,float fov);
+
+	void multiple3d(unsigned int shaderprogram, int width, int height, float fov);
 
 	void mattoshader(unsigned int shaderprogram);
 

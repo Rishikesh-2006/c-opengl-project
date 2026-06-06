@@ -3,13 +3,19 @@
 #include "Shader.h"
 #include "object.h"
 
+
 int scheight = 800;
-int scwidth = 900;
+int scwidth = 800;
 
 
-glm::vec3 camerapos = { 0.0f, 0.0f ,0.0f };
+glm::vec3 camerapos = { 0.0f, 0.0f ,5.0f };
 glm::vec3 camerafront = { 0.0f, 0.0f ,-3.0f };
 glm::vec3 cameraup = { 0.0f, 1.0f ,0.0f };
+
+glm::mat4 mainmodel = glm::mat4(1.0f);
+glm::mat4 mainview = glm::mat4(1.0f);
+glm::mat4 mainprojection = glm::mat4(1.0f);
+
 
 
 float deltatime = 0.0f;
@@ -164,6 +170,19 @@ int main()
 		1,2,3
 	};*/
 
+	glm::vec3 cubePositions[] = {
+	glm::vec3(0.0f,  0.0f,  0.0f),
+	glm::vec3(2.0f,  5.0f, -15.0f),
+	glm::vec3(-1.5f, -2.2f, -2.5f),
+	glm::vec3(-3.8f, -2.0f, -12.3f),
+	glm::vec3(2.4f, -0.4f, -3.5f),
+	glm::vec3(-1.7f,  3.0f, -7.5f),
+	glm::vec3(1.3f, -2.0f, -2.5f),
+	glm::vec3(1.5f,  2.0f, -2.5f),
+	glm::vec3(1.5f,  0.2f, -1.5f),
+	glm::vec3(-1.3f,  1.0f, -1.5f)
+	};
+
 	glfwInit();
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -234,7 +253,7 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	int width, height, nrchannels;
@@ -264,8 +283,9 @@ int main()
 		deltatime = currentframe - lastframe;
 		lastframe = currentframe;
 
+		std::cout << camerapos.x<<"," << camerapos.y << "," << camerapos.z << std::endl;
 		processInput(window);
-		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 		glBindTexture(GL_TEXTURE_2D, textures);
 
@@ -273,13 +293,43 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 		glBindVertexArray(VAO);
 
-		render1.camera(shaderid, camerapos, cameraup, camerafront);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		//render1.camera(shaderid, camerapos, cameraup, camerafront);
+		//glDrawArrays(GL_TRIANGLES, 0, 36);
 		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-		render1.make3d(scwidth, scheight,45.0f);
-		render1.mattoshader(shaderid);
+		//render1.make3d(scwidth, scheight,45.0f);
+		//render1.multiple3d(shaderid,scwidth,scheight,45.0f);
+
+		//render1.mattoshader(shaderid);
 		//render1.rotateobject(shaderid, 0.4f, 0.5f, 0.7f);
+
+		//mutiple objects test
+		glm::mat4 view = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+		glm::mat4 projection = glm::mat4(1.0f);
+		projection = glm::perspective(glm::radians(45.0f), (float)scwidth / (float)scheight, 0.1f, 100.0f);
+		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+		int projectionloc = glGetUniformLocation(shaderid, "projection");
+		glUniformMatrix4fv(projectionloc, 1, GL_FALSE, glm::value_ptr(projection));
+		
+		view = glm::lookAt(camerapos, camerapos + camerafront, cameraup);
+		int viewloc = glGetUniformLocation(shaderid, "view");
+		glUniformMatrix4fv(viewloc, 1, GL_FALSE, glm::value_ptr(view));
+
+		for (unsigned int i = 0;i < 10;i++)
+		{
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, cubePositions[i]);
+			float angle = 20.0f * i;
+			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+
+			int modelloc = glGetUniformLocation(shaderid, "model");
+			glUniformMatrix4fv(modelloc, 1, GL_FALSE, glm::value_ptr(model));
+
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+
+		//Camera function
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
