@@ -197,6 +197,9 @@ int main()
 	glfwMakeContextCurrent(window);
 
 	gladLoadGL();
+
+	
+
 	
 	glViewport(0, 0, scheight, scwidth);
 	glfwSetCursorPosCallback(window, mouse_callback);
@@ -273,19 +276,24 @@ int main()
 
 	unsigned int shaderid = shader.shprgm();
 
+
 	while (!glfwWindowShouldClose(window))
 	{
 		currentframe = glfwGetTime();
 		deltatime = currentframe - lastframe;
 		lastframe = currentframe;
 
-		std::cout << camerapos.x<<"," << camerapos.y << "," << camerapos.z << std::endl;
+		std::cout << camerafront.x<<"," << camerafront.y << "," << camerafront.z << std::endl;
 		processInput(window);
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 		glBindTexture(GL_TEXTURE_2D, textures);
 
 		shader.useshader();
+
+		glUniform3f(glGetUniformLocation(shaderid, "lightColor"), 1.0f, 1.0f, 1.0f);
+		glUniform3f(glGetUniformLocation(shaderid, "objectColor"), 1.0f, 0.5f, 0.31f);
+
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 		glBindVertexArray(VAO);
 
@@ -295,7 +303,7 @@ int main()
 
 		//mutiple objects test
 		render1.multiple3d(shaderid,scwidth,scheight,45.0f);
-
+		render1.rotateobject(shaderid, 0.0f, 0.0f, 1.0f);
 		
 		glfwSwapBuffers(window);
 		glfwPollEvents();
