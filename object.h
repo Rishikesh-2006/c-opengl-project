@@ -11,11 +11,14 @@ class object
 
 
 public:
+	void make3d(unsigned int shaderprogram, int width, int height, float fov);
+
 	void rotateobject(unsigned int shaderprogram,float x, float y , float z);
 
 	void multiple3d(unsigned int shaderprogram, int width, int height, float fov);
 
-	void camera(unsigned int shaderprogram,glm::vec3 camerapos, glm::vec3 cameraup, glm::vec3 camerafront);
+	glm::mat4 camera(unsigned int shaderprogram,glm::vec3 camerapos, glm::vec3 cameraup, glm::vec3 camerafront);
 
+	void setview(unsigned int shaderprogram, glm::mat4 view);
 };
 

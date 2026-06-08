@@ -58,6 +58,12 @@
     <None Include="default.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="lightobject.vert">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="lightobject.frag">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="c++opengl project1.rc">

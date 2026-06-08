@@ -1,5 +1,18 @@
 #include "object.h"
 
+void object::make3d(unsigned int shaderprogram, int width, int height, float fov)
+{
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::translate(model,glm::vec3 (1.0f,0.5f,0.6f));
+	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.3f, 0.5f));
+	glUniformMatrix4fv(glGetUniformLocation(shaderprogram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+
+	glm::mat4 projection = glm::mat4(1.0f);
+	projection = glm::perspective(glm::radians(fov), float(width / height), 0.1f, 100.0f);
+	glUniformMatrix4fv(glGetUniformLocation(shaderprogram, "projection"), 1, GL_FALSE, glm::value_ptr(model));
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
 void object::rotateobject(unsigned int shaderprogram, float x, float y, float z)
 {
 	glm::mat4 trans = glm::mat4(1.0f);
@@ -45,14 +58,19 @@ void object::multiple3d(unsigned int shaderprogram,int width, int height, float 
 		int modelloc = glGetUniformLocation(shaderprogram, "model");
 		glUniformMatrix4fv(modelloc, 1, GL_FALSE, glm::value_ptr(model));
 		
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 	}
 }
 
 
-void object::camera(unsigned int shaderprogram,glm::vec3 camerapos, glm::vec3 cameraup, glm::vec3 camerafront)
+glm::mat4 object::camera(unsigned int shaderprogram,glm::vec3 camerapos, glm::vec3 cameraup, glm::vec3 camerafront)
 {
 	glm::mat4 view = glm::lookAt(camerapos, camerapos + camerafront, cameraup);
+	return view;
+}
+
+void object::setview(unsigned int shaderprogram,glm::mat4 view)
+{
 	int viewloc = glGetUniformLocation(shaderprogram, "view");
 	glUniformMatrix4fv(viewloc, 1, GL_FALSE, glm::value_ptr(view));
 }

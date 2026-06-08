@@ -164,6 +164,8 @@
   <ItemGroup>
     <None Include="default.frag" />
     <None Include="default.vert" />
+    <None Include="lightobject.frag" />
+    <None Include="lightobject.vert" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="c++opengl project1.rc" />
