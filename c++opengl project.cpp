@@ -346,7 +346,7 @@ int main()
 		shader.useshader();
 
 		shader.setvec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-		shader.setvec3("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
+		shader.setvec3("objectColor", glm::vec3(0.5f, 0.5f, 0.5f));
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glBindVertexArray(VAO);
 
@@ -374,6 +374,9 @@ int main()
 
 
 		}
+		lightpos.x = 4*sin(glfwGetTime());
+		lightpos.y = 4 * cos(glfwGetTime());
+		lightpos.z = 2 * cos(glfwGetTime());
 
 		light.useshader();
 		light.setmat4("view", view);

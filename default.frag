@@ -9,6 +9,8 @@ uniform vec3 lightColor;
 uniform sampler2D ourTexture;
 
 void main()
-{
-	FragColor = texture(ourTexture, TexCoord)*vec4(lightColor * objectColor, 1.0);
+{	float ambientstrength = 0.1;
+	vec3 ambient = ambientstrength*lightColor;
+	vec3 result = ambient*objectColor;
+	FragColor = texture(ourTexture, TexCoord)*vec4(result, 1.0);
 }
