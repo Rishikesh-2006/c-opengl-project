@@ -1,18 +1,5 @@
 #include "object.h"
 
-void object::make3d(unsigned int shaderprogram, int width, int height, float fov)
-{
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model,glm::vec3 (1.0f,0.5f,0.6f));
-	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.3f, 0.5f));
-	glUniformMatrix4fv(glGetUniformLocation(shaderprogram, "model"), 1, GL_FALSE, glm::value_ptr(model));
-
-	glm::mat4 projection = glm::mat4(1.0f);
-	projection = glm::perspective(glm::radians(fov), float(width / height), 0.1f, 100.0f);
-	glUniformMatrix4fv(glGetUniformLocation(shaderprogram, "projection"), 1, GL_FALSE, glm::value_ptr(model));
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-}
-
 void object::rotateobject(unsigned int shaderprogram, float x, float y, float z)
 {
 	glm::mat4 trans = glm::mat4(1.0f);
@@ -24,7 +11,7 @@ void object::rotateobject(unsigned int shaderprogram, float x, float y, float z)
 }
 
 
-void object::multiple3d(unsigned int shaderprogram,int width, int height, float fov)
+glm::mat4 object::multiple3d(unsigned int shaderprogram, int width, int height, float fov)
 {
 	glm::mat4 model = glm::mat4(1.0f);
 	glm::mat4 view = glm::mat4(1.0f);
@@ -42,35 +29,33 @@ void object::multiple3d(unsigned int shaderprogram,int width, int height, float 
 	glm::vec3(1.5f,  0.2f, -1.5f),
 	glm::vec3(-1.3f,  1.0f, -1.5f)
 	};
-	
+
 	projection = glm::perspective(glm::radians(fov), float(width / height), 0.1f, 100.0f);
 	int projectionloc = glGetUniformLocation(shaderprogram, "projection");
 	glUniformMatrix4fv(projectionloc, 1, GL_FALSE, glm::value_ptr(projection));
 
-	for (int i = 0;i <10;i++)
+	for (int i = 0;i < 10;i++)
 	{
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, cubePositions[i]);
-		
+
 		float angle = 20.0f * i;
 		model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 
 		int modelloc = glGetUniformLocation(shaderprogram, "model");
 		glUniformMatrix4fv(modelloc, 1, GL_FALSE, glm::value_ptr(model));
-		
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		 
 	}
+	return projection;
 }
 
 
-glm::mat4 object::camera(unsigned int shaderprogram,glm::vec3 camerapos, glm::vec3 cameraup, glm::vec3 camerafront)
+void object::camera(unsigned int shaderprogram, glm::vec3 camerapos, glm::vec3 cameraup, glm::vec3 camerafront)
 {
 	glm::mat4 view = glm::lookAt(camerapos, camerapos + camerafront, cameraup);
-	return view;
-}
-
-void object::setview(unsigned int shaderprogram,glm::mat4 view)
-{
 	int viewloc = glGetUniformLocation(shaderprogram, "view");
 	glUniformMatrix4fv(viewloc, 1, GL_FALSE, glm::value_ptr(view));
 }

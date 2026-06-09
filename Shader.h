@@ -5,6 +5,9 @@
 #include <sstream>
 #include <iostream>
 #include <cerrno>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 
 
@@ -20,7 +23,11 @@ public:
 	// deletion of shader after running game code to free up memory
 	void deleteshader();
 
-	unsigned int shprgm();
+	unsigned int getshdr();
+
+	void setvec3(const std::string &name,const glm::vec3 &value);
+
+	void setmat4(const std::string& name, const glm::mat4 mat);
 
 };
 

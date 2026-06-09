@@ -13,7 +13,7 @@ out vec3 ourColor;
 out vec2 TexCoord;
 void main()
 {// transform*vec4(aPos, 1.0);
-	gl_Position = projection*view*model*transform*vec4(aPos, 1.0);
+	gl_Position = projection*view*model*vec4(aPos, 1.0);
 	ourColor = aColor;
 	TexCoord = vec2(aTexCoord.x, aTexCoord.y);
 }
