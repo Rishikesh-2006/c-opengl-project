@@ -15,7 +15,7 @@ uniform vec3 lightColor;
 uniform sampler2D ourTexture;
 
 uniform vec3 attenval;
-
+uniform float lightscale;
 void main()
 {	
 	
@@ -38,11 +38,11 @@ void main()
 	float attenuation = 1.0 / (attenval.x + attenval.y * distance + 
     		    attenval.z* (distance * distance)); 
 
-	ambient *=attenuation;
+	//ambient *=attenuation;
 	diffuse *=attenuation;
 	specularlight *=attenuation;
 
 	vec3 result = (ambient + diffuse + specularlight) * objectColor;
-	FragColor = texture(ourTexture, TexCoord)*vec4(result, 1.0);
+	FragColor = texture(ourTexture, TexCoord)*vec4(result*lightscale, 1.0);
 
 }

@@ -19,9 +19,10 @@ float lastframe = 0.0f;
 float currentframe;
 
 //lightobject
-glm::vec3 lightpos(0.0f, 0.0f, 3.0f);
+glm::vec3 lightpos(0.0f, 5.0f, 3.0f);
 glm::vec3 lightobjectcolor(1.0f, 1.0f, 1.0f);
 
+void valcaper(float val);
 void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -342,12 +343,19 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, textures);
 		shader.useshader();
 
+		float lightscale = sin(glfwGetTime());
+		if (lightscale < 0)
+		{
+			lightscale = -lightscale;
+		}
 		
+
 		shader.setvec3("lightColor", lightobjectcolor);
 		shader.setvec3("objectColor", glm::vec3(0.5f, 0.5f, 0.5f));
 		shader.setvec3("lightpos", lightpos);
 		shader.setvec3("viewpos", camerapos);
 		shader.setvec3("attenval", glm::vec3(1.0f, 0.0014f, 0.000007f));
+		shader.setfloat("lightscale", lightscale);
 		
 		glBindVertexArray(VAO);
 
@@ -376,7 +384,7 @@ int main()
 
 		}
 		//lightpos.x = 4 * sin(glfwGetTime());
-		//lightpos.y = 4 * cos(glfwGetTime());
+		lightpos.y = 4 * cos(glfwGetTime());
 		//lightpos.z = 2 * cos(glfwGetTime());
 
 		light.useshader();
@@ -386,7 +394,7 @@ int main()
 
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, lightpos);
-		model = glm::scale(model, glm::vec3(0.5f));
+		model = glm::scale(model, glm::vec3(lightscale));
 		light.setmat4("model", model);
 		glBindVertexArray(lightvao);
 		//glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -409,4 +417,9 @@ int main()
 	glfwDestroyWindow(window);
 	glfwTerminate();
 	return 0;
+}
+
+void valcaper(float val)
+{
+
 }
