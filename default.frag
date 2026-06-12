@@ -30,11 +30,15 @@ void main()
 
 	float specularstrength = 1.0;
 	vec3 viewdir = normalize(viewpos-fragpos);
-	vec3 reflectdir = reflect(-lightDir,norm);
-	float spec = pow(max(dot(viewdir, reflectdir), 0.0), 32);
+	//vec3 reflectdir = reflect(-lightDir,norm);
+	//float spec = pow(max(dot(viewdir, reflectdir), 0.0), 32);
+
+	vec3 halfwaydir = normalize(lightDir+viewdir);
+	float spec = pow(max(dot(Normal, halfwaydir), 0.0), 16);
 	vec3 specularlight = specularstrength*spec*lightColor;
 
-	float distance    = length(lightpos-fragpos);
+
+	float distance  = length(lightpos-fragpos);
 	float attenuation = 1.0 / (attenval.x + attenval.y * distance + 
     		    attenval.z* (distance * distance)); 
 
