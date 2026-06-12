@@ -14,6 +14,8 @@ uniform vec3 objectColor;
 uniform vec3 lightColor;
 uniform sampler2D ourTexture;
 
+uniform vec3 attenval;
+
 void main()
 {	
 	
@@ -22,14 +24,23 @@ void main()
 	
 	vec3 norm = normalize(Normal);
 	vec3 lightDir = normalize(lightpos - fragpos);
+	
 	float diff = max(dot(norm, lightDir), 0.0);
 	vec3 diffuse = diff * lightColor;
 
-	float specularstrength = 0.8;
+	float specularstrength = 1.0;
 	vec3 viewdir = normalize(viewpos-fragpos);
 	vec3 reflectdir = reflect(-lightDir,norm);
-	float spec = pow(max(dot(viewdir, reflectdir), 0.0), 128);
+	float spec = pow(max(dot(viewdir, reflectdir), 0.0), 32);
 	vec3 specularlight = specularstrength*spec*lightColor;
+
+	float distance    = length(lightpos-fragpos);
+	float attenuation = 1.0 / (attenval.x + attenval.y * distance + 
+    		    attenval.z* (distance * distance)); 
+
+	ambient *=attenuation;
+	diffuse *=attenuation;
+	specularlight *=attenuation;
 
 	vec3 result = (ambient + diffuse + specularlight) * objectColor;
 	FragColor = texture(ourTexture, TexCoord)*vec4(result, 1.0);

@@ -29,5 +29,9 @@ public:
 
 	void setmat4(const std::string& name, const glm::mat4 mat);
 
+	void setint(const std::string& name, const int value);
+
+	void setfloat(const std::string& name, const float value);
+
 };
 
