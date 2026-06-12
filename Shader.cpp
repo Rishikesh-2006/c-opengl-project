@@ -66,34 +66,42 @@ void Shader::activateshader(const char* vertexpath, const char* fragmentpath)
 
 }
 
+
 void Shader::useshader()
 {
 	glUseProgram(shaderprogram);
 }
+
 
 void Shader::deleteshader()
 {
 	glDeleteProgram(shaderprogram);
 }
 
+
 unsigned int Shader::getshdr()
 {
 	return shaderprogram;
 }
+
+
 void Shader::setvec3(const std::string &name,const glm::vec3 &value)
 {
 	glUniform3fv(glGetUniformLocation(shaderprogram, name.c_str()), 1,&value[0]);
 }
+
 
 void Shader::setmat4(const std::string& name, const glm::mat4 mat)
 {
 	glUniformMatrix4fv(glGetUniformLocation(shaderprogram, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
+
 void Shader::setint(const std::string& name, const int value)
 {
 	glUniform1i(glGetUniformLocation(shaderprogram, name.c_str()), value);
 }
+
 
 void Shader::setfloat(const std::string& name, const float value)
 {

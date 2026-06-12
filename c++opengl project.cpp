@@ -7,41 +7,10 @@
 int scheight = 800;
 int scwidth = 800;
 
-
+//camera vals
 glm::vec3 camerapos = { 0.0f, 0.0f ,5.0f };
 glm::vec3 camerafront = { 0.0f, 0.0f ,-3.0f };
 glm::vec3 cameraup = { 0.0f, 1.0f ,0.0f };
-
-
-
-float deltatime = 0.0f;
-float lastframe = 0.0f;
-float currentframe;
-
-//lightobject
-glm::vec3 lightpos(0.0f, 5.0f, 3.0f);
-glm::vec3 lightobjectcolor(1.0f, 1.0f, 1.0f);
-
-void valcaper(float val);
-void processInput(GLFWwindow* window)
-{
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, true);
-
-	float cameraSpeedvertical = 4.5 * deltatime;
-	float cameraSpeedhorizontal = 5 * deltatime;
-	if (glfwGetKey(window, GLFW_KEY_W) || (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS))
-		camerapos += cameraSpeedvertical * camerafront;
-	if (glfwGetKey(window, GLFW_KEY_S) || (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS))
-		camerapos -= cameraSpeedvertical * camerafront;
-	if (glfwGetKey(window, GLFW_KEY_A) || (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS))
-		camerapos -= glm::normalize(glm::cross(camerafront, cameraup)) * cameraSpeedhorizontal;
-	if (glfwGetKey(window, GLFW_KEY_D) || (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS))
-		camerapos += glm::normalize(glm::cross(camerafront, cameraup)) * cameraSpeedhorizontal;
-
-
-}
-
 bool firstmouse = true;
 float yaw = -90.0f;
 float pitch = 0.0f;
@@ -49,88 +18,33 @@ float lastx = scwidth / 2;
 float lasty = scheight / 2;
 float zoom = 45.0f;
 
-void mouse_callback(GLFWwindow* window, double xposin, double yposin)
-{
-	float xpos = static_cast<float>(xposin);
-	float ypos = static_cast<float>(yposin);
 
-	if (firstmouse)
-	{
-		lastx = xpos;
-		lasty = ypos;
-		firstmouse = false;
-	}
+float deltatime = 0.0f;
+float lastframe = 0.0f;
+float currentframe;
 
-	float xoffset = xpos - lastx;
-	float yoffset = lasty - ypos;
-	lastx = xpos;
-	lasty = ypos;
+//lightobject
+glm::vec3 lightpos(12.0f, 97.0f, 11.0f);
+glm::vec3 lightobjectcolor(1.0f, 1.0f, 1.0f);
+glm::vec4 background_light = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
-
-	float sensetivity = 0.1;
-	xoffset *= sensetivity;
-	yoffset *= sensetivity;
-
-
-
-	yaw += xoffset;
-	pitch += yoffset;
-
-	if (pitch > 89.0f)
-	{
-		pitch = 89.0f;
-	}
-	if (pitch < -89.0f)
-	{
-		pitch = -89.0f;
-	}
-
-	glm::vec3 front;
-	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	front.y = sin(glm::radians(pitch));
-	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-
-	camerafront = glm::normalize(front);
-}
-
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-{
-	zoom -= (float)yoffset;
-
-	if (zoom < 1.0f)
-	{
-		zoom = 1.0f;
-	}
-
-	if (zoom > 45.0f)
-	{
-		zoom = 45.0f;
-	}
-}
+void mouse_callback(GLFWwindow* window, double xposin, double yposin);
+void processInput(GLFWwindow* window);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 
 int main()
 {
-
-
-	/*float vertices[] = {
-		0.25f,0.25f,0.0f,	1.0f, 0.0f, 0.0f,	1.0f,1.0f,
-		0.25f,-0.25f,0.0f,	0.0f, 1.0f, 0.0f,	1.0f,0.0f,
-		-0.25f,-0.25f,0.0f,	0.0f, 0.0f, 1.0f,	0.0f,0.0f,
-		-0.25f,0.25f,0.0f,	1.0f,0.0f,1.0f,		0.0f,1.0f
-	};*/
-
-
 	float vertices[] = {
 	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,0.0f,-1.0f,
 	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,0.0f,-1.0f,
-	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,0.0f,-1.0f,	//2 0 1	e
-	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,0.0f,-1.0f,	//5 3 4 
+	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,0.0f,-1.0f,	
+	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,0.0f,-1.0f,	
 	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,0.0f,-1.0f,
 	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,0.0f,-1.0f,
 
-	-0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,0.0f,1.0f,		//8 6 7
-	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,0.0f,1.0f,		//11 9 10
+	-0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,0.0f,1.0f,		
+	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,0.0f,1.0f,		
 	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,0.0f,1.0f,
 	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,0.0f,1.0f,
 	-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,0.0f,1.0f,
@@ -138,52 +52,49 @@ int main()
 
 	-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		-1.0f,0.0f,0.0f,
 	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		-1.0f,0.0f,0.0f,
-	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		-1.0f,0.0f,0.0f,	//14 12 13e
-	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		-1.0f,0.0f,0.0f,	//17 15 16
+	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		-1.0f,0.0f,0.0f,	
+	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		-1.0f,0.0f,0.0f,	
 	-0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		-1.0f,0.0f,0.0f,
 	-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		-1.0f,0.0f,0.0f,
 
 	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		1.0f,0.0f,0.0f,
 	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		1.0f,0.0f,0.0f,
-	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		1.0f,0.0f,0.0f,		//20 18 19
-	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		1.0f,0.0f,0.0f,		//23 21 22
+	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		1.0f,0.0f,0.0f,		
+	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		1.0f,0.0f,0.0f,		
 	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		1.0f,0.0f,0.0f,
 	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		1.0f,0.0f,0.0f,
 
 	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,-1.0f,0.0f,
 	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,-1.0f,0.0f,
-	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,-1.0f,0.0f,	//26 24 25e
-	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,-1.0f,0.0f,	//29 27 28
+	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,-1.0f,0.0f,	
+	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,-1.0f,0.0f,	
 	-0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,-1.0f,0.0f,
 	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,-1.0f,0.0f,
 
 	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,1.0f,0.0f,
 	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,1.0f,0.0f,
-	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,1.0f,0.0f,		//32 30 31
-	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,1.0f,0.0f,		//35 33 34
+	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,1.0f,0.0f,
+	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,1.0f,0.0f,		
 	-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,1.0f,0.0f,
 	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,1.0f,0.0f
 	};
 
 	unsigned int indices[] = {
-		0,2,1,//e
+		0,2,1,
 		3,5,4,
 		8,6,7,
 		11,9,10,
-		12,13,14,//e
+		12,13,14,
 		15,16,17,
 		18,20,19,
 		21,23,22,
-		24,25,26,//e
+		24,25,26,
 		27,28,29,
 		30,32,31,
 		33,35,34
 	};
 
-
-
 	glfwInit();
-
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -199,11 +110,8 @@ int main()
 
 	glfwMakeContextCurrent(window);
 
+	//loading opengl using glad
 	gladLoadGL();
-
-
-
-
 	glViewport(0, 0, scheight, scwidth);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
@@ -225,18 +133,18 @@ int main()
 	 
 	//vertex buffers , arrays
 
-	GLuint VAO, VBO;
-	GLuint EBO;
+	GLuint CUBEVAO, CUBEVBO;
+	GLuint CUBEEBO;
 
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
+	glGenVertexArrays(1, &CUBEVAO);
+	glGenBuffers(1, &CUBEVBO);
 
-	glBindVertexArray(VAO);
+	glBindVertexArray(CUBEVAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, CUBEVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glGenBuffers(1, &CUBEEBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, CUBEEBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)0);
@@ -258,7 +166,7 @@ int main()
 	glGenVertexArrays(1, &lightvao);
 	glBindVertexArray(lightvao);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, CUBEVBO);
 
 	glGenBuffers(1, &lightEBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lightEBO);
@@ -304,9 +212,8 @@ int main()
 	unsigned int shaderid = shader.getshdr();
 
 
-	glm::vec4 background_light = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
-	//floor vector coordinates
+	//generation of floor vector coordinates
 
 	std::vector <glm::vec3> floor;
 	int x_val = 10, z_val = 10;
@@ -316,15 +223,27 @@ int main()
 		{
 			float posx = i * 1.0f;
 			float posz = j * 1.0f;
-			float posy = -1.0f;
+			float posy = i*j;
+			floor.push_back(glm::vec3(posx, posy, posz));
+		}
+	}
+
+	//testing roof
+	int x_up = 10, z_up = 10;
+	for (int i = 0;i < x_up;i++)
+	{
+		for (int j = 0;j < z_up;j++)
+		{
+			float posx = i * 1.0f;
+			float posz = j * 1.0f;
+			float posy = 5.0f;
 			floor.push_back(glm::vec3(posx, posy, posz));
 		}
 	}
 	
 
-	//attenuation values-
 
-	
+
 	while (!glfwWindowShouldClose(window))
 	{
 
@@ -354,17 +273,17 @@ int main()
 		shader.setvec3("objectColor", glm::vec3(0.5f, 0.5f, 0.5f));
 		shader.setvec3("lightpos", lightpos);
 		shader.setvec3("viewpos", camerapos);
+
+		//attenuation values-
 		shader.setvec3("attenval", glm::vec3(1.0f, 0.0014f, 0.000007f));
-		shader.setfloat("lightscale", lightscale);
+		shader.setfloat("lightscale", /*lightscale */1.0f );
 		
-		glBindVertexArray(VAO);
+		glBindVertexArray(CUBEVAO);
 
 		//camera
 
 		glm::mat4 view = glm::lookAt(camerapos, camerapos + camerafront, cameraup);
 		shader.setmat4("view", view);
-
-		//shader 1 cubes
 
 		glm::mat4 projection = glm::perspective(glm::radians(45.0f), float(width / height), 0.1f, 500.0f);
 		shader.setmat4("projection", projection);
@@ -383,8 +302,9 @@ int main()
 
 
 		}
+
 		//lightpos.x = 4 * sin(glfwGetTime());
-		lightpos.y = 4 * cos(glfwGetTime());
+		lightpos.y = 50+40 * sin(glfwGetTime());
 		//lightpos.z = 2 * cos(glfwGetTime());
 
 		light.useshader();
@@ -394,7 +314,7 @@ int main()
 
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, lightpos);
-		model = glm::scale(model, glm::vec3(lightscale));
+		model = glm::scale(model, glm::vec3(/*lightscale */1.0f));
 		light.setmat4("model", model);
 		glBindVertexArray(lightvao);
 		//glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -408,18 +328,92 @@ int main()
 
 	shader.deleteshader();
 	glDeleteTextures(1, &textures);
-	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &CUBEVBO);
 	glDeleteVertexArrays(1, &lightvao);
-	glDeleteBuffers(1, &EBO);
+	glDeleteBuffers(1, &CUBEEBO);
 	glDeleteBuffers(1, &lightEBO);
-	glDeleteVertexArrays(1, &VAO);
+	glDeleteVertexArrays(1, &CUBEVAO);
 
 	glfwDestroyWindow(window);
 	glfwTerminate();
 	return 0;
 }
 
-void valcaper(float val)
-{
 
+void mouse_callback(GLFWwindow* window, double xposin, double yposin)
+{
+	float xpos = static_cast<float>(xposin);
+	float ypos = static_cast<float>(yposin);
+
+	if (firstmouse)
+	{
+		lastx = xpos;
+		lasty = ypos;
+		firstmouse = false;
+	}
+
+	float xoffset = xpos - lastx;
+	float yoffset = lasty - ypos;
+	lastx = xpos;
+	lasty = ypos;
+
+
+	float sensetivity = 0.1;
+	xoffset *= sensetivity;
+	yoffset *= sensetivity;
+
+
+
+	yaw += xoffset;
+	pitch += yoffset;
+
+	if (pitch > 89.0f)
+	{
+		pitch = 89.0f;
+	}
+	if (pitch < -89.0f)
+	{
+		pitch = -89.0f;
+	}
+
+	glm::vec3 front;
+	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	front.y = sin(glm::radians(pitch));
+	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+
+	camerafront = glm::normalize(front);
+}
+
+void processInput(GLFWwindow* window)
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
+
+	float cameraSpeedvertical = 4.5 * deltatime;
+	float cameraSpeedhorizontal = 5 * deltatime;
+	if (glfwGetKey(window, GLFW_KEY_W) || (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS))
+		camerapos += cameraSpeedvertical * camerafront;
+	if (glfwGetKey(window, GLFW_KEY_S) || (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS))
+		camerapos -= cameraSpeedvertical * camerafront;
+	if (glfwGetKey(window, GLFW_KEY_A) || (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS))
+		camerapos -= glm::normalize(glm::cross(camerafront, cameraup)) * cameraSpeedhorizontal;
+	if (glfwGetKey(window, GLFW_KEY_D) || (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS))
+		camerapos += glm::normalize(glm::cross(camerafront, cameraup)) * cameraSpeedhorizontal;
+
+
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	zoom -= (float)yoffset;
+
+	if (zoom < 1.0f)
+	{
+		zoom = 1.0f;
+	}
+
+	if (zoom > 45.0f)
+	{
+		zoom = 45.0f;
+	}
 }

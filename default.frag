@@ -1,4 +1,4 @@
-//fragment shader
+//fragment shader for cube object
 
 #version 330 core
 out vec4 FragColor;
@@ -38,7 +38,7 @@ void main()
 	float attenuation = 1.0 / (attenval.x + attenval.y * distance + 
     		    attenval.z* (distance * distance)); 
 
-	//ambient *=attenuation;
+	ambient *=attenuation;
 	diffuse *=attenuation;
 	specularlight *=attenuation;
 

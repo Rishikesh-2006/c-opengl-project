@@ -1,4 +1,4 @@
-//vertex shader
+//vertex shader for cube object
 
 #version 330 core
 layout(location = 0) in vec3 aPos;
@@ -17,7 +17,7 @@ out vec3 Normal;
 out vec3 fragpos;
 
 void main()
-{// transform*vec4(aPos, 1.0);
+{// temporary to check rotation --> transform*vec4(aPos, 1.0);
 	fragpos = vec3(model * vec4(aPos, 1.0));
 	gl_Position = projection*view*model*vec4(aPos, 1.0);
 	ourColor = aColor;
