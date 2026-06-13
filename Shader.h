@@ -23,8 +23,6 @@ public:
 
 	void deleteshader();
 
-	unsigned int getshdr();
-
 	void setvec3(const std::string &name,const glm::vec3 &value);
 
 	void setmat4(const std::string& name, const glm::mat4 mat);
@@ -33,5 +31,6 @@ public:
 
 	void setfloat(const std::string& name, const float value);
 
+	void settexture(const std::string& name, const int loc);
 };
 

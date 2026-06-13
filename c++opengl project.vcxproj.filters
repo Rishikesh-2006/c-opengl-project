@@ -52,17 +52,23 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="default.vert">
+    <None Include="wall.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="default.frag">
+    <None Include="wall.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="lightobject.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="lightobject.vert">
-      <Filter>Source Files</Filter>
+      <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="lightobject.frag">
-      <Filter>Source Files</Filter>
+    <None Include="floor.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="floor.frag">
+      <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -72,6 +78,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\..\wall.jpg">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="..\..\..\..\wood.png">
       <Filter>Resource Files\textures</Filter>
     </Image>
   </ItemGroup>

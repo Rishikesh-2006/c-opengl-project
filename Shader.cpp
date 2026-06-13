@@ -79,11 +79,6 @@ void Shader::deleteshader()
 }
 
 
-unsigned int Shader::getshdr()
-{
-	return shaderprogram;
-}
-
 
 void Shader::setvec3(const std::string &name,const glm::vec3 &value)
 {
@@ -106,4 +101,9 @@ void Shader::setint(const std::string& name, const int value)
 void Shader::setfloat(const std::string& name, const float value)
 {
 	glUniform1f(glGetUniformLocation(shaderprogram, name.c_str()), value);
+}
+
+void Shader::settexture(const std::string& name, const int loc)
+{
+	glUniform1i(glGetUniformLocation(shaderprogram, name.c_str()), loc);
 }

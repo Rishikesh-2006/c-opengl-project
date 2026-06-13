@@ -24,7 +24,7 @@ float lastframe = 0.0f;
 float currentframe;
 
 //lightobject
-glm::vec3 lightpos(12.0f, 97.0f, 11.0f);
+glm::vec3 lightpos(5.0f, 0.0f, 6.0f);
 glm::vec3 lightobjectcolor(1.0f, 1.0f, 1.0f);
 glm::vec4 background_light = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -38,13 +38,13 @@ int main()
 	float vertices[] = {
 	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,0.0f,-1.0f,
 	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,0.0f,-1.0f,
-	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,0.0f,-1.0f,	
-	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,0.0f,-1.0f,	
+	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,0.0f,-1.0f,
+	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,0.0f,-1.0f,
 	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,0.0f,-1.0f,
 	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,0.0f,-1.0f,
 
-	-0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,0.0f,1.0f,		
-	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,0.0f,1.0f,		
+	-0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,0.0f,1.0f,
+	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,0.0f,1.0f,
 	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,0.0f,1.0f,
 	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,0.0f,1.0f,
 	-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,0.0f,1.0f,
@@ -52,29 +52,29 @@ int main()
 
 	-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		-1.0f,0.0f,0.0f,
 	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		-1.0f,0.0f,0.0f,
-	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		-1.0f,0.0f,0.0f,	
-	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		-1.0f,0.0f,0.0f,	
+	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		-1.0f,0.0f,0.0f,
+	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		-1.0f,0.0f,0.0f,
 	-0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		-1.0f,0.0f,0.0f,
 	-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		-1.0f,0.0f,0.0f,
 
 	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		1.0f,0.0f,0.0f,
 	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		1.0f,0.0f,0.0f,
-	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		1.0f,0.0f,0.0f,		
-	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		1.0f,0.0f,0.0f,		
+	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		1.0f,0.0f,0.0f,
+	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		1.0f,0.0f,0.0f,
 	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		1.0f,0.0f,0.0f,
 	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		1.0f,0.0f,0.0f,
 
 	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,-1.0f,0.0f,
 	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,-1.0f,0.0f,
-	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,-1.0f,0.0f,	
-	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,-1.0f,0.0f,	
+	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,-1.0f,0.0f,
+	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,-1.0f,0.0f,
 	-0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,-1.0f,0.0f,
 	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,-1.0f,0.0f,
 
 	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,1.0f,0.0f,
 	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,1.0f,0.0f,
 	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,1.0f,0.0f,
-	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,1.0f,0.0f,		
+	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,1.0f,0.0f,
 	-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,1.0f,0.0f,
 	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,1.0f,0.0f
 	};
@@ -118,19 +118,20 @@ int main()
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//shader class to initialize and combine vertex and fragement shader
-	Shader shader;
+	Shader wall;
 	Shader light;
-	shader.activateshader("default.vert", "default.frag");
+	Shader floor;
+	wall.activateshader("wall.vert", "wall.frag");
 	light.activateshader("lightobject.vert", "lightobject.frag");
-
+	floor.activateshader("floor.vert", "floor.frag");
 	//this ensures the faces on the front are shown and the back ones are hidden
 
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE); 
-	glCullFace(GL_BACK); 
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
-	
-	 
+
+
 	//vertex buffers , arrays
 
 	GLuint CUBEVAO, CUBEVBO;
@@ -161,7 +162,7 @@ int main()
 
 	//lightobject
 
-	GLuint lightvao,lightEBO;
+	GLuint lightvao, lightEBO;
 
 	glGenVertexArrays(1, &lightvao);
 	glBindVertexArray(lightvao);
@@ -175,15 +176,39 @@ int main()
 	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
+	// floor block
+	GLuint floorVAO;
+	GLuint floorEBO;
 
-	//textures
+	glGenVertexArrays(1, &floorVAO);
+	glBindVertexArray(floorVAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, CUBEVBO);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+
+	glVertexAttribPointer(2, 2, GL_FLOAT, 0, 11 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+
+	glVertexAttribPointer(3, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)(8 * sizeof(float)));
+	glEnableVertexAttribArray(3);
+
+	glGenBuffers(1, &floorEBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, floorEBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	//wall texture
 
 	stbi_set_flip_vertically_on_load(true);
-	unsigned int textures;
+	unsigned int Walltextures;
 
-	glGenTextures(1, &textures);
+	glGenTextures(1, &Walltextures);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textures);
+	glBindTexture(GL_TEXTURE_2D, Walltextures);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
@@ -191,31 +216,55 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	int width, height, nrchannels;
+	int Wwidth, Wheight, Wnrchannels;
 
-	unsigned char* data = stbi_load("wall.jpg", &width, &height, &nrchannels, 0);
+	unsigned char* Wdata = stbi_load("wall.jpg", &Wwidth, &Wheight, &Wnrchannels, 0);
 
 
-	if (data)
+	if (Wdata)
 	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Wwidth, Wheight, 0, GL_RGB, GL_UNSIGNED_BYTE, Wdata);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 
 	else
 	{
-		std::cout << "failed to get data";
+		std::cout << "failed to load wall data" << std::endl;
 	}
 
-	stbi_image_free(data);
+	stbi_image_free(Wdata);
 
-	unsigned int shaderid = shader.getshdr();
+	//floor texture
+	unsigned int  floortexture;
+	glGenTextures(1, &floortexture);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, floortexture);
 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	int Fwidth, Fheight, Fnrchannels;
+	unsigned char* Fdata = stbi_load("wood.png", &Fwidth, &Fheight, &Fnrchannels, 0);
+
+	if (Fdata)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Fwidth, Fheight, 0, GL_RGB, GL_UNSIGNED_BYTE, Fdata);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+
+	else
+	{
+		std::cout << "failed to load floor data" << std::endl;
+	}
+	
+	stbi_image_free(Fdata);
 
 	//generation of floor vector coordinates
 
-	std::vector <glm::vec3> floor;
+	std::vector <glm::vec3> floorcoors;
 	int x_val = 10, z_val = 10;
 	for (int i = 0;i < x_val;i++)
 	{
@@ -223,8 +272,8 @@ int main()
 		{
 			float posx = i * 1.0f;
 			float posz = j * 1.0f;
-			float posy = i*j;
-			floor.push_back(glm::vec3(posx, posy, posz));
+			float posy = -1.0f;
+			floorcoors.push_back(glm::vec3(posx, posy, posz));
 		}
 	}
 
@@ -237,10 +286,23 @@ int main()
 			float posx = i * 1.0f;
 			float posz = j * 1.0f;
 			float posy = 5.0f;
-			floor.push_back(glm::vec3(posx, posy, posz));
+			floorcoors.push_back(glm::vec3(posx, posy, posz));
 		}
 	}
-	
+
+	//wall pos
+	std::vector <glm::vec3> wallcoors;
+	int x_upw = 10, y_upw = 10;
+	for (int i = 0;i < x_upw;i++)
+	{
+		for (int j = 0;j < y_upw;j++)
+		{
+			float posx = i * 1.0f;
+			float posz = 1.0f;
+			float posy = j * 1.0f;
+			wallcoors.push_back(glm::vec3(posx, posy, posz));
+		}
+	}
 
 
 
@@ -256,55 +318,93 @@ int main()
 		std::cout << camerapos.x << "," << camerapos.y << "," << camerapos.z << std::endl;
 
 		processInput(window);
-		glClearColor(background_light.x,background_light.y,background_light.z, background_light.w);
+		glClearColor(background_light.x, background_light.y, background_light.z, background_light.w);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glBindTexture(GL_TEXTURE_2D, textures);
-		shader.useshader();
+		glBindTexture(GL_TEXTURE_2D, Walltextures);
 
-		float lightscale = sin(glfwGetTime());
-		if (lightscale < 0)
-		{
-			lightscale = -lightscale;
-		}
-		
+		wall.useshader();
+		wall.settexture("ourTexture", 0);
+		//float lightscale = sin(glfwGetTime());
+		//if (lightscale < 0)
+		//{
+		//	lightscale = -lightscale;
+		//}
+		float lightscale = 0.3;
+		float multiplier = 4;
 
-		shader.setvec3("lightColor", lightobjectcolor);
-		shader.setvec3("objectColor", glm::vec3(0.5f, 0.5f, 0.5f));
-		shader.setvec3("lightpos", lightpos);
-		shader.setvec3("viewpos", camerapos);
+		wall.setvec3("lightColor", lightobjectcolor);
+		wall.setvec3("objectColor", glm::vec3(0.5f, 0.5f, 0.5f));
+		wall.setvec3("lightpos", lightpos);
+		wall.setvec3("viewpos", camerapos);
 
 		//attenuation values-
-		shader.setvec3("attenval", glm::vec3(1.0f, 0.0014f, 0.000007f));
-		shader.setfloat("lightscale", /*lightscale */1.0f );
-		
+		wall.setvec3("attenval", glm::vec3(1.0f, 0.014f, 0.0007f));
+		wall.setfloat("lightscale", lightscale);
+		wall.setfloat("lightmultiplier", multiplier);
+
 		glBindVertexArray(CUBEVAO);
 
 		//camera
 
 		glm::mat4 view = glm::lookAt(camerapos, camerapos + camerafront, cameraup);
-		shader.setmat4("view", view);
+		wall.setmat4("view", view);
 
-		glm::mat4 projection = glm::perspective(glm::radians(45.0f), float(width / height), 0.1f, 500.0f);
-		shader.setmat4("projection", projection);
+		glm::mat4 projection = glm::perspective(glm::radians(45.0f), float(scwidth / scheight), 0.1f, 500.0f);
+		wall.setmat4("projection", projection);
 
-		for (int i = 0;i<x_val*z_val;i++)
+		for (int i = 0;i < x_val * z_val;i++)
 		{
-				glm::mat4 model = glm::mat4(1.0f);
-				model = glm::translate(model, floor[i]);
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, wallcoors[i]);
 
-				float angle = 0;
-				model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+			float angle = 0;
+			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 
-				shader.setmat4("model", model);
+			wall.setmat4("model", model);
 
-				glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
 
 		}
 
+		//floor
+
+		glBindTexture(GL_TEXTURE_2D, floortexture);
+
+		floor.useshader();
+		floor.settexture("ourTexture", 1);
+		floor.setvec3("lightColor", lightobjectcolor);
+		floor.setvec3("objectColor", glm::vec3(0.5f, 0.5f, 0.5f));
+		floor.setvec3("lightpos", lightpos);
+		floor.setvec3("viewpos", camerapos);
+
+		floor.setvec3("attenval", glm::vec3(1.0f, 0.0014f, 0.000007f));
+		floor.setfloat("lightscale", lightscale);
+		floor.setfloat("lightmultiplier", multiplier);
+		glBindVertexArray(floorVAO);
+
+		floor.setmat4("view", view);
+		floor.setmat4("projection", projection);
+
+		for (int i = 0;i < x_val * z_val;i++)
+		{
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, floorcoors[i]);
+
+			float angle = 0;
+			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+
+			wall.setmat4("model", model);
+
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
+
+		}
+
+
 		//lightpos.x = 4 * sin(glfwGetTime());
-		lightpos.y = 50+40 * sin(glfwGetTime());
+		lightpos.y = 4 * sin(glfwGetTime());
 		//lightpos.z = 2 * cos(glfwGetTime());
 
 		light.useshader();
@@ -314,7 +414,7 @@ int main()
 
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, lightpos);
-		model = glm::scale(model, glm::vec3(/*lightscale */1.0f));
+		model = glm::scale(model, glm::vec3(lightscale));
 		light.setmat4("model", model);
 		glBindVertexArray(lightvao);
 		//glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -322,17 +422,27 @@ int main()
 
 
 
+
+
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 
-	shader.deleteshader();
-	glDeleteTextures(1, &textures);
-	glDeleteBuffers(1, &CUBEVBO);
-	glDeleteVertexArrays(1, &lightvao);
-	glDeleteBuffers(1, &CUBEEBO);
-	glDeleteBuffers(1, &lightEBO);
+
+	wall.deleteshader();
+	glDeleteTextures(1, &Walltextures);
 	glDeleteVertexArrays(1, &CUBEVAO);
+	glDeleteBuffers(1, &CUBEVBO);
+	glDeleteBuffers(1, &CUBEEBO);
+
+	light.deleteshader();
+	glDeleteVertexArrays(1, &lightvao);
+	glDeleteBuffers(1, &lightEBO);
+
+	floor.deleteshader();
+	glDeleteVertexArrays(1, &floorVAO);
+	glDeleteBuffers(1, &floorEBO);
+	glDeleteTextures(1, &floortexture);
 
 	glfwDestroyWindow(window);
 	glfwTerminate();

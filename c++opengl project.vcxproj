@@ -162,8 +162,10 @@
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="default.frag" />
-    <None Include="default.vert" />
+    <None Include="floor.frag" />
+    <None Include="floor.vert" />
+    <None Include="wall.frag" />
+    <None Include="wall.vert" />
     <None Include="lightobject.frag" />
     <None Include="lightobject.vert" />
   </ItemGroup>
@@ -172,6 +174,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\..\wall.jpg" />
+    <Image Include="..\..\..\..\wood.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
