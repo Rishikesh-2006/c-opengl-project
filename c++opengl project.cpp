@@ -8,7 +8,7 @@ int scheight = 800;
 int scwidth = 800;
 
 //camera vals
-glm::vec3 camerapos = { 0.0f, 0.0f ,5.0f };
+glm::vec3 camerapos = { 5.0f, 2.0f ,10.0f };
 glm::vec3 camerafront = { 0.0f, 0.0f ,-3.0f };
 glm::vec3 cameraup = { 0.0f, 1.0f ,0.0f };
 bool firstmouse = true;
@@ -24,7 +24,7 @@ float lastframe = 0.0f;
 float currentframe;
 
 //lightobject
-glm::vec3 lightpos(5.0f, 0.0f, 6.0f);
+glm::vec3 lightpos(5.0f, 12.0f, 6.0f);
 glm::vec3 lightobjectcolor(1.0f, 1.0f, 1.0f);
 glm::vec4 background_light = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -218,12 +218,12 @@ int main()
 
 	int Wwidth, Wheight, Wnrchannels;
 
-	unsigned char* Wdata = stbi_load("wall.jpg", &Wwidth, &Wheight, &Wnrchannels, 0);
+	unsigned char* Wdata = stbi_load("gray.png", &Wwidth, &Wheight, &Wnrchannels, 0);
 
 
 	if (Wdata)
 	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Wwidth, Wheight, 0, GL_RGB, GL_UNSIGNED_BYTE, Wdata);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Wwidth, Wheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, Wdata);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 
@@ -248,7 +248,6 @@ int main()
 
 	int Fwidth, Fheight, Fnrchannels;
 	unsigned char* Fdata = stbi_load("wood.png", &Fwidth, &Fheight, &Fnrchannels, 0);
-
 	if (Fdata)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Fwidth, Fheight, 0, GL_RGB, GL_UNSIGNED_BYTE, Fdata);
@@ -265,10 +264,11 @@ int main()
 	//generation of floor vector coordinates
 
 	std::vector <glm::vec3> floorcoors;
-	int x_val = 10, z_val = 10;
-	for (int i = 0;i < x_val;i++)
+
+	float x_val = 10, z_val = 10;
+	for (float i = 0;i < x_val;i++)
 	{
-		for (int j = 0;j < z_val;j++)
+		for (float j = 0;j < z_val;j++)
 		{
 			float posx = i * 1.0f;
 			float posz = j * 1.0f;
@@ -277,21 +277,10 @@ int main()
 		}
 	}
 
-	//testing roof
-	int x_up = 10, z_up = 10;
-	for (int i = 0;i < x_up;i++)
-	{
-		for (int j = 0;j < z_up;j++)
-		{
-			float posx = i * 1.0f;
-			float posz = j * 1.0f;
-			float posy = 5.0f;
-			floorcoors.push_back(glm::vec3(posx, posy, posz));
-		}
-	}
 
 	//wall pos
 	std::vector <glm::vec3> wallcoors;
+
 	int x_upw = 10, y_upw = 10;
 	for (int i = 0;i < x_upw;i++)
 	{
@@ -304,24 +293,28 @@ int main()
 		}
 	}
 
-
-
 	while (!glfwWindowShouldClose(window))
 	{
+
 
 
 		float currentframe = static_cast<float>(glfwGetTime());
 		deltatime = currentframe - lastframe;
 		lastframe = currentframe;
-
+		//std::cout << spupdate << std::endl;
 		//std::cout << camerafront.x << "," << camerafront.y << "," << camerafront.z << std::endl;
-		std::cout << camerapos.x << "," << camerapos.y << "," << camerapos.z << std::endl;
+		//std::cout << camerapos.x << "," << camerapos.y << "," << camerapos.z << std::endl;
 
 		processInput(window);
 		glClearColor(background_light.x, background_light.y, background_light.z, background_light.w);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glBindTexture(GL_TEXTURE_2D, Walltextures);
+
+
+		//lightobjectcolor.x = sin(glfwGetTime());
+		//lightobjectcolor.y = cos(glfwGetTime());
+		//lightobjectcolor.z = 2 * cos(glfwGetTime());
 
 		wall.useshader();
 		wall.settexture("ourTexture", 0);
@@ -331,7 +324,7 @@ int main()
 		//	lightscale = -lightscale;
 		//}
 		float lightscale = 0.3;
-		float multiplier = 4;
+		float multiplier = 6;
 
 		wall.setvec3("lightColor", lightobjectcolor);
 		wall.setvec3("objectColor", glm::vec3(0.5f, 0.5f, 0.5f));
@@ -404,8 +397,13 @@ int main()
 
 
 		//lightpos.x = 4 * sin(glfwGetTime());
-		lightpos.y = 4 * sin(glfwGetTime());
+		lightpos.y = 4*sin(glfwGetTime());
 		//lightpos.z = 2 * cos(glfwGetTime());
+
+		if (lightpos.y < -0.1f)
+		{
+			lightpos.y = -lightpos.y;
+		}
 
 		light.useshader();
 		light.setvec3("color", lightobjectcolor);
