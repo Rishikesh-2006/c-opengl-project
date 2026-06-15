@@ -262,35 +262,35 @@ int main()
 
 	//generation of floor vector coordinates
 
-	std::vector <glm::vec3> floorcoors;
-
-	float x_val = 10, z_val = 10;
-	for (float i = 0;i < x_val;i++)
-	{
-		for (float j = 0;j < z_val;j++)
-		{
-			float posx = i * 1.0f;
-			float posz = j * 1.0f;
-			float posy = -1.0f;
-			floorcoors.push_back(glm::vec3(posx, posy, posz));
-		}
-	}
-
 
 	//wall pos
 	std::vector <glm::vec3> wallcoors;
-
-	int x_upw = 10, y_upw = 10;
-	for (int i = 0;i < x_upw;i++)
+	int x_wall = 20, y_wall = 20;
+	for (int i = 0;i < x_wall;i++)
 	{
-		for (int j = 0;j < y_upw;j++)
+		for (int j = 0;j < y_wall;j++)
 		{
 			float posx = i * 1.0f;
-			float posz = 1.0f;
 			float posy = j * 1.0f;
+			float posz = 5.0f;
 			wallcoors.push_back(glm::vec3(posx, posy, posz));
 		}
 	}
+
+	//floor pos
+	std::vector <glm::vec3> floorcoors;
+	int x_floor = 20, z_floor = 20;
+	for (int i = 0;i < x_floor;i++)
+	{
+		for (int j = 0; j < z_floor;j++)
+		{
+			float posxf = i * 1.0f;
+			float posyf = -1.0f;
+			float poszf = j * 1.0f;
+			floorcoors.push_back(glm::vec3(posxf, posyf, poszf));
+		}
+	}
+
 float accln = 9.81f;
 float velocity = 0.0f;
 	while (!glfwWindowShouldClose(window))
@@ -320,13 +320,10 @@ float velocity = 0.0f;
 
 		wall.useshader();
 		wall.settexture("ourTexture", 0);
-		//float lightscale = sin(glfwGetTime());
-		//if (lightscale < 0)
-		//{
-		//	lightscale = -lightscale;
-		//}
+
+		//light multiplier
 		float lightscale = 1.0f;
-		float multiplier = 1.0f;
+		float multiplier = 2.0f;
 
 		wall.setvec3("lightColor", lightobjectcolor);
 		wall.setvec3("objectColor", glm::vec3(0.5f, 0.5f, 0.5f));
@@ -348,7 +345,9 @@ float velocity = 0.0f;
 		glm::mat4 projection = glm::perspective(glm::radians(45.0f), float(scwidth / scheight), 0.1f, 500.0f);
 		wall.setmat4("projection", projection);
 
-		for (int i = 0;i < x_val * z_val;i++)
+		//wall
+
+		for (int i = 0;i < x_wall * y_wall;i++)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, wallcoors[i]);
@@ -362,6 +361,7 @@ float velocity = 0.0f;
 
 
 		}
+
 
 		//floor
 
@@ -382,21 +382,19 @@ float velocity = 0.0f;
 		floor.setmat4("view", view);
 		floor.setmat4("projection", projection);
 
-		for (int i = 0;i < x_val * z_val;i++)
+		for (int i = 0;i < x_floor * z_floor;i++)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, floorcoors[i]);
 
 			float angle = 0;
 			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-
-			wall.setmat4("model", model);
+			floor.setmat4("model", model);
 
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
 
 		}
-
 
 		//lightpos.x = 4 * sin(glfwGetTime());
 		//lightpos.y = 4*sin(glfwGetTime());
@@ -404,15 +402,17 @@ float velocity = 0.0f;
 		velocity += accln * deltatime;
 		lightpos.y -= velocity * deltatime;
 
-		if (lightpos.y < -0.1f)
+		if (lightpos.y < -0.07f)
 		{
-			velocity = -velocity*(85.0f/100.0f);
+			velocity = -velocity*0.75f;
 		}
 
 		light.useshader();
 		light.setvec3("color", lightobjectcolor);
 		light.setmat4("view", view);
 		light.setmat4("projection", projection);
+
+
 
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, lightpos);
