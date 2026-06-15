@@ -14,14 +14,13 @@ glm::vec3 cameraup = { 0.0f, 1.0f ,0.0f };
 bool firstmouse = true;
 float yaw = -90.0f;
 float pitch = 0.0f;
-float lastx = scwidth / 2;
-float lasty = scheight / 2;
+float lastx = scwidth / 2.0f;
+float lasty = scheight / 2.0f;
 float zoom = 45.0f;
 
 
 float deltatime = 0.0f;
 float lastframe = 0.0f;
-float currentframe;
 
 //lightobject
 glm::vec3 lightpos(5.0f, 12.0f, 6.0f);
@@ -292,7 +291,8 @@ int main()
 			wallcoors.push_back(glm::vec3(posx, posy, posz));
 		}
 	}
-
+float accln = 9.81f;
+float velocity = 0.0f;
 	while (!glfwWindowShouldClose(window))
 	{
 
@@ -301,6 +301,8 @@ int main()
 		float currentframe = static_cast<float>(glfwGetTime());
 		deltatime = currentframe - lastframe;
 		lastframe = currentframe;
+
+
 		//std::cout << spupdate << std::endl;
 		//std::cout << camerafront.x << "," << camerafront.y << "," << camerafront.z << std::endl;
 		//std::cout << camerapos.x << "," << camerapos.y << "," << camerapos.z << std::endl;
@@ -323,8 +325,8 @@ int main()
 		//{
 		//	lightscale = -lightscale;
 		//}
-		float lightscale = 0.3;
-		float multiplier = 6;
+		float lightscale = 1.0f;
+		float multiplier = 1.0f;
 
 		wall.setvec3("lightColor", lightobjectcolor);
 		wall.setvec3("objectColor", glm::vec3(0.5f, 0.5f, 0.5f));
@@ -397,12 +399,14 @@ int main()
 
 
 		//lightpos.x = 4 * sin(glfwGetTime());
-		lightpos.y = 4*sin(glfwGetTime());
+		//lightpos.y = 4*sin(glfwGetTime());
 		//lightpos.z = 2 * cos(glfwGetTime());
+		velocity += accln * deltatime;
+		lightpos.y -= velocity * deltatime;
 
 		if (lightpos.y < -0.1f)
 		{
-			lightpos.y = -lightpos.y;
+			velocity = -velocity*(85.0f/100.0f);
 		}
 
 		light.useshader();
@@ -412,6 +416,7 @@ int main()
 
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, lightpos);
+		//model = glm::rotate(model, 4*sin(float(glfwGetTime())), glm::vec3(1.0f, 0.3f, 0.5f));
 		model = glm::scale(model, glm::vec3(lightscale));
 		light.setmat4("model", model);
 		glBindVertexArray(lightvao);
@@ -466,7 +471,7 @@ void mouse_callback(GLFWwindow* window, double xposin, double yposin)
 	lasty = ypos;
 
 
-	float sensetivity = 0.1;
+	float sensetivity = 0.1f;
 	xoffset *= sensetivity;
 	yoffset *= sensetivity;
 
