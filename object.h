@@ -1,7 +1,4 @@
 #pragma once
-
-//temporary may remove or combine with a future class
-
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -11,13 +8,9 @@
 
 class object
 {
-
-
 public:
-	void rotateobject(unsigned int shaderprogram, float x, float y, float z);
+	glm::vec3 acceleration = glm::vec3(1.0f,1.0f,1.0f);
+	glm::vec3 velocity = glm::vec3(0.0f); 
 
-	glm::mat4 multiple3d(unsigned int shaderprogram, int width, int height, float fov);
-
-	void camera(unsigned int shaderprogram, glm::vec3 camerapos, glm::vec3 cameraup, glm::vec3 camerafront);
-
+	void collision(float deltatime, float wall,glm::vec3 position, glm::vec3 rotation);
 };

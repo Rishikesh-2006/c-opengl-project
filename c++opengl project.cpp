@@ -1,6 +1,7 @@
 #include <stb/stb_image.h>
 #include <iostream>
 #include "Shader.h"
+
 #include "object.h"
 
 
@@ -23,7 +24,7 @@ float deltatime = 0.0f;
 float lastframe = 0.0f;
 
 //lightobject
-glm::vec3 lightpos(5.0f, 12.0f, 6.0f);
+glm::vec3 lightpos(5.0f, 12.0f, 10.0f);
 glm::vec3 lightobjectcolor(1.0f, 1.0f, 1.0f);
 glm::vec4 background_light = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -279,7 +280,7 @@ int main()
 
 	//floor pos
 	std::vector <glm::vec3> floorcoors;
-	int x_floor = 20, z_floor = 20;
+	int x_floor = 30, z_floor = 30;
 	for (int i = 0;i < x_floor;i++)
 	{
 		for (int j = 0; j < z_floor;j++)
@@ -293,6 +294,8 @@ int main()
 
 float accln = 9.81f;
 float velocity = 0.0f;
+
+object cube;
 	while (!glfwWindowShouldClose(window))
 	{
 
@@ -322,7 +325,7 @@ float velocity = 0.0f;
 		wall.settexture("ourTexture", 0);
 
 		//light multiplier
-		float lightscale = 1.0f;
+		float lightscale = 0.5f;
 		float multiplier = 2.0f;
 
 		wall.setvec3("lightColor", lightobjectcolor);
@@ -395,16 +398,28 @@ float velocity = 0.0f;
 
 
 		}
+		//testing physics in circular motion
 
-		//lightpos.x = 4 * sin(glfwGetTime());
+		//lightpos.x = 7+4 * sin(glfwGetTime());
 		//lightpos.y = 4*sin(glfwGetTime());
-		//lightpos.z = 2 * cos(glfwGetTime());
+		//lightpos.z = 15+4 * cos(glfwGetTime());
+
 		velocity += accln * deltatime;
+		lightpos.z -= velocity * deltatime;
 		lightpos.y -= velocity * deltatime;
 
-		if (lightpos.y < -0.07f)
+		/*if (lightpos.y < -1.0f)
 		{
-			velocity = -velocity*0.75f;
+			velocity = -velocity;
+		}
+		*/
+		//new rough work
+		glm::vec3 axis = glm::vec3(1.0f, 0.3f, 0.5f);
+
+		if (lightpos.z < 5.0f)
+		{
+			cube.collision(deltatime, 5.0f, lightpos, axis);
+			velocity -= velocity;
 		}
 
 		light.useshader();
@@ -413,10 +428,11 @@ float velocity = 0.0f;
 		light.setmat4("projection", projection);
 
 
+		std::cout << axis.x<<"," << axis.y<<","<< axis.z << std::endl;
 
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, lightpos);
-		//model = glm::rotate(model, 4*sin(float(glfwGetTime())), glm::vec3(1.0f, 0.3f, 0.5f));
+		model = glm::rotate(model, 4*sin(float(glfwGetTime())),axis);
 		model = glm::scale(model, glm::vec3(lightscale));
 		light.setmat4("model", model);
 		glBindVertexArray(lightvao);
