@@ -324,8 +324,8 @@ float velocity = 0.0f;
 		wall.settexture("ourTexture", 0);
 
 		//light multiplier
-		float lightscale = 0.5f;
-		float multiplier = 2.0f;
+		float lightscale = 2.0f;
+		float multiplier = 1.0f;
 
 		wall.setvec3("lightColor", lightobjectcolor);
 		wall.setvec3("objectColor", glm::vec3(0.5f, 0.5f, 0.5f));
@@ -406,10 +406,10 @@ float velocity = 0.0f;
 		velocity += accln * deltatime;
 		lightpos.y -= velocity * deltatime;
 
-		if (lightpos.y < -lightscale/2)
+		if (lightpos.y <0.5f*lightscale-0.5f)
 		{
 
-			lightpos.y = -lightscale/2;
+			lightpos.y = 0.5f * lightscale - 0.5f;
 			velocity = -velocity*0.70f;
 		}
 
