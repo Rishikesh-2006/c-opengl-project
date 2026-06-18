@@ -9,7 +9,7 @@ int scheight = 800;
 int scwidth = 800;
 
 //camera vals
-glm::vec3 camerapos = { 5.0f, 2.0f ,10.0f };
+glm::vec3 camerapos = { 5.0f, 2.0f ,20.0f };
 glm::vec3 camerafront = { 0.0f, 0.0f ,-3.0f };
 glm::vec3 cameraup = { 0.0f, 1.0f ,0.0f };
 bool firstmouse = true;
@@ -24,7 +24,7 @@ float deltatime = 0.0f;
 float lastframe = 0.0f;
 
 //lightobject
-glm::vec3 lightpos(5.0f, 12.0f, 10.0f);
+glm::vec3 lightpos(5.0f, 12.0f, 15.0f);
 glm::vec3 lightobjectcolor(1.0f, 1.0f, 1.0f);
 glm::vec4 background_light = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -292,13 +292,12 @@ int main()
 		}
 	}
 
-float accln = 9.81f;
+
 float velocity = 0.0f;
 
-object cube;
 	while (!glfwWindowShouldClose(window))
 	{
-
+		float accln = 9.81f;
 
 
 		float currentframe = static_cast<float>(glfwGetTime());
@@ -306,9 +305,9 @@ object cube;
 		lastframe = currentframe;
 
 
-		//std::cout << spupdate << std::endl;
 		//std::cout << camerafront.x << "," << camerafront.y << "," << camerafront.z << std::endl;
 		//std::cout << camerapos.x << "," << camerapos.y << "," << camerapos.z << std::endl;
+
 
 		processInput(window);
 		glClearColor(background_light.x, background_light.y, background_light.z, background_light.w);
@@ -405,22 +404,19 @@ object cube;
 		//lightpos.z = 15+4 * cos(glfwGetTime());
 
 		velocity += accln * deltatime;
-		lightpos.z -= velocity * deltatime;
 		lightpos.y -= velocity * deltatime;
 
-		/*if (lightpos.y < -1.0f)
+		if (lightpos.y < -lightscale/2)
 		{
-			velocity = -velocity;
+
+			lightpos.y = -lightscale/2;
+			velocity = -velocity*0.70f;
 		}
-		*/
+
+		std::cout << lightpos.y << std::endl;
+		
 		//new rough work
 		glm::vec3 axis = glm::vec3(1.0f, 0.3f, 0.5f);
-
-		if (lightpos.z < 5.0f)
-		{
-			cube.collision(deltatime, 5.0f, lightpos, axis);
-			velocity -= velocity;
-		}
 
 		light.useshader();
 		light.setvec3("color", lightobjectcolor);
@@ -428,11 +424,11 @@ object cube;
 		light.setmat4("projection", projection);
 
 
-		std::cout << axis.x<<"," << axis.y<<","<< axis.z << std::endl;
+		//std::cout << axis.x<<"," << axis.y<<","<< axis.z << std::endl;
 
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, lightpos);
-		model = glm::rotate(model, 4*sin(float(glfwGetTime())),axis);
+		//model = glm::rotate(model, 4*sin(float(glfwGetTime())),axis);
 		model = glm::scale(model, glm::vec3(lightscale));
 		light.setmat4("model", model);
 		glBindVertexArray(lightvao);
