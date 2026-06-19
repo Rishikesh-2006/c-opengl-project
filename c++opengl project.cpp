@@ -1,7 +1,6 @@
 #include <stb/stb_image.h>
 #include <iostream>
 #include "Shader.h"
-
 #include "object.h"
 
 
@@ -118,12 +117,9 @@ int main()
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//shader class to initialize and combine vertex and fragement shader
-	Shader wall;
-	Shader light;
-	Shader floor;
-	wall.activateshader("wall.vert", "wall.frag");
-	light.activateshader("lightobject.vert", "lightobject.frag");
-	floor.activateshader("floor.vert", "floor.frag");
+	//Shader wall("wall.vert", "wall.frag");
+	//Shader light("lightobject.vert", "lightobject.frag");
+	//Shader floor("floor.vert", "floor.frag");
 	//this ensures the faces on the front are shown and the back ones are hidden
 
 	glEnable(GL_DEPTH_TEST);
@@ -134,73 +130,16 @@ int main()
 
 	//vertex buffers , arrays
 
-	GLuint CUBEVAO, CUBEVBO;
-	GLuint CUBEEBO;
-
-	glGenVertexArrays(1, &CUBEVAO);
-	glGenBuffers(1, &CUBEVBO);
-
-	glBindVertexArray(CUBEVAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, CUBEVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glGenBuffers(1, &CUBEEBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, CUBEEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	glVertexAttribPointer(1, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	glVertexAttribPointer(2, 2, GL_FLOAT, 0, 11 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-
-	glVertexAttribPointer(3, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)(8 * sizeof(float)));
-	glEnableVertexAttribArray(3);
-
+	object wall("wall.vert", "floor.frag");
+	wall.Set_Object(vertices, 4, 3, {6,2},indices);
 	//lightobject
 
-	GLuint lightvao, lightEBO;
-
-	glGenVertexArrays(1, &lightvao);
-	glBindVertexArray(lightvao);
-
-	glBindBuffer(GL_ARRAY_BUFFER, CUBEVBO);
-
-	glGenBuffers(1, &lightEBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lightEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
+	object light("lightobject.vert", "lightobject.frag");
+	light.Set_Object_AVBO(vertices, 1, indices, { 0,0 }, 0, );
 	// floor block
-	GLuint floorVAO;
-	GLuint floorEBO;
 
-	glGenVertexArrays(1, &floorVAO);
-	glBindVertexArray(floorVAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, CUBEVBO);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	glVertexAttribPointer(1, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	glVertexAttribPointer(2, 2, GL_FLOAT, 0, 11 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-
-	glVertexAttribPointer(3, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)(8 * sizeof(float)));
-	glEnableVertexAttribArray(3);
-
-	glGenBuffers(1, &floorEBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, floorEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
+	object floor("floor.vert", "floor.frag");
 	//wall texture
 
 	stbi_set_flip_vertically_on_load(true);
@@ -324,7 +263,7 @@ float velocity = 0.0f;
 		wall.settexture("ourTexture", 0);
 
 		//light multiplier
-		float lightscale = 2.0f;
+		float lightscale = 1.0f;
 		float multiplier = 1.0f;
 
 		wall.setvec3("lightColor", lightobjectcolor);
@@ -360,8 +299,6 @@ float velocity = 0.0f;
 			wall.setmat4("model", model);
 
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-
-
 		}
 
 
@@ -397,6 +334,7 @@ float velocity = 0.0f;
 
 
 		}
+
 		//testing physics in circular motion
 
 		//lightpos.x = 7+4 * sin(glfwGetTime());
@@ -410,10 +348,10 @@ float velocity = 0.0f;
 		{
 
 			lightpos.y = 0.5f * lightscale - 0.5f;
-			velocity = -velocity*0.70f;
+			velocity = -velocity*0.75f;
 		}
 
-		std::cout << lightpos.y << std::endl;
+		std::cout << velocity << std::endl;
 		
 		//new rough work
 		glm::vec3 axis = glm::vec3(1.0f, 0.3f, 0.5f);

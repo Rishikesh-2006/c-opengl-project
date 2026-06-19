@@ -1,7 +1,8 @@
 #include "Shader.h"
 
 
-void Shader::activateshader(const char* vertexpath, const char* fragmentpath)
+
+Shader::Shader(const char* vertexpath, const char* fragmentpath)
 {
 	std::string vertexsource;
 	std::string fragmentsource;
