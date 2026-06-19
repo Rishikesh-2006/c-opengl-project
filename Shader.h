@@ -14,8 +14,8 @@
 
 class Shader
 {
-	unsigned int shaderprogram;
 public:
+	unsigned int shaderprogram;
 
 	Shader(const char* vertexpath, const char* fragmentpath);
 	//void activateshader(const char* vertexpath,const char* fragmentpath);

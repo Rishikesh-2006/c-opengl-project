@@ -127,19 +127,20 @@ int main()
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
 
+	std::array <int, 2> vertarr = { 6,2 };
 
 	//vertex buffers , arrays
 
 	object wall("wall.vert", "floor.frag");
-	wall.Set_Object(vertices, 4, 3, {6,2},indices);
-	//lightobject
-
+	wall.Set_Object(vertices, 4, 3,indices, vertarr);
+	//lightobject 
 	object light("lightobject.vert", "lightobject.frag");
-	light.Set_Object_AVBO(vertices, 1, indices, { 0,0 }, 0, );
+	light.Set_Object_AVBO(vertices, 1, indices, 0, wall.CUBEVBO, vertarr);
 	// floor block
 
 
 	object floor("floor.vert", "floor.frag");
+	floor.Set_Object_AVBO(vertices, 4, indices, 3, wall.CUBEVBO,vertarr);
 	//wall texture
 
 	stbi_set_flip_vertically_on_load(true);
@@ -276,7 +277,7 @@ float velocity = 0.0f;
 		wall.setfloat("lightscale", lightscale);
 		wall.setfloat("lightmultiplier", multiplier);
 
-		glBindVertexArray(CUBEVAO);
+		glBindVertexArray(wall.CUBEVAO);
 
 		//camera
 
@@ -316,7 +317,7 @@ float velocity = 0.0f;
 		floor.setvec3("attenval", glm::vec3(1.0f, 0.0014f, 0.000007f));
 		floor.setfloat("lightscale", lightscale);
 		floor.setfloat("lightmultiplier", multiplier);
-		glBindVertexArray(floorVAO);
+		glBindVertexArray(floor.CUBEVAO);
 
 		floor.setmat4("view", view);
 		floor.setmat4("projection", projection);
@@ -369,7 +370,7 @@ float velocity = 0.0f;
 		//model = glm::rotate(model, 4*sin(float(glfwGetTime())),axis);
 		model = glm::scale(model, glm::vec3(lightscale));
 		light.setmat4("model", model);
-		glBindVertexArray(lightvao);
+		glBindVertexArray(light.CUBEVAO);
 		//glDrawArrays(GL_TRIANGLES, 0, 36);
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
@@ -384,17 +385,17 @@ float velocity = 0.0f;
 
 	wall.deleteshader();
 	glDeleteTextures(1, &Walltextures);
-	glDeleteVertexArrays(1, &CUBEVAO);
-	glDeleteBuffers(1, &CUBEVBO);
-	glDeleteBuffers(1, &CUBEEBO);
+	glDeleteVertexArrays(1, &wall.CUBEVAO);
+	glDeleteBuffers(1, &wall.CUBEVBO);
+	glDeleteBuffers(1, &wall.CUBEEBO);
 
 	light.deleteshader();
-	glDeleteVertexArrays(1, &lightvao);
-	glDeleteBuffers(1, &lightEBO);
+	glDeleteVertexArrays(1, &light.CUBEVAO);
+	glDeleteBuffers(1, &light.CUBEEBO);
 
 	floor.deleteshader();
-	glDeleteVertexArrays(1, &floorVAO);
-	glDeleteBuffers(1, &floorEBO);
+	glDeleteVertexArrays(1, &floor.CUBEVAO);
+	glDeleteBuffers(1, &floor.CUBEEBO);
 	glDeleteTextures(1, &floortexture);
 
 	glfwDestroyWindow(window);

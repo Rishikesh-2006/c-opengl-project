@@ -1,22 +1,18 @@
 #include "object.h"
 
-void Set_Object(float vertices[],int num_items,int stride, const std::array<int, 2>& tex = {0 , 0}/* tex position 1 is the location
-	of the first instance of the texture and 2 is the number of elements of texture per vertex */, unsigned int indices[])
-{
-	GLuint CUBEVAO;
-	GLuint CUBEEBO;
 
+void object::Set_Object(float* vertices, int num_items, int stride, unsigned int* indices, const std::array<int, 2>& tex)
+{
 	glGenVertexArrays(1, &CUBEVAO);
-	glGenBuffers(1, &OGVBO);
+	glGenBuffers(1, &CUBEVBO);
 
 	glBindVertexArray(CUBEVAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, OGVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, CUBEVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	glGenBuffers(1, &CUBEEBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, CUBEEBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
 	int update = 0;
 	/*glVertexAttribPointer(1, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
@@ -50,7 +46,8 @@ void Set_Object(float vertices[],int num_items,int stride, const std::array<int,
 	}
 }
 
-void Set_Object_AVBO(float vertices[], int num_items, unsigned int indices[], const std::array <int, 2>& tex = { 0,0 },int stride, unsigned int VBO)
+
+void object::Set_Object_AVBO(float* vertices, int num_items, unsigned int* indices, int stride, unsigned int VBO, const std::array <int, 2>& tex)
 {
 
 	GLuint VAO;
@@ -58,6 +55,8 @@ void Set_Object_AVBO(float vertices[], int num_items, unsigned int indices[], co
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
 	bool texture = true;
 	int update = 0;
@@ -72,9 +71,9 @@ void Set_Object_AVBO(float vertices[], int num_items, unsigned int indices[], co
 		glVertexAttribPointer(i, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)(update * sizeof(float)));
 		glEnableVertexAttribArray(i);
 
-		if (texture && i == tex[1])
+		if (texture && i == tex[0])
 		{
-			glVertexAttribPointer(i, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)((update + tex[2]) * sizeof(float)));
+			glVertexAttribPointer(i, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)((update + tex[1]) * sizeof(float)));
 			glEnableVertexAttribArray(i);
 		}
 
