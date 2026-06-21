@@ -24,7 +24,7 @@ float deltatime = 0.0f;
 float lastframe = 0.0f;
 
 //lightobject
-glm::vec3 lightpos(5.0f, 12.0f, 9.0f);
+glm::vec3 lightpos(5.0f, 12.0f, 6.0f);
 glm::vec3 lightobjectcolor(1.0f, 1.0f, 1.0f);
 glm::vec4 background_light = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -252,12 +252,10 @@ int main()
 
 
 	float velocity = 0.0f;
-
+	float accln = 9.81f;
 	while (!glfwWindowShouldClose(window))
 	{
-		float accln = 9.81f;
-
-
+		
 		float currentframe = static_cast<float>(glfwGetTime());
 		deltatime = currentframe - lastframe;
 		lastframe = currentframe;
@@ -370,7 +368,7 @@ int main()
 			velocity = -velocity * 0.70f;
 		}
 
-		std::cout << lightpos.y << std::endl;
+		std::cout << velocity << std::endl;
 
 		//new rough work
 		glm::vec3 axis = glm::vec3(1.0f, 0.3f, 0.5f);

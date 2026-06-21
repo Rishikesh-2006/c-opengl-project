@@ -63,4 +63,11 @@ void object::set_VBO_object(unsigned int& VBO,float * vertices,int vertice_size,
 
 	glVertexAttribPointer(3, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)(8 * sizeof(float)));
 	glEnableVertexAttribArray(3);
+
+
+
+	this->VAO = VAO;
+	this->EBO = EBO;
+	std::cout << VAO << "," << EBO << "," << VBO << std::endl;
+
 }
