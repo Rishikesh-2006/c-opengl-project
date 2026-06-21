@@ -1,6 +1,7 @@
 #include <stb/stb_image.h>
 #include <iostream>
 #include "Shader.h"
+
 #include "object.h"
 
 
@@ -117,9 +118,10 @@ int main()
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//shader class to initialize and combine vertex and fragement shader
-	//Shader wall("wall.vert", "wall.frag");
-	//Shader light("lightobject.vert", "lightobject.frag");
-	//Shader floor("floor.vert", "floor.frag");
+	Shader wall("wall.vert", "wall.frag");
+	Shader light("lightobject.vert", "lightobject.frag");
+	Shader floor("floor.vert", "floor.frag");
+
 	//this ensures the faces on the front are shown and the back ones are hidden
 
 	glEnable(GL_DEPTH_TEST);
@@ -127,20 +129,85 @@ int main()
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
 
-	std::array <int, 2> vertarr = { 6,2 };
 
 	//vertex buffers , arrays
 
-	object wall("wall.vert", "floor.frag");
-	wall.Set_Object(vertices, 4, 3,indices, vertarr);
-	//lightobject 
-	object light("lightobject.vert", "lightobject.frag");
-	light.Set_Object_AVBO(vertices, 1, indices, 0, wall.CUBEVBO, vertarr);
+	GLuint CUBEVAO, CUBEVBO;
+	GLuint CUBEEBO;
+
+	glGenVertexArrays(1, &CUBEVAO);
+	glGenBuffers(1, &CUBEVBO);
+
+	glBindVertexArray(CUBEVAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, CUBEVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glGenBuffers(1, &CUBEEBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, CUBEEBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+
+	glVertexAttribPointer(2, 2, GL_FLOAT, 0, 11 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+
+	glVertexAttribPointer(3, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)(8 * sizeof(float)));
+	glEnableVertexAttribArray(3);
+
+	//lightobject
+
+	GLuint lightvao, lightEBO;
+
+	glGenVertexArrays(1, &lightvao);
+	glBindVertexArray(lightvao);
+
+	glBindBuffer(GL_ARRAY_BUFFER, CUBEVBO);
+
+	glGenBuffers(1, &lightEBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lightEBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	object f1;
+	unsigned int floorVAO,floorEBO;
+	f1.set_object(CUBEVBO, indices,sizeof(indices));
+
+	floorVAO = f1.floorVAO;
+	floorEBO = f1.floorEBO;
+
+	std::cout << floorVAO << "," << floorEBO << "," << CUBEVBO << std::endl;
+	//std::cout << floorVAO << "," << floorEBO << std::endl;
 	// floor block
+	/*GLuint floorVAO;
+	GLuint floorEBO;
 
+	glGenVertexArrays(1, &floorVAO);
+	glBindVertexArray(floorVAO);
 
-	object floor("floor.vert", "floor.frag");
-	floor.Set_Object_AVBO(vertices, 4, indices, 3, wall.CUBEVBO,vertarr);
+	glBindBuffer(GL_ARRAY_BUFFER, CUBEVBO);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+
+	glVertexAttribPointer(2, 2, GL_FLOAT, 0, 11 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+
+	glVertexAttribPointer(3, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)(8 * sizeof(float)));
+	glEnableVertexAttribArray(3);
+
+	glGenBuffers(1, &floorEBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, floorEBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);*/
+
 	//wall texture
 
 	stbi_set_flip_vertically_on_load(true);
@@ -198,7 +265,7 @@ int main()
 	{
 		std::cout << "failed to load floor data" << std::endl;
 	}
-	
+
 	stbi_image_free(Fdata);
 
 	//generation of floor vector coordinates
@@ -233,7 +300,7 @@ int main()
 	}
 
 
-float velocity = 0.0f;
+	float velocity = 0.0f;
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -264,7 +331,7 @@ float velocity = 0.0f;
 		wall.settexture("ourTexture", 0);
 
 		//light multiplier
-		float lightscale = 1.0f;
+		float lightscale = 2.0f;
 		float multiplier = 1.0f;
 
 		wall.setvec3("lightColor", lightobjectcolor);
@@ -277,7 +344,7 @@ float velocity = 0.0f;
 		wall.setfloat("lightscale", lightscale);
 		wall.setfloat("lightmultiplier", multiplier);
 
-		glBindVertexArray(wall.CUBEVAO);
+		glBindVertexArray(CUBEVAO);
 
 		//camera
 
@@ -300,8 +367,9 @@ float velocity = 0.0f;
 			wall.setmat4("model", model);
 
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-		}
 
+
+		}
 
 		//floor
 
@@ -317,7 +385,7 @@ float velocity = 0.0f;
 		floor.setvec3("attenval", glm::vec3(1.0f, 0.0014f, 0.000007f));
 		floor.setfloat("lightscale", lightscale);
 		floor.setfloat("lightmultiplier", multiplier);
-		glBindVertexArray(floor.CUBEVAO);
+		glBindVertexArray(floorVAO);
 
 		floor.setmat4("view", view);
 		floor.setmat4("projection", projection);
@@ -335,7 +403,6 @@ float velocity = 0.0f;
 
 
 		}
-
 		//testing physics in circular motion
 
 		//lightpos.x = 7+4 * sin(glfwGetTime());
@@ -345,15 +412,15 @@ float velocity = 0.0f;
 		velocity += accln * deltatime;
 		lightpos.y -= velocity * deltatime;
 
-		if (lightpos.y <0.5f*lightscale-0.5f)
+		if (lightpos.y < 0.5f * lightscale - 0.5f)
 		{
 
 			lightpos.y = 0.5f * lightscale - 0.5f;
-			velocity = -velocity*0.75f;
+			velocity = -velocity * 0.70f;
 		}
 
-		std::cout << velocity << std::endl;
-		
+		std::cout << lightpos.y << std::endl;
+
 		//new rough work
 		glm::vec3 axis = glm::vec3(1.0f, 0.3f, 0.5f);
 
@@ -370,7 +437,7 @@ float velocity = 0.0f;
 		//model = glm::rotate(model, 4*sin(float(glfwGetTime())),axis);
 		model = glm::scale(model, glm::vec3(lightscale));
 		light.setmat4("model", model);
-		glBindVertexArray(light.CUBEVAO);
+		glBindVertexArray(lightvao);
 		//glDrawArrays(GL_TRIANGLES, 0, 36);
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
@@ -385,17 +452,17 @@ float velocity = 0.0f;
 
 	wall.deleteshader();
 	glDeleteTextures(1, &Walltextures);
-	glDeleteVertexArrays(1, &wall.CUBEVAO);
-	glDeleteBuffers(1, &wall.CUBEVBO);
-	glDeleteBuffers(1, &wall.CUBEEBO);
+	glDeleteVertexArrays(1, &CUBEVAO);
+	glDeleteBuffers(1, &CUBEVBO);
+	glDeleteBuffers(1, &CUBEEBO);
 
 	light.deleteshader();
-	glDeleteVertexArrays(1, &light.CUBEVAO);
-	glDeleteBuffers(1, &light.CUBEEBO);
+	glDeleteVertexArrays(1, &lightvao);
+	glDeleteBuffers(1, &lightEBO);
 
 	floor.deleteshader();
-	glDeleteVertexArrays(1, &floor.CUBEVAO);
-	glDeleteBuffers(1, &floor.CUBEEBO);
+	glDeleteVertexArrays(1, &floorVAO);
+	glDeleteBuffers(1, &floorEBO);
 	glDeleteTextures(1, &floortexture);
 
 	glfwDestroyWindow(window);
