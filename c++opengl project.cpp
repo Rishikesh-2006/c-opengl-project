@@ -24,7 +24,7 @@ float deltatime = 0.0f;
 float lastframe = 0.0f;
 
 //lightobject
-glm::vec3 lightpos(5.0f, 12.0f, 15.0f);
+glm::vec3 lightpos(5.0f, 12.0f, 9.0f);
 glm::vec3 lightobjectcolor(1.0f, 1.0f, 1.0f);
 glm::vec4 background_light = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -118,9 +118,9 @@ int main()
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//shader class to initialize and combine vertex and fragement shader
-	Shader wall("wall.vert", "wall.frag");
-	Shader light("lightobject.vert", "lightobject.frag");
-	Shader floor("floor.vert", "floor.frag");
+	object wall("wall.vert", "wall.frag");
+	object light("lightobject.vert", "lightobject.frag");
+	object floor("floor.vert", "floor.frag");
 
 	//this ensures the faces on the front are shown and the back ones are hidden
 
@@ -132,82 +132,33 @@ int main()
 
 	//vertex buffers , arrays
 
-	GLuint CUBEVAO, CUBEVBO;
-	GLuint CUBEEBO;
+	//main cube object
 
-	glGenVertexArrays(1, &CUBEVAO);
-	glGenBuffers(1, &CUBEVBO);
+	unsigned int CUBEVBO;
 
-	glBindVertexArray(CUBEVAO);
+	wall.set_VBO_object(CUBEVBO,vertices,sizeof(vertices), indices, sizeof(indices));
 
-	glBindBuffer(GL_ARRAY_BUFFER, CUBEVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glGenBuffers(1, &CUBEEBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, CUBEEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	unsigned int CUBEVAO = wall.VAO;
+	unsigned int CUBEEBO = wall.EBO;
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	glVertexAttribPointer(1, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	glVertexAttribPointer(2, 2, GL_FLOAT, 0, 11 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-
-	glVertexAttribPointer(3, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)(8 * sizeof(float)));
-	glEnableVertexAttribArray(3);
-
+	
 	//lightobject
 
-	GLuint lightvao, lightEBO;
+	light.set_object(CUBEVBO, indices, sizeof(indices), true);
+	unsigned int lightVAO = light.VAO;
+	unsigned int lightEBO = light.EBO;
 
-	glGenVertexArrays(1, &lightvao);
-	glBindVertexArray(lightvao);
+	
+	//floor 
 
-	glBindBuffer(GL_ARRAY_BUFFER, CUBEVBO);
-
-	glGenBuffers(1, &lightEBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lightEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	object f1;
 	unsigned int floorVAO,floorEBO;
-	f1.set_object(CUBEVBO, indices,sizeof(indices));
+	floor.set_object(CUBEVBO, indices,sizeof(indices),false);
 
-	floorVAO = f1.floorVAO;
-	floorEBO = f1.floorEBO;
+	floorVAO = floor.VAO;
+	floorEBO = floor.EBO;
 
 	std::cout << floorVAO << "," << floorEBO << "," << CUBEVBO << std::endl;
-	//std::cout << floorVAO << "," << floorEBO << std::endl;
-	// floor block
-	/*GLuint floorVAO;
-	GLuint floorEBO;
-
-	glGenVertexArrays(1, &floorVAO);
-	glBindVertexArray(floorVAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, CUBEVBO);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	glVertexAttribPointer(1, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	glVertexAttribPointer(2, 2, GL_FLOAT, 0, 11 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-
-	glVertexAttribPointer(3, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)(8 * sizeof(float)));
-	glEnableVertexAttribArray(3);
-
-	glGenBuffers(1, &floorEBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, floorEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);*/
-
+	
 	//wall texture
 
 	stbi_set_flip_vertically_on_load(true);
@@ -332,7 +283,7 @@ int main()
 
 		//light multiplier
 		float lightscale = 2.0f;
-		float multiplier = 1.0f;
+		float multiplier = 2.0f;
 
 		wall.setvec3("lightColor", lightobjectcolor);
 		wall.setvec3("objectColor", glm::vec3(0.5f, 0.5f, 0.5f));
@@ -437,7 +388,7 @@ int main()
 		//model = glm::rotate(model, 4*sin(float(glfwGetTime())),axis);
 		model = glm::scale(model, glm::vec3(lightscale));
 		light.setmat4("model", model);
-		glBindVertexArray(lightvao);
+		glBindVertexArray(lightVAO);
 		//glDrawArrays(GL_TRIANGLES, 0, 36);
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
@@ -457,7 +408,7 @@ int main()
 	glDeleteBuffers(1, &CUBEEBO);
 
 	light.deleteshader();
-	glDeleteVertexArrays(1, &lightvao);
+	glDeleteVertexArrays(1, &lightVAO);
 	glDeleteBuffers(1, &lightEBO);
 
 	floor.deleteshader();

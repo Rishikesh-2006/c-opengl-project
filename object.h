@@ -6,13 +6,18 @@
 #include <glad/glad.h>
 #include <utility>
 #include <iostream>
+#include "Shader.h"
 //std::pair <unsigned int, unsigned int>
 
-class object
+class object : public Shader
 {
 public:
-	unsigned int floorVAO;
-	unsigned int floorEBO;
+	unsigned int VAO;
+	unsigned int EBO;
 
-	void set_object(unsigned int &VBO, unsigned int* indices,int indice_size);
+	object(const char* vertex, const char* fragment) : Shader(vertex, fragment){};
+
+	void set_object(unsigned int& VBO, unsigned int* indices, int indices_size, bool lightsrc);
+
+	void set_VBO_object(unsigned int& VBO, float* vertices, int vertice_size, unsigned int* indices, int indice_size);
 };
