@@ -1,7 +1,6 @@
 #include <stb/stb_image.h>
 #include <iostream>
 #include "Shader.h"
-
 #include "object.h"
 
 
@@ -9,10 +8,10 @@ int scheight = 800;
 int scwidth = 800;
 
 //camera vals
-glm::vec3 camerapos = { 5.0f, 2.0f ,20.0f };
-glm::vec3 camerafront = { 0.0f, 0.0f ,-3.0f };
+glm::vec3 camerapos = { -35.75f, 7.48f, 15.52f };
+glm::vec3 camerafront = {0.99f, -0.07f, 0.008f };
 glm::vec3 cameraup = { 0.0f, 1.0f ,0.0f };
-bool firstmouse = true;
+bool firstmouse = true; 
 float yaw = -90.0f;
 float pitch = 0.0f;
 float lastx = scwidth / 2.0f;
@@ -24,13 +23,15 @@ float deltatime = 0.0f;
 float lastframe = 0.0f;
 
 //lightobject
-glm::vec3 lightpos(5.0f, 12.0f, 15.0f);
+glm::vec3 lightpos(5.0f,12.0f,20.0f);
 glm::vec3 lightobjectcolor(1.0f, 1.0f, 1.0f);
-glm::vec4 background_light = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+glm::vec4 background_light = glm::vec4(0.53f, 0.81f, 0.92f, 1.0f);
 
+//functions
 void mouse_callback(GLFWwindow* window, double xposin, double yposin);
 void processInput(GLFWwindow* window);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+unsigned int set_texture(GLenum Tex_num, const char* name, GLenum val);
 
 
 int main()
@@ -156,82 +157,42 @@ int main()
 
 	floorVAO = floor.VAO;
 	floorEBO = floor.EBO;
-
-	std::cout << floorVAO << "," << floorEBO << "," << CUBEVBO << std::endl;
+	
+	//Textures
+	//set orientation
+	stbi_set_flip_vertically_on_load(true);
 	
 	//wall texture
 
-	stbi_set_flip_vertically_on_load(true);
-	unsigned int Walltextures;
-
-	glGenTextures(1, &Walltextures);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, Walltextures);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	int Wwidth, Wheight, Wnrchannels;
-
-	unsigned char* Wdata = stbi_load("gray.png", &Wwidth, &Wheight, &Wnrchannels, 0);
-
-
-	if (Wdata)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Wwidth, Wheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, Wdata);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-
-	else
-	{
-		std::cout << "failed to load wall data" << std::endl;
-	}
-
-	stbi_image_free(Wdata);
+	unsigned int Walltextures = set_texture(GL_TEXTURE0,"gray.png",GL_RGBA);
 
 	//floor texture
-	unsigned int  floortexture;
-	glGenTextures(1, &floortexture);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, floortexture);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	int Fwidth, Fheight, Fnrchannels;
-	unsigned char* Fdata = stbi_load("wood.png", &Fwidth, &Fheight, &Fnrchannels, 0);
-	if (Fdata)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Fwidth, Fheight, 0, GL_RGB, GL_UNSIGNED_BYTE, Fdata);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-
-	else
-	{
-		std::cout << "failed to load floor data" << std::endl;
-	}
-
-	stbi_image_free(Fdata);
-
-	//generation of floor vector coordinates
+	unsigned int floortexture = set_texture(GL_TEXTURE1, "wood.png", GL_RGB);
+	
 
 
 	//wall pos
 	std::vector <glm::vec3> wallcoors;
-	int x_wall = 20, y_wall = 20;
+	int x_wall = 30, y_wall = 15;
 	for (int i = 0;i < x_wall;i++)
 	{
 		for (int j = 0;j < y_wall;j++)
 		{
 			float posx = i * 1.0f;
 			float posy = j * 1.0f;
-			float posz = 5.0f;
+			float posz = 0.0f;
+			wallcoors.push_back(glm::vec3(posx, posy, posz));
+		}
+	}
+
+	for (int i = 0;i < x_wall;i++)
+	{
+		for (int j = 0;j < y_wall;j++)
+		{
+			float posx = i * 1.0f;
+			float posy = j * 1.0f;
+			float posz = 29.0f;
 			wallcoors.push_back(glm::vec3(posx, posy, posz));
 		}
 	}
@@ -272,7 +233,7 @@ int main()
 		lastframe = currentframe;
 
 
-		//std::cout << camerafront.x << "," << camerafront.y << "," << camerafront.z << std::endl;
+		std::cout << camerafront.x << "," << camerafront.y << "," << camerafront.z << std::endl;
 		//std::cout << camerapos.x << "," << camerapos.y << "," << camerapos.z << std::endl;
 
 
@@ -295,7 +256,7 @@ int main()
 		glBindVertexArray(CUBEVAO);
 
 
-		for (int i = 0;i < x_wall * y_wall;i++)
+		for (int i = 0;i < x_wall * y_wall*2;i++)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, wallcoors[i]);
@@ -358,7 +319,7 @@ int main()
 
 		std::cout << velocity << std::endl;
 
-		//rough
+		//light 
 		glm::vec3 axis = glm::vec3(1.0f, 0.3f, 0.5f);
 
 		light.useshader();
@@ -456,8 +417,8 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 
-	float cameraSpeedvertical = 4.5 * deltatime;
-	float cameraSpeedhorizontal = 5 * deltatime;
+	float cameraSpeedvertical = 80 * deltatime;
+	float cameraSpeedhorizontal = 80 * deltatime;
 	if (glfwGetKey(window, GLFW_KEY_W) || (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS))
 		camerapos += cameraSpeedvertical * camerafront;
 	if (glfwGetKey(window, GLFW_KEY_S) || (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS))
@@ -483,4 +444,38 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 	{
 		zoom = 45.0f;
 	}
+}
+
+
+unsigned int set_texture(GLenum Tex_num ,const char* name,GLenum val)
+{
+	unsigned int texture;
+	
+
+	glGenTextures(1, &texture);
+	glActiveTexture(Tex_num);
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	int Fwidth, Fheight, Fnrchannels;
+	unsigned char* Fdata = stbi_load(name, &Fwidth, &Fheight, &Fnrchannels, 0);
+	if (Fdata)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, val, Fwidth, Fheight, 0, val, GL_UNSIGNED_BYTE, Fdata);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+
+	else
+	{
+		std::cout << "failed to load floor data" << std::endl;
+	}
+
+	stbi_image_free(Fdata);
+
+	return texture;
 }

@@ -83,5 +83,8 @@
     <Image Include="..\..\..\..\wood.png">
       <Filter>Resource Files\textures</Filter>
     </Image>
+    <Image Include="rr.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
   </ItemGroup>
 </Project>

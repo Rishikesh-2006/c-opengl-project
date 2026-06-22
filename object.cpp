@@ -37,7 +37,7 @@ void object::set_object(unsigned int& VBO, unsigned int* indices, int indices_si
 	//this->VAO = VAO;
 	//this->EBO = EBO;
 
-	std::cout << VAO << "," << EBO << ","<<VBO<<std::endl;
+	//std::cout << VAO << "," << EBO << ","<<VBO<<std::endl;
 }
 
 void object::set_VBO_object(unsigned int& VBO,float * vertices,int vertice_size,unsigned int * indices , int indice_size)
@@ -68,7 +68,7 @@ void object::set_VBO_object(unsigned int& VBO,float * vertices,int vertice_size,
 
 	//this->VAO = VAO;
 	//this->EBO = EBO;
-	std::cout << VAO << "," << EBO << "," << VBO << std::endl;
+	//std::cout << VAO << "," << EBO << "," << VBO << std::endl;
 
 }
 
@@ -76,8 +76,6 @@ void object::set_in_loop(object& val,std::string textureloc,int num,glm::vec3 li
 {
 	val.useshader();
 	val.settexture(textureloc, num);
-
-	//light multiplier
 
 	val.setvec3("lightColor", lightobjectcolor);
 	val.setvec3("objectColor", glm::vec3(0.5f, 0.5f, 0.5f));
