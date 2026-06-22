@@ -34,8 +34,8 @@ void object::set_object(unsigned int& VBO, unsigned int* indices, int indices_si
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices_size, indices, GL_STATIC_DRAW);
 
-	this->VAO = VAO;
-	this->EBO = EBO;
+	//this->VAO = VAO;
+	//this->EBO = EBO;
 
 	std::cout << VAO << "," << EBO << ","<<VBO<<std::endl;
 }
@@ -66,8 +66,46 @@ void object::set_VBO_object(unsigned int& VBO,float * vertices,int vertice_size,
 
 
 
-	this->VAO = VAO;
-	this->EBO = EBO;
+	//this->VAO = VAO;
+	//this->EBO = EBO;
 	std::cout << VAO << "," << EBO << "," << VBO << std::endl;
+
+}
+
+void object::set_in_loop(object& val,std::string textureloc,int num,glm::vec3 lightobjectcolor,glm::vec3 lightpos, glm::vec3 camerapos)
+{
+	val.useshader();
+	val.settexture(textureloc, num);
+
+	//light multiplier
+
+	val.setvec3("lightColor", lightobjectcolor);
+	val.setvec3("objectColor", glm::vec3(0.5f, 0.5f, 0.5f));
+	val.setvec3("lightpos", lightpos);
+	val.setvec3("viewpos", camerapos);
+
+	//attenuation values-
+	val.setvec3("attenval", glm::vec3(1.0f, 0.014f, 0.0007f));
+	val.setfloat("lightscale", lightscale);
+	val.setfloat("lightmultiplier", multiplier);
+
+}
+
+void object::light_in_loop(object& val ,glm::vec3 lightobjectcolor,glm::mat4 view, glm::mat4 projection,glm::vec3 lightpos)
+{
+	val.useshader();
+	val.setvec3("color", lightobjectcolor);
+	val.setmat4("view", view);
+	val.setmat4("projection", projection);
+
+
+	//std::cout << axis.x<<"," << axis.y<<","<< axis.z << std::endl;
+
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::translate(model, lightpos);
+	//model = glm::rotate(model, 4*sin(float(glfwGetTime())),axis);
+	model = glm::scale(model, glm::vec3(lightscale));
+	val.setmat4("model", model);
+	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
 }

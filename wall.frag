@@ -43,7 +43,7 @@ void main()
 	float attenuation = 1.0 / (attenval.x + attenval.y * distance + 
     		    attenval.z* (distance * distance)); 
 
-	//ambient *=attenuation;
+	ambient *=attenuation;
 	diffuse *=attenuation;
 	specularlight *=attenuation;
 

@@ -24,7 +24,7 @@ float deltatime = 0.0f;
 float lastframe = 0.0f;
 
 //lightobject
-glm::vec3 lightpos(5.0f, 12.0f, 6.0f);
+glm::vec3 lightpos(5.0f, 12.0f, 15.0f);
 glm::vec3 lightobjectcolor(1.0f, 1.0f, 1.0f);
 glm::vec4 background_light = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -250,6 +250,17 @@ int main()
 		}
 	}
 
+	for (int i = 0;i < x_floor;i++)
+	{
+		for (int j = 0; j < z_floor;j++)
+		{
+			float posxf = i * 1.0f;
+			float posyf = 15.0f;
+			float poszf = j * 1.0f;
+			floorcoors.push_back(glm::vec3(posxf, posyf, poszf));
+		}
+	}
+
 
 	float velocity = 0.0f;
 	float accln = 9.81f;
@@ -270,40 +281,19 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glBindTexture(GL_TEXTURE_2D, Walltextures);
+		glBindTexture(GL_TEXTURE_2D, floortexture);
 
 
 		//lightobjectcolor.x = sin(glfwGetTime());
 		//lightobjectcolor.y = cos(glfwGetTime());
 		//lightobjectcolor.z = 2 * cos(glfwGetTime());
+		 
+		//wall
 
-		wall.useshader();
-		wall.settexture("ourTexture", 0);
-
-		//light multiplier
-		float lightscale = 2.0f;
-		float multiplier = 2.0f;
-
-		wall.setvec3("lightColor", lightobjectcolor);
-		wall.setvec3("objectColor", glm::vec3(0.5f, 0.5f, 0.5f));
-		wall.setvec3("lightpos", lightpos);
-		wall.setvec3("viewpos", camerapos);
-
-		//attenuation values-
-		wall.setvec3("attenval", glm::vec3(1.0f, 0.014f, 0.0007f));
-		wall.setfloat("lightscale", lightscale);
-		wall.setfloat("lightmultiplier", multiplier);
+		wall.set_in_loop(wall,"ourTexture",0, lightobjectcolor, lightpos, camerapos);
 
 		glBindVertexArray(CUBEVAO);
 
-		//camera
-
-		glm::mat4 view = glm::lookAt(camerapos, camerapos + camerafront, cameraup);
-		wall.setmat4("view", view);
-
-		glm::mat4 projection = glm::perspective(glm::radians(45.0f), float(scwidth / scheight), 0.1f, 500.0f);
-		wall.setmat4("projection", projection);
-
-		//wall
 
 		for (int i = 0;i < x_wall * y_wall;i++)
 		{
@@ -319,27 +309,24 @@ int main()
 
 
 		}
+		//camera
+
+		glm::mat4 view = glm::lookAt(camerapos, camerapos + camerafront, cameraup);
+		wall.setmat4("view", view);
+
+		glm::mat4 projection = glm::perspective(glm::radians(45.0f), float(scwidth / scheight), 0.1f, 500.0f);
+		wall.setmat4("projection", projection);
 
 		//floor
 
-		glBindTexture(GL_TEXTURE_2D, floortexture);
-
-		floor.useshader();
-		floor.settexture("ourTexture", 1);
-		floor.setvec3("lightColor", lightobjectcolor);
-		floor.setvec3("objectColor", glm::vec3(0.5f, 0.5f, 0.5f));
-		floor.setvec3("lightpos", lightpos);
-		floor.setvec3("viewpos", camerapos);
-
-		floor.setvec3("attenval", glm::vec3(1.0f, 0.0014f, 0.000007f));
-		floor.setfloat("lightscale", lightscale);
-		floor.setfloat("lightmultiplier", multiplier);
+		
+		floor.set_in_loop(floor, "ourTexture", 1, lightobjectcolor, lightpos, camerapos);
 		glBindVertexArray(floorVAO);
 
 		floor.setmat4("view", view);
 		floor.setmat4("projection", projection);
 
-		for (int i = 0;i < x_floor * z_floor;i++)
+		for (int i = 0;i < x_floor * z_floor*2;i++)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, floorcoors[i]);
@@ -352,25 +339,26 @@ int main()
 
 
 		}
-		//testing physics in circular motion
 
-		//lightpos.x = 7+4 * sin(glfwGetTime());
+		//testing movement in circular motion
+
+		lightpos.x = 7+4 * sin(glfwGetTime());
 		//lightpos.y = 4*sin(glfwGetTime());
 		//lightpos.z = 15+4 * cos(glfwGetTime());
 
 		velocity += accln * deltatime;
 		lightpos.y -= velocity * deltatime;
 
-		if (lightpos.y < 0.5f * lightscale - 0.5f)
+		if (lightpos.y < 0.5f * light.lightscale - 0.5f)
 		{
 
-			lightpos.y = 0.5f * lightscale - 0.5f;
+			lightpos.y = 0.5f * light.lightscale - 0.5f;
 			velocity = -velocity * 0.70f;
 		}
 
 		std::cout << velocity << std::endl;
 
-		//new rough work
+		//rough
 		glm::vec3 axis = glm::vec3(1.0f, 0.3f, 0.5f);
 
 		light.useshader();
@@ -384,12 +372,11 @@ int main()
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, lightpos);
 		//model = glm::rotate(model, 4*sin(float(glfwGetTime())),axis);
-		model = glm::scale(model, glm::vec3(lightscale));
+		model = glm::scale(model, glm::vec3(light.lightscale));
 		light.setmat4("model", model);
-		glBindVertexArray(lightVAO);
-		//glDrawArrays(GL_TRIANGLES, 0, 36);
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
+		glBindVertexArray(lightVAO);
 
 
 
