@@ -9,9 +9,9 @@ int scwidth = 800;
 
 //camera vals
 glm::vec3 camerapos = { -35.75f, 7.48f, 15.52f };
-glm::vec3 camerafront = {0.99f, -0.07f, 0.008f };
+glm::vec3 camerafront = { 0.99f, -0.07f, 0.008f };
 glm::vec3 cameraup = { 0.0f, 1.0f ,0.0f };
-bool firstmouse = true; 
+bool firstmouse = true;
 float yaw = -90.0f;
 float pitch = 0.0f;
 float lastx = scwidth / 2.0f;
@@ -23,7 +23,7 @@ float deltatime = 0.0f;
 float lastframe = 0.0f;
 
 //lightobject
-glm::vec3 lightpos(5.0f,12.0f,20.0f);
+glm::vec3 lightpos(5.0f, 12.0f, 20.0f);
 glm::vec3 lightobjectcolor(1.0f, 1.0f, 1.0f);
 glm::vec4 background_light = glm::vec4(0.53f, 0.81f, 0.92f, 1.0f);
 
@@ -137,39 +137,38 @@ int main()
 
 	unsigned int CUBEVBO;
 
-	wall.set_VBO_object(CUBEVBO,vertices,sizeof(vertices), indices, sizeof(indices));
+	wall.set_VBO_object(CUBEVBO, vertices, sizeof(vertices), indices, sizeof(indices));
 
 	unsigned int CUBEVAO = wall.VAO;
 	unsigned int CUBEEBO = wall.EBO;
 
-	
 	//lightobject
 
 	light.set_object(CUBEVBO, indices, sizeof(indices), true);
 	unsigned int lightVAO = light.VAO;
 	unsigned int lightEBO = light.EBO;
 
-	
+
 	//floor 
 
-	unsigned int floorVAO,floorEBO;
-	floor.set_object(CUBEVBO, indices,sizeof(indices),false);
+	unsigned int floorVAO, floorEBO;
+	floor.set_object(CUBEVBO, indices, sizeof(indices), false);
 
 	floorVAO = floor.VAO;
 	floorEBO = floor.EBO;
-	
+
 	//Textures
 	//set orientation
 	stbi_set_flip_vertically_on_load(true);
-	
+
 	//wall texture
 
-	unsigned int Walltextures = set_texture(GL_TEXTURE0,"gray.png",GL_RGBA);
+	unsigned int Walltextures = set_texture(GL_TEXTURE0, "gray.png", GL_RGBA);
 
 	//floor texture
 
 	unsigned int floortexture = set_texture(GL_TEXTURE1, "wood.png", GL_RGB);
-	
+
 
 
 	//wall pos
@@ -227,7 +226,7 @@ int main()
 	float accln = 9.81f;
 	while (!glfwWindowShouldClose(window))
 	{
-		
+
 		float currentframe = static_cast<float>(glfwGetTime());
 		deltatime = currentframe - lastframe;
 		lastframe = currentframe;
@@ -248,15 +247,23 @@ int main()
 		//lightobjectcolor.x = sin(glfwGetTime());
 		//lightobjectcolor.y = cos(glfwGetTime());
 		//lightobjectcolor.z = 2 * cos(glfwGetTime());
-		 
+
 		//wall
 
-		wall.set_in_loop(wall,"ourTexture",0, lightobjectcolor, lightpos, camerapos);
+		wall.set_in_loop(wall, "ourTexture", 0, lightobjectcolor, lightpos, camerapos);
 
 		glBindVertexArray(CUBEVAO);
 
+		//camera
 
-		for (int i = 0;i < x_wall * y_wall*2;i++)
+		glm::mat4 view = glm::lookAt(camerapos, camerapos + camerafront, cameraup);
+		wall.setmat4("view", view);
+
+		glm::mat4 projection = glm::perspective(glm::radians(45.0f), float(scwidth / scheight), 0.1f, 500.0f);
+		wall.setmat4("projection", projection);
+
+
+		for (int i = 0;i < x_wall * y_wall * 2;i++)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, wallcoors[i]);
@@ -270,24 +277,17 @@ int main()
 
 
 		}
-		//camera
-
-		glm::mat4 view = glm::lookAt(camerapos, camerapos + camerafront, cameraup);
-		wall.setmat4("view", view);
-
-		glm::mat4 projection = glm::perspective(glm::radians(45.0f), float(scwidth / scheight), 0.1f, 500.0f);
-		wall.setmat4("projection", projection);
 
 		//floor
 
-		
+
 		floor.set_in_loop(floor, "ourTexture", 1, lightobjectcolor, lightpos, camerapos);
 		glBindVertexArray(floorVAO);
 
 		floor.setmat4("view", view);
 		floor.setmat4("projection", projection);
 
-		for (int i = 0;i < x_floor * z_floor*2;i++)
+		for (int i = 0;i < x_floor * z_floor * 2;i++)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, floorcoors[i]);
@@ -303,7 +303,7 @@ int main()
 
 		//testing movement in circular motion
 
-		lightpos.x = 7+4 * sin(glfwGetTime());
+		lightpos.x = 7 + 4 * sin(glfwGetTime());
 		//lightpos.y = 4*sin(glfwGetTime());
 		//lightpos.z = 15+4 * cos(glfwGetTime());
 
@@ -447,10 +447,10 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 }
 
 
-unsigned int set_texture(GLenum Tex_num ,const char* name,GLenum val)
+unsigned int set_texture(GLenum Tex_num, const char* name, GLenum val)
 {
 	unsigned int texture;
-	
+
 
 	glGenTextures(1, &texture);
 	glActiveTexture(Tex_num);
