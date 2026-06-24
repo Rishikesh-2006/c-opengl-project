@@ -11,8 +11,8 @@ void object::set_object(unsigned int& VBO, unsigned int* indices, int indices_si
 
 	if (lightsrc == true)
 	{
-	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
 	}
 
 	else
@@ -40,7 +40,7 @@ void object::set_object(unsigned int& VBO, unsigned int* indices, int indices_si
 	//std::cout << VAO << "," << EBO << ","<<VBO<<std::endl;
 }
 
-void object::set_VBO_object(unsigned int& VBO,float * vertices,int vertice_size,unsigned int * indices , int indice_size)
+void object::set_VBO_object(unsigned int& VBO, float* vertices, int vertice_size, unsigned int* indices, int indice_size)
 {
 	glGenBuffers(1, &VBO);
 
@@ -72,7 +72,7 @@ void object::set_VBO_object(unsigned int& VBO,float * vertices,int vertice_size,
 
 }
 
-void object::set_in_loop(object& val,std::string textureloc,int num,glm::vec3 lightobjectcolor,glm::vec3 lightpos, glm::vec3 camerapos)
+void object::set_in_loop(object& val, std::string textureloc, int num, glm::vec3 lightobjectcolor, glm::vec3 lightpos, glm::vec3 camerapos)
 {
 	val.useshader();
 	val.settexture(textureloc, num);
@@ -89,7 +89,7 @@ void object::set_in_loop(object& val,std::string textureloc,int num,glm::vec3 li
 
 }
 
-void object::light_in_loop(object& val ,glm::vec3 lightobjectcolor,glm::mat4 view, glm::mat4 projection,glm::vec3 lightpos)
+void object::light_in_loop(object& val, glm::vec3 lightobjectcolor, glm::mat4 view, glm::mat4 projection, glm::vec3 lightpos)
 {
 	val.useshader();
 	val.setvec3("color", lightobjectcolor);

@@ -41,7 +41,7 @@ void main()
 
 	float distance  = length(lightpos-fragpos);
 	float attenuation = 1.0 / (attenval.x + attenval.y * distance + 
-    		    attenval.z* (distance * distance)); 
+    		    attenval.z* (distance * distance * 8)); 
 
 	ambient *=attenuation;
 	diffuse *=attenuation;

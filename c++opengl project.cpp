@@ -2,6 +2,7 @@
 #include <iostream>
 #include "Shader.h"
 #include "object.h"
+#include <string.h>
 
 
 int scheight = 800;
@@ -26,6 +27,7 @@ float lastframe = 0.0f;
 glm::vec3 lightpos(5.0f, 12.0f, 20.0f);
 glm::vec3 lightobjectcolor(1.0f, 1.0f, 1.0f);
 glm::vec4 background_light = glm::vec4(0.53f, 0.81f, 0.92f, 1.0f);
+//glm::vec4 background_light = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 //functions
 void mouse_callback(GLFWwindow* window, double xposin, double yposin);
@@ -95,6 +97,18 @@ int main()
 		33,35,34
 	};
 
+	float sq_vertex[] = {
+	0.5f,-0.5f,0.0f,
+	0.5f,0.5f,0.0f,
+	-0.5f,-0.5f,0.0f,
+	-0.5f,0.5f,0.0f
+	};
+
+	unsigned int sq_indice[] = {
+		0,1,2,
+		3,2,1
+	};
+
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -122,6 +136,7 @@ int main()
 	object wall("wall.vert", "wall.frag");
 	object light("lightobject.vert", "lightobject.frag");
 	object floor("floor.vert", "floor.frag");
+	object sq("lightobject.vert", "lightobject.frag");
 
 	//this ensures the faces on the front are shown and the back ones are hidden
 
@@ -157,6 +172,24 @@ int main()
 	floorVAO = floor.VAO;
 	floorEBO = floor.EBO;
 
+	//square
+
+	unsigned int sqVBO, sqVAO=0, sqEBO;
+
+	glGenBuffers(1, &sqVBO);
+
+	glBindVertexArray(sqVAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, sqVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(sq_vertex), sq_vertex, GL_STATIC_DRAW);
+	glGenBuffers(1, &sqEBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sqEBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(sq_indice), sq_indice, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+
 	//Textures
 	//set orientation
 	stbi_set_flip_vertically_on_load(true);
@@ -168,7 +201,6 @@ int main()
 	//floor texture
 
 	unsigned int floortexture = set_texture(GL_TEXTURE1, "wood.png", GL_RGB);
-
 
 
 	//wall pos
@@ -231,8 +263,13 @@ int main()
 		deltatime = currentframe - lastframe;
 		lastframe = currentframe;
 
+		//fpscalc
+		int fps = 1 / deltatime;
+		std::string sfps = std::to_string(fps);
+		const char* cfps = sfps.c_str();
+		glfwSetWindowTitle(window, cfps);
 
-		std::cout << camerafront.x << "," << camerafront.y << "," << camerafront.z << std::endl;
+		//std::cout << camerafront.x << "," << camerafront.y << "," << camerafront.z << std::endl;
 		//std::cout << camerapos.x << "," << camerapos.y << "," << camerapos.z << std::endl;
 
 
@@ -247,6 +284,8 @@ int main()
 		//lightobjectcolor.x = sin(glfwGetTime());
 		//lightobjectcolor.y = cos(glfwGetTime());
 		//lightobjectcolor.z = 2 * cos(glfwGetTime());
+
+
 
 		//wall
 
@@ -277,6 +316,7 @@ int main()
 
 
 		}
+
 
 		//floor
 
@@ -317,10 +357,10 @@ int main()
 			velocity = -velocity * 0.70f;
 		}
 
-		std::cout << velocity << std::endl;
+		//std::cout << velocity << std::endl;
 
 		//light 
-		glm::vec3 axis = glm::vec3(1.0f, 0.3f, 0.5f);
+		//glm::vec3 axis = glm::vec3(1.0f, 0.3f, 0.5f);
 
 		light.useshader();
 		light.setvec3("color", lightobjectcolor);
@@ -335,9 +375,29 @@ int main()
 		//model = glm::rotate(model, 4*sin(float(glfwGetTime())),axis);
 		model = glm::scale(model, glm::vec3(light.lightscale));
 		light.setmat4("model", model);
+		glBindVertexArray(lightVAO);
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
-		glBindVertexArray(lightVAO);
+
+		//square
+
+		sq.useshader();
+		sq.setvec3("color", glm::vec3(0.0f, 0.0f, 1.0f));
+		sq.setmat4("view", view);
+		sq.setmat4("projection", projection);
+
+		glm::vec3 axis = glm::vec3(1.0f, 0.3f, 0.5f);
+
+		glm::mat4 sqmodel = glm::mat4(1.0f);
+		sqmodel = glm::translate(sqmodel, glm::vec3(1.0f,1.0f,-20.0f));
+
+		float angle = 0;
+		std::cout << glfwGetTime() << std::endl;
+		sqmodel = glm::rotate(sqmodel,float(14.138), glm::vec3(1.0f, 0.0f, 0.0f));
+		sqmodel = glm::scale(sqmodel, glm::vec3(40.0f, 30.0f,0.0f));
+		sq.setmat4("model", sqmodel);
+
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 
 
@@ -361,6 +421,12 @@ int main()
 	glDeleteVertexArrays(1, &floorVAO);
 	glDeleteBuffers(1, &floorEBO);
 	glDeleteTextures(1, &floortexture);
+
+	sq.deleteshader();
+	glDeleteVertexArrays(1, &sqVAO);
+	glDeleteBuffers(1, &sqVBO);
+	glDeleteBuffers(1, &sqEBO);
+
 
 	glfwDestroyWindow(window);
 	glfwTerminate();
