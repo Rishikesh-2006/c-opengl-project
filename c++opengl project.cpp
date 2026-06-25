@@ -12,12 +12,13 @@ int scwidth = 800;
 glm::vec3 camerapos = { -35.75f, 7.48f, 15.52f };
 glm::vec3 camerafront = { 0.99f, -0.07f, 0.008f };
 glm::vec3 cameraup = { 0.0f, 1.0f ,0.0f };
+
 bool firstmouse = true;
-float yaw = -90.0f;
+float yaw = 0.0f;
 float pitch = 0.0f;
 float lastx = scwidth / 2.0f;
 float lasty = scheight / 2.0f;
-float zoom = 45.0f;
+float fov = 45.0f;
 
 
 float deltatime = 0.0f;
@@ -25,11 +26,12 @@ float lastframe = 0.0f;
 
 //lightobject
 glm::vec3 lightpos(5.0f, 12.0f, 20.0f);
-glm::vec3 lightobjectcolor(1.0f, 1.0f, 1.0f);
+glm::vec3 lightobjectcolor(0.0f, 1.0f, 1.0f);
 glm::vec4 background_light = glm::vec4(0.53f, 0.81f, 0.92f, 1.0f);
 //glm::vec4 background_light = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 //functions
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xposin, double yposin);
 void processInput(GLFWwindow* window);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
@@ -124,19 +126,24 @@ int main()
 	}
 
 	glfwMakeContextCurrent(window);
-
-	//loading opengl using glad
-	gladLoadGL();
-	glViewport(0, 0, scheight, scwidth);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+	//loading opengl using glad
+
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	{
+		std::cout << "Failed to initialize GLAD" << std::endl;
+		return -1;
+	}
+	
 	//shader class to initialize and combine vertex and fragement shader
 	object wall("wall.vert", "wall.frag");
 	object light("lightobject.vert", "lightobject.frag");
 	object floor("floor.vert", "floor.frag");
-	object sq("lightobject.vert", "lightobject.frag");
+	object sq("water.vert", "water.frag");
 
 	//this ensures the faces on the front are shown and the back ones are hidden
 
@@ -196,11 +203,11 @@ int main()
 
 	//wall texture
 
-	unsigned int Walltextures = set_texture(GL_TEXTURE0, "gray.png", GL_RGBA);
+	unsigned int Walltextures = set_texture(GL_TEXTURE0, "bricks.png", GL_RGB);
 
 	//floor texture
 
-	unsigned int floortexture = set_texture(GL_TEXTURE1, "wood.png", GL_RGB);
+	unsigned int floortexture = set_texture(GL_TEXTURE1, "high floor.png", GL_RGB);
 
 
 	//wall pos
@@ -261,14 +268,16 @@ int main()
 
 		float currentframe = static_cast<float>(glfwGetTime());
 		deltatime = currentframe - lastframe;
-		lastframe = currentframe;
+
+			int fps = 1 / deltatime;
+			std::string sfps = std::to_string(fps);
+			const char* cfps = sfps.c_str();
+			glfwSetWindowTitle(window, cfps);
+			lastframe = currentframe;
+
 
 		//fpscalc
-		int fps = 1 / deltatime;
-		std::string sfps = std::to_string(fps);
-		const char* cfps = sfps.c_str();
-		glfwSetWindowTitle(window, cfps);
-
+		
 		//std::cout << camerafront.x << "," << camerafront.y << "," << camerafront.z << std::endl;
 		//std::cout << camerapos.x << "," << camerapos.y << "," << camerapos.z << std::endl;
 
@@ -298,7 +307,7 @@ int main()
 		glm::mat4 view = glm::lookAt(camerapos, camerapos + camerafront, cameraup);
 		wall.setmat4("view", view);
 
-		glm::mat4 projection = glm::perspective(glm::radians(45.0f), float(scwidth / scheight), 0.1f, 500.0f);
+		glm::mat4 projection = glm::perspective(fov, float(scwidth / scheight), 0.1f, 200.0f);
 		wall.setmat4("projection", projection);
 
 
@@ -392,7 +401,7 @@ int main()
 		sqmodel = glm::translate(sqmodel, glm::vec3(1.0f,1.0f,-20.0f));
 
 		float angle = 0;
-		std::cout << glfwGetTime() << std::endl;
+		//std::cout << glfwGetTime() << std::endl;
 		sqmodel = glm::rotate(sqmodel,float(14.138), glm::vec3(1.0f, 0.0f, 0.0f));
 		sqmodel = glm::scale(sqmodel, glm::vec3(40.0f, 30.0f,0.0f));
 		sq.setmat4("model", sqmodel);
@@ -434,10 +443,10 @@ int main()
 }
 
 
-void mouse_callback(GLFWwindow* window, double xposin, double yposin)
+void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
-	float xpos = static_cast<float>(xposin);
-	float ypos = static_cast<float>(yposin);
+	float xpos = static_cast<float>(xposIn);
+	float ypos = static_cast<float>(yposIn);
 
 	if (firstmouse)
 	{
@@ -447,34 +456,27 @@ void mouse_callback(GLFWwindow* window, double xposin, double yposin)
 	}
 
 	float xoffset = xpos - lastx;
-	float yoffset = lasty - ypos;
+	float yoffset = lasty - ypos; // reversed since y-coordinates go from bottom to top
 	lastx = xpos;
 	lasty = ypos;
 
-
-	float sensetivity = 0.1f;
-	xoffset *= sensetivity;
-	yoffset *= sensetivity;
-
-
+	float sensitivity = 0.1f; // change this value to your liking
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
 
 	yaw += xoffset;
 	pitch += yoffset;
 
+	// make sure that when pitch is out of bounds, screen doesn't get flipped
 	if (pitch > 89.0f)
-	{
 		pitch = 89.0f;
-	}
 	if (pitch < -89.0f)
-	{
 		pitch = -89.0f;
-	}
 
 	glm::vec3 front;
 	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 	front.y = sin(glm::radians(pitch));
 	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-
 	camerafront = glm::normalize(front);
 }
 
@@ -483,32 +485,29 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 
-	float cameraSpeedvertical = 80 * deltatime;
-	float cameraSpeedhorizontal = 80 * deltatime;
-	if (glfwGetKey(window, GLFW_KEY_W) || (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS))
-		camerapos += cameraSpeedvertical * camerafront;
-	if (glfwGetKey(window, GLFW_KEY_S) || (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS))
-		camerapos -= cameraSpeedvertical * camerafront;
-	if (glfwGetKey(window, GLFW_KEY_A) || (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS))
-		camerapos -= glm::normalize(glm::cross(camerafront, cameraup)) * cameraSpeedhorizontal;
-	if (glfwGetKey(window, GLFW_KEY_D) || (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS))
-		camerapos += glm::normalize(glm::cross(camerafront, cameraup)) * cameraSpeedhorizontal;
-
+	const float cameraSpeed = 80.0f*deltatime; // adjust accordingly
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+			camerapos += cameraSpeed * camerafront;
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+			camerapos -= cameraSpeed * camerafront;
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+			camerapos -= glm::normalize(glm::cross(camerafront, cameraup)) * cameraSpeed;
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+			camerapos += glm::normalize(glm::cross(camerafront, cameraup)) * cameraSpeed;
 
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	zoom -= (float)yoffset;
+	fov -= (float)yoffset*0.06;
 
-	if (zoom < 1.0f)
+	if (fov < 1.0f)
 	{
-		zoom = 1.0f;
+		fov = 1.0f;
 	}
-
-	if (zoom > 45.0f)
+	if (fov > 45.0f)
 	{
-		zoom = 45.0f;
+		fov = 45.0f;
 	}
 }
 
@@ -544,4 +543,10 @@ unsigned int set_texture(GLenum Tex_num, const char* name, GLenum val)
 	stbi_image_free(Fdata);
 
 	return texture;
+}
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+
+	glViewport(0, 0, width, height);
 }

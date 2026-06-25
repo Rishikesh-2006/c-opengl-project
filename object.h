@@ -16,7 +16,7 @@ public:
 	unsigned int EBO = 0;
 
 	float lightscale = 2.0f;
-	float multiplier = 1.0f;
+	float multiplier = 2.0f;
 
 
 	object(const char* vertex, const char* fragment) : Shader(vertex, fragment) {};

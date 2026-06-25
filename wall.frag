@@ -18,8 +18,7 @@ uniform vec3 attenval;
 uniform float lightscale;
 uniform float lightmultiplier;
 void main()
-{	
-	
+{		
 	float ambientstrength = 0.1;
 	vec3 ambient = ambientstrength*lightColor;
 	
