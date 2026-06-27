@@ -164,6 +164,8 @@
   <ItemGroup>
     <None Include="floor.frag" />
     <None Include="floor.vert" />
+    <None Include="shadow.frag" />
+    <None Include="shadow.vert" />
     <None Include="wall.frag" />
     <None Include="wall.vert" />
     <None Include="lightobject.frag" />
@@ -172,14 +174,13 @@
     <None Include="water.vert" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="c++opengl project1.rc" />
-  </ItemGroup>
-  <ItemGroup>
     <Image Include="..\..\..\..\wall.jpg" />
     <Image Include="..\..\..\..\wood.png" />
-    <Image Include="bricks.png" />
-    <Image Include="high floor.png" />
     <Image Include="rr.png" />
+    <Image Include="test_water.png" />
+    <Image Include="Textures\bricks.png" />
+    <Image Include="Textures\high floor.png" />
+    <Image Include="wooden floor.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

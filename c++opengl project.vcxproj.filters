@@ -70,17 +70,18 @@
     <None Include="floor.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="water.vert">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="water.frag">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Shaders</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="c++opengl project1.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
+    <None Include="water.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shadow.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="shadow.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\..\wall.jpg">
@@ -92,10 +93,16 @@
     <Image Include="rr.png">
       <Filter>Resource Files\textures</Filter>
     </Image>
-    <Image Include="high floor.png">
+    <Image Include="wooden floor.png">
       <Filter>Resource Files\textures</Filter>
     </Image>
-    <Image Include="bricks.png">
+    <Image Include="test_water.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="Textures\bricks.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="Textures\high floor.png">
       <Filter>Resource Files\textures</Filter>
     </Image>
   </ItemGroup>

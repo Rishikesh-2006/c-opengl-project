@@ -1,6 +1,6 @@
 #include "object.h"
 
-void object::set_object(unsigned int& VBO, unsigned int* indices, int indices_size, bool lightsrc)
+void object::set_object(unsigned int& VBO, unsigned int* indices, int indices_size, bool islightsrc)
 {
 
 
@@ -9,7 +9,7 @@ void object::set_object(unsigned int& VBO, unsigned int* indices, int indices_si
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	if (lightsrc == true)
+	if (islightsrc == true)
 	{
 		glVertexAttribPointer(0, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
