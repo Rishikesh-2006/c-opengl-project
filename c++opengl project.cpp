@@ -125,8 +125,8 @@ int main()
 			wallcoors.push_back(glm::vec3(posx, posy, posz));
 		}
 	}
-	wallcoors.push_back(glm::vec3(15.0f, 5.0f, 4.0f));
-	wallcoors.push_back(glm::vec3(14.0f, 5.0f, 4.0f));
+	//wallcoors.push_back(glm::vec3(15.0f, 5.0f, 4.0f));
+	//wallcoors.push_back(glm::vec3(14.0f, 5.0f, 4.0f));
 	for (int i = 0;i < x_wall;i++)
 	{
 		for (int j = 0;j < y_wall;j++)
@@ -436,6 +436,7 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, floortexture);
 
 		floor.set_in_loop(floor, "ourTexture", 2, lightobjectcolor, lightpos, camerapos);
+		floor.settexture("shadowmap",1);
 		glBindVertexArray(floorVAO);
 
 		floor.setmat4("view", view);
@@ -481,7 +482,7 @@ int main()
 		//testing movement in circular motion
 
 		//lightpos.x = 7 + 4 * sin(glfwGetTime());
-		//lightpos.y = 4 * sin(glfwGetTime());
+		lightpos.y = 7+7 * sin(glfwGetTime());
 		//lightpos.z = 15+4 * cos(glfwGetTime());
 
 		//velocity += accln * deltatime;
