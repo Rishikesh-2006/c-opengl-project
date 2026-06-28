@@ -7,7 +7,7 @@
 
 int scheight = 800;
 int scwidth = 800;
-
+unsigned int depthwidth = 1024, depthheight = 1024;
 //camera vals
 glm::vec3 camerapos = { -35.75f, 7.48f, 15.52f };
 glm::vec3 camerafront = { 0.99f, -0.07f, 0.008f };
@@ -36,8 +36,8 @@ void mouse_callback(GLFWwindow* window, double xposin, double yposin);
 void processInput(GLFWwindow* window);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 unsigned int set_texture(GLenum Tex_num, const char* name, GLenum val);
-void shadowcalc(std::vector <glm::vec3>& vector, object& object);
-
+void shadowcalc(std::vector <glm::vec3>& vector, object& object, unsigned int VAO);
+void lightcube(object& light, glm::mat4(view), glm::mat4(projection), unsigned int lightVAO);
 
 int main()
 {
@@ -125,8 +125,8 @@ int main()
 			wallcoors.push_back(glm::vec3(posx, posy, posz));
 		}
 	}
-	//wallcoors.push_back(glm::vec3(15.0f, 5.0f,4.0f));
-	//wallcoors.push_back(glm::vec3(14.0f, 5.0f, 4.0f));
+	wallcoors.push_back(glm::vec3(15.0f, 5.0f, 4.0f));
+	wallcoors.push_back(glm::vec3(14.0f, 5.0f, 4.0f));
 	for (int i = 0;i < x_wall;i++)
 	{
 		for (int j = 0;j < y_wall;j++)
@@ -183,7 +183,7 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(scheight, scwidth, "opengl", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(scwidth, scheight, "opengl", NULL, NULL);
 
 	if (window == NULL)
 	{
@@ -205,7 +205,7 @@ int main()
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
 	}
-	
+
 	//shader class to initialize and combine vertex and fragement shader
 	object wall("wall.vert", "wall.frag");
 	object light("lightobject.vert", "lightobject.frag");
@@ -256,9 +256,9 @@ int main()
 	waterEBO = water.EBO;
 	*/
 	//square
-	
 
-	unsigned int sqVBO, sqVAO=0, sqEBO;
+
+	/*unsigned int sqVBO, sqVAO = 0, sqEBO;
 
 	glGenBuffers(1, &sqVBO);
 	glBindVertexArray(sqVAO);
@@ -271,14 +271,14 @@ int main()
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-
+	*/
 
 	//depth map
 
 	unsigned int depthmapFBO;
 	glGenFramebuffers(1, &depthmapFBO);
 
-	unsigned int depthwidth = 1024, depthheight = 1024;
+
 	unsigned int depthmap;
 	glGenTextures(1, &depthmap);
 	glBindTexture(GL_TEXTURE_2D, depthmap);
@@ -286,35 +286,23 @@ int main()
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	
+
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
-	float clampcolor[] = {1.0f,1.0f,1.0f,1.0f};
+
+	float clampcolor[] = { 1.0f,1.0f,1.0f,1.0f };
 	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, clampcolor);
 	glBindFramebuffer(GL_FRAMEBUFFER, depthmapFBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthmap, 0);
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cout << "Framebuffer issue";
+	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	glm::mat4 shadowprojection = glm::ortho(-10.0, 10.0, -10.00, 10.00, 0.1, 10.0);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, depthmapFBO);
-	glEnable(GL_DEPTH_TEST);
-	glClear(GL_DEPTH_BUFFER_BIT);
-	glViewport(0, 0, depthwidth, depthheight);
-	glBindVertexArray(CUBEVAO);
-	shadowcalc(wallcoors, shadow);
-	glBindVertexArray(floorVAO);
-	shadowcalc(floorcoors, shadow);
-	//shadowcalc(watercoors, shadow);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	
-
-
-	glViewport(0, 0, scwidth, scheight);
 	//Textures
 	//set orientation
 	stbi_set_flip_vertically_on_load(true);
@@ -330,25 +318,27 @@ int main()
 	//water texture
 
 	unsigned int watertexture = set_texture(GL_TEXTURE2, "Textures/test_water.png", GL_RGBA);
-	
-	
+
+
 	float velocity = 0.0f;
 	float accln = 9.81f;
 	while (!glfwWindowShouldClose(window))
 	{
+		glm::mat4 view = glm::lookAt(camerapos, camerapos + camerafront, cameraup);
+		glm::mat4 projection = glm::perspective(glm::radians(fov), float(scwidth / scheight), 0.1f, 400.0f);
 
 		float currentframe = static_cast<float>(glfwGetTime());
 		deltatime = currentframe - lastframe;
 
-			int fps = 1 / deltatime;
-			std::string sfps = std::to_string(fps);
-			const char* cfps = sfps.c_str();
-			glfwSetWindowTitle(window, cfps);
-			lastframe = currentframe;
+		int fps = 1 / deltatime;
+		std::string sfps = std::to_string(fps);
+		const char* cfps = sfps.c_str();
+		glfwSetWindowTitle(window, cfps);
+		lastframe = currentframe;
 
 
 		//fpscalc
-		
+
 		//std::cout << camerafront.x << "," << camerafront.y << "," << camerafront.z << std::endl;
 		//std::cout << camerapos.x << "," << camerapos.y << "," << camerapos.z << std::endl;
 
@@ -361,53 +351,71 @@ int main()
 
 		//glBindTexture(GL_TEXTURE_2D, watertexture);
 
-		
+
 
 		//lightobjectcolor.x = sin(glfwGetTime());
 		//lightobjectcolor.y = cos(glfwGetTime());
 		//lightobjectcolor.z = 2 * cos(glfwGetTime());
 
-
-		//shadow
-		glBindTexture(GL_TEXTURE_2D, depthmap);
-
-		shadow.useshader();
-		glm::mat4 shadowview = glm::lookAt(lightpos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 shadowprojection = glm::ortho(-40.0, 40.0, -40.00, 40.00, 0.1, 100.0);
+		glm::mat4 shadowview = glm::lookAt(lightpos, glm::vec3(15.0f, 7.0f, 15.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 sh_projection = shadowprojection * shadowview;
-		shadow.setmat4("lightprojection", sh_projection);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, depthmapFBO);
 		glEnable(GL_DEPTH_TEST);
 		glClear(GL_DEPTH_BUFFER_BIT);
-		glViewport(0, 0, scwidth, scheight);
-		glBindVertexArray(CUBEVAO);
-		shadowcalc(wallcoors, shadow);
-		glBindVertexArray(floorVAO);
-		shadowcalc(floorcoors, shadow);
-		//shadowcalc(watercoors, shadow);
-		
+
+		//shadow
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, depthmap);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, depthmapFBO);
+		shadow.useshader();
+		glViewport(0, 0, depthwidth, depthheight);
+
+		shadow.setmat4("lightprojection", sh_projection);
+
+		glEnable(GL_DEPTH_TEST);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glCullFace(GL_FRONT);
+		shadowcalc(wallcoors, shadow, CUBEVAO);
+		shadowcalc(floorcoors, shadow, floorVAO);
+
+
+
+
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		//shadowcalc(watercoors, shadow);
+		glCullFace(GL_BACK);
+
+
+		glViewport(
+			0,
+			0,
+			scwidth,
+			scheight);
+
+
 
 
 		//wall
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, Walltextures);
 
 		wall.set_in_loop(wall, "ourTexture", 0, lightobjectcolor, lightpos, camerapos);
 		wall.setmat4("lightprojection", sh_projection);
-		glActiveTexture(GL_TEXTURE3);
-		glBindTexture(GL_TEXTURE_2D, depthmap);
+
+
+		wall.settexture("shadowmap", 1);
 		glBindVertexArray(CUBEVAO);
 
 		//camera
 
-		glm::mat4 view = glm::lookAt(camerapos, camerapos + camerafront, cameraup);
 		wall.setmat4("view", view);
 
-		glm::mat4 projection = glm::perspective(fov, float(scwidth / scheight), 0.1f, 400.0f);
 		wall.setmat4("projection", projection);
 
 
-		for (glm::vec3 &i : wallcoors)
+		for (glm::vec3& i : wallcoors)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, i);
@@ -424,9 +432,10 @@ int main()
 
 
 		//floor
+		glActiveTexture(GL_TEXTURE2);
 		glBindTexture(GL_TEXTURE_2D, floortexture);
 
-		floor.set_in_loop(floor, "ourTexture", 1, lightobjectcolor, lightpos, camerapos);
+		floor.set_in_loop(floor, "ourTexture", 2, lightobjectcolor, lightpos, camerapos);
 		glBindVertexArray(floorVAO);
 
 		floor.setmat4("view", view);
@@ -472,7 +481,7 @@ int main()
 		//testing movement in circular motion
 
 		//lightpos.x = 7 + 4 * sin(glfwGetTime());
-		lightpos.y = 4*sin(glfwGetTime());
+		//lightpos.y = 4 * sin(glfwGetTime());
 		//lightpos.z = 15+4 * cos(glfwGetTime());
 
 		//velocity += accln * deltatime;
@@ -509,7 +518,7 @@ int main()
 
 		//square
 
-		sq.useshader();
+		/*sq.useshader();
 		sq.setvec3("color", glm::vec3(0.0f, 0.0f, 1.0f));
 		sq.setmat4("view", view);
 		sq.setmat4("projection", projection);
@@ -517,16 +526,16 @@ int main()
 		glm::vec3 axis = glm::vec3(1.0f, 0.3f, 0.5f);
 
 		glm::mat4 sqmodel = glm::mat4(1.0f);
-		sqmodel = glm::translate(sqmodel, glm::vec3(1.0f,1.0f,-20.0f));
+		sqmodel = glm::translate(sqmodel, glm::vec3(1.0f, 1.0f, -20.0f));
 
 		float angle = 0;
 		//std::cout << glfwGetTime() << std::endl;
-		sqmodel = glm::rotate(sqmodel,float(14.138), glm::vec3(1.0f, 0.0f, 0.0f));
-		sqmodel = glm::scale(sqmodel, glm::vec3(40.0f, 30.0f,0.0f));
+		sqmodel = glm::rotate(sqmodel, float(14.138), glm::vec3(1.0f, 0.0f, 0.0f));
+		sqmodel = glm::scale(sqmodel, glm::vec3(40.0f, 30.0f, 0.0f));
 		sq.setmat4("model", sqmodel);
 		//glBindVertexArray(sqVAO);
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);*/
 
 
 
@@ -551,10 +560,10 @@ int main()
 	glDeleteBuffers(1, &floorEBO);
 	glDeleteTextures(1, &floortexture);
 
-	sq.deleteshader();
+	/*sq.deleteshader();
 	glDeleteVertexArrays(1, &sqVAO);
 	glDeleteBuffers(1, &sqVBO);
-	glDeleteBuffers(1, &sqEBO);
+	glDeleteBuffers(1, &sqEBO);*/
 
 	/*water.deleteshader();
 	glDeleteVertexArrays(1, &waterVAO);
@@ -610,21 +619,21 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 
-	const float cameraSpeed = 80.0f*deltatime; // adjust accordingly
-		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-			camerapos += cameraSpeed * camerafront;
-		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-			camerapos -= cameraSpeed * camerafront;
-		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-			camerapos -= glm::normalize(glm::cross(camerafront, cameraup)) * cameraSpeed;
-		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-			camerapos += glm::normalize(glm::cross(camerafront, cameraup)) * cameraSpeed;
+	const float cameraSpeed = 80.0f * deltatime; // adjust accordingly
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		camerapos += cameraSpeed * camerafront;
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		camerapos -= cameraSpeed * camerafront;
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		camerapos -= glm::normalize(glm::cross(camerafront, cameraup)) * cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		camerapos += glm::normalize(glm::cross(camerafront, cameraup)) * cameraSpeed;
 
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	fov -= (float)yoffset*0.06;
+	fov -= (float)yoffset * 0.1;
 
 	if (fov < 1.0f)
 	{
@@ -676,8 +685,9 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
-void shadowcalc(std::vector <glm::vec3> &vector,object &object)
+void shadowcalc(std::vector <glm::vec3>& vector, object& object, unsigned int VAO)
 {
+	glBindVertexArray(VAO);
 	for (glm::vec3 i : vector)
 	{
 		glm::mat4 model = glm::mat4(1.0f);
@@ -692,4 +702,21 @@ void shadowcalc(std::vector <glm::vec3> &vector,object &object)
 
 
 	}
+}
+void lightcube(object& light, glm::mat4(view), glm::mat4(projection), unsigned int lightVAO)
+{
+	{
+		light.useshader();
+
+		//std::cout << axis.x<<"," << axis.y<<","<< axis.z << std::endl;
+
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, lightpos);
+		//model = glm::rotate(model, 4*sin(float(glfwGetTime())),axis);
+		model = glm::scale(model, glm::vec3(light.lightscale));
+		light.setmat4("model", model);
+		glBindVertexArray(lightVAO);
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+	}
+
 }

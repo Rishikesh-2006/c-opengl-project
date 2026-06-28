@@ -18,26 +18,36 @@ uniform sampler2D shadowmap;
 uniform vec3 attenval;
 uniform float lightscale;
 uniform float lightmultiplier;
+
+
+float shadowcalc(vec4 fragposlight, vec3 normal,vec3 lightdir)
+{
+	vec3 lightcoors = fragposlight.xyz/fragposlight.w;
+	lightcoors = lightcoors*0.5+0.5;
+	if(lightcoors.z>1.0) return 0.0;
+	
+	//float closest_depth = texture(shadowmap,lightcoors.xy).r;
+	float current_depth = lightcoors.z;
+	float bias = 0.005;
+	float shadow = 0.0;
+	vec2 texelsize = 1.0/textureSize(shadowmap,0);
+	for(int x = -1;x<=1;++x) 
+	{
+		for(int y = -1;y<=1;++y)
+		{
+			float depth = texture(shadowmap,lightcoors.xy + vec2(x,y)*texelsize).r;
+			shadow += current_depth - bias > depth ? 1.0:0.0;
+		}
+	}
+	shadow /=9.0;
+	return shadow;
+
+}
+
+
 void main()
 {	
 
-	//shadow calc
-	float shadow = 0.0;
-	vec3 lightcoors = fragposlight.xyz/fragposlight.w;
-
-	if(lightcoors.z-0.005<=1.0)
-	{
-		lightcoors = (lightcoors+1)/2;
-
-		float closest_depth = texture(shadowmap,lightcoors.xy).r;
-		float current_depth = lightcoors.z;
-
-		if(current_depth > closest_depth)
-		{
-		shadow = 1.0;
-		}
-
-	}
 
 	//Blinn-phong calc
 	float ambientstrength = 0.15;
@@ -58,17 +68,16 @@ void main()
 	float spec = pow(max(dot(norm, halfwaydir), 0.0), 16);
 	vec3 specularlight = specularstrength*spec*lightColor;
 
-
 	float distance  = length(lightpos-fragpos);
 	float attenuation = 1.0 / (attenval.x + attenval.y * distance + 
     		    attenval.z* (distance * distance * 8)); 
 
-	//ambient *=attenuation;
 	diffuse *=attenuation;
 	specularlight *=attenuation;
+	
+	float shadow = shadowcalc(fragposlight,norm,lightDir); 
 
-	vec3 result = (ambient + diffuse*(1.0-shadow) + specularlight) * objectColor;
+	vec3 result = (ambient +(1.0-shadow)*( diffuse + specularlight )) * objectColor;
 	FragColor = texture(ourTexture, TexCoord)*vec4(result*lightscale*lightmultiplier, 1.0);
 
 }
-	

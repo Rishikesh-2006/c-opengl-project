@@ -22,7 +22,6 @@ out vec4 fragposlight;
 void main()
 {// temporary to check rotation --> transform*vec4(aPos, 1.0);
 	fragpos = vec3(model * vec4(aPos, 1.0));
-	gl_Position = projection*view*model*vec4(aPos, 1.0);
 	ourColor = aColor;
 	TexCoord = vec2(aTexCoord.x, aTexCoord.y);
 	//Normal = aNormal;
@@ -30,4 +29,5 @@ void main()
 
 	fragposlight = lightprojection * vec4(fragpos,1.0);
 	
+	gl_Position = projection*view*vec4(fragpos, 1.0);
 }
