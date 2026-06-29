@@ -28,7 +28,7 @@ float shadowcalc(vec4 fragposlight, vec3 normal,vec3 lightdir)
 	
 	//float closest_depth = texture(shadowmap,lightcoors.xy).r;
 	float current_depth = lightcoors.z;
-	float bias = 0.005;
+	float bias = 0.05;
 	float shadow = 0.0;
 	vec2 texelsize = 1.0/textureSize(shadowmap,0);
 	for(int x = -1;x<=1;++x) 

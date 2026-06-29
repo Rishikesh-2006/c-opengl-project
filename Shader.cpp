@@ -104,7 +104,7 @@ void Shader::setfloat(const std::string& name, const float value)
 	glUniform1f(glGetUniformLocation(shaderprogram, name.c_str()), value);
 }
 
-void Shader::settexture(const std::string& name, const int loc)
+void Shader::settexture(const std::string& name,int loc)
 {
 	glUniform1i(glGetUniformLocation(shaderprogram, name.c_str()), loc);
 }

@@ -32,6 +32,6 @@ public:
 
 	void setfloat(const std::string& name, const float value);
 
-	void settexture(const std::string& name, const int loc);
+	void settexture(const std::string& name,  int loc);
 };
 
