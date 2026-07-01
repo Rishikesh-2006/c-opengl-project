@@ -26,9 +26,9 @@ float shadowcalc(vec4 fragposlight, vec3 normal,vec3 lightdir)
 	lightcoors = lightcoors*0.5+0.5;
 	if(lightcoors.z>1.0) return 0.0;
 	
-	//float closest_depth = texture(shadowmap,lightcoors.xy).r;
+	float closest_depth = texture(shadowmap,lightcoors.xy).r;
 	float current_depth = lightcoors.z;
-	float bias = 0.05;
+	float bias = max(0.1*(1.0-dot(normal,lightdir)),0.02);
 	float shadow = 0.0;
 	vec2 texelsize = 1.0/textureSize(shadowmap,0);
 	for(int x = -1;x<=1;++x) 
@@ -40,7 +40,8 @@ float shadowcalc(vec4 fragposlight, vec3 normal,vec3 lightdir)
 		}
 	}
 	shadow /=9.0;
-	return shadow;
+	
+return shadow;
 
 }
 
@@ -75,7 +76,7 @@ void main()
 	diffuse *=attenuation;
 	specularlight *=attenuation;
 	
-	float shadow = shadowcalc(fragposlight,norm,lightDir); 
+	float shadow = shadowcalc(fragposlight,norm,lightDir);
 
 	vec3 result = (ambient +(1.0-shadow)*( diffuse + specularlight )) * objectColor;
 	FragColor = texture(ourTexture, TexCoord)*vec4(result*lightscale*lightmultiplier, 1.0);

@@ -25,7 +25,7 @@ float deltatime = 0.0f;
 float lastframe = 0.0f;
 
 //lightobject
-glm::vec3 lightpos(10.0f, 8.0f, 10.0f);
+glm::vec3 lightpos(10.0f, 8.0f, 40.0f);
 glm::vec3 lightobjectcolor(1.0f, 1.0f, 1.0f);
 glm::vec4 background_light = glm::vec4(0.53f, 0.81f, 0.92f, 1.0f);
 //glm::vec4 background_light = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -37,6 +37,9 @@ void processInput(GLFWwindow* window);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 unsigned int set_texture(GLenum Tex_num, const char* name, GLenum val);
 void shadowcalc(std::vector <glm::vec3>& vector, object& shadowobject, unsigned int& cubeVAO);
+void Make_Structure(std::vector <glm::vec3>& array, glm::vec3 start, float distance, float num);
+
+
 int main()
 {
 	float vertices[] = {
@@ -112,10 +115,10 @@ int main()
 
 	//wall pos
 	std::vector <glm::vec3> wallcoors;
-	int x_wall = 30, y_wall = 15;
+	int x_wall = 45, y_wall = 20;
 	for (int i = 0;i < x_wall;i++)
 	{
-		for (int j = 0;j < y_wall;j++)
+		for (int j = -20;j < y_wall;j++)
 		{
 			float posx = i * 1.0f;
 			float posy = j * 1.0f;
@@ -123,9 +126,13 @@ int main()
 			wallcoors.push_back(glm::vec3(posx, posy, posz));
 		}
 	}
-	wallcoors.push_back(glm::vec3(15.0f, 5.0f, 4.0f));
-	wallcoors.push_back(glm::vec3(14.0f, 5.0f, 4.0f));
-	for (int i = 0;i < x_wall;i++)
+
+	//Make_Structure(wallcoors, glm::vec3(0.0f, -20.0f, 15.0f),3.0f,5.0f);
+	Make_Structure(wallcoors, glm::vec3(6.0f, 0.0f, 15.0f),3.0f, 1.0f);
+	Make_Structure(wallcoors, glm::vec3(12.0f, 0.0f, 15.0f), 3.0f, 1.0f);
+	Make_Structure(wallcoors, glm::vec3(6.0f, 6.0f, 15.0f), 3.0f, 1.0f);
+	Make_Structure(wallcoors, glm::vec3(12.0f, 6.0f, 15.0f), 3.0f, 1.0f);
+	/*for (int i = 0;i < x_wall;i++)
 	{
 		for (int j = 0;j < y_wall;j++)
 		{
@@ -156,10 +163,10 @@ int main()
 			float posz = i * 1.0f;
 			wallcoors.push_back(glm::vec3(posx, posy, posz));
 		}
-	}
+	}*/
 	//floor pos
 	std::vector <glm::vec3> floorcoors;
-	int x_floor = 30, z_floor = 30;
+	/*int x_floor = 30, z_floor = 30;
 	for (int i = 0;i < x_floor;i++)
 	{
 		for (int j = 0; j < z_floor;j++)
@@ -181,9 +188,9 @@ int main()
 			floorcoors.push_back(glm::vec3(posxf, posyf, poszf));
 		}
 	}
-
-	std::vector <glm::vec3> onlyfloor(floorcoors.begin(), floorcoors.begin() + x_floor * z_floor);
-
+	*/
+	
+	floorcoors.push_back(glm::vec3(1.0f,1.0f,0.0f));
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -336,11 +343,11 @@ int main()
 		//lightobjectcolor.x = sin(glfwGetTime());
 		//lightobjectcolor.y = cos(glfwGetTime());
 		//lightobjectcolor.z = 2 * cos(glfwGetTime());
-
-		glm::mat4 shadowprojection = glm::ortho(-60.0, 60.0, -60.00, 60.00, 0.1, 150.0);
-		glm::mat4 shadowview = glm::lookAt(lightpos, glm::vec3(1.0f), glm::vec3(0.0, 1.0, 0.0));
+		/*glm::vec3(15.0f,7.0f,15.0f)*/
+		glm::mat4 shadowprojection = glm::ortho(-30.0, 30.0, -30.00, 30.00, 0.1, 60.0);
+		glm::mat4 shadowview = glm::lookAt(lightpos, glm::vec3(15.0f, 7.0f, 15.0f), glm::vec3(0.0, 1.0, 0.0));
 		glm::mat4 sh_projection = shadowprojection * shadowview;
-
+		std::cout << lightpos.x << std::endl;
 		//shadow
 
 		glBindFramebuffer(GL_FRAMEBUFFER, depthmapFBO);
@@ -352,7 +359,7 @@ int main()
 		shadow.useshader();
 		shadow.setmat4("lightprojection", sh_projection);
 		shadowcalc(wallcoors, shadow, CUBEVAO);
-		shadowcalc(onlyfloor, shadow, floorVAO);
+		shadowcalc(floorcoors, shadow, floorVAO);
 		glCullFace(GL_BACK);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -424,9 +431,8 @@ int main()
 		//testing movement in circular motion
 
 		lightpos.x = 15+7*sin(glfwGetTime());
-		//lightpos.y -= 12 * sin(glfwGetTime()) * deltatime;
-		//lightpos.z = 15+4 * cos(glfwGetTime());
-
+		lightpos.y = 7+7* cos(glfwGetTime());
+		lightpos.z -= 12 * cos(glfwGetTime())*deltatime;
 		//velocity += accln * deltatime;
 		//lightpos.y -= velocity * deltatime;
 
@@ -525,12 +531,13 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 	camerafront = glm::normalize(front);
 }
 
+
 void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 
-	const float cameraSpeed = 80.0f * deltatime; // adjust accordingly
+	const float cameraSpeed = 40.0f * deltatime; // adjust accordingly
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		camerapos += cameraSpeed * camerafront;
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -610,10 +617,30 @@ void shadowcalc(std::vector <glm::vec3>& vector, object& shadowobject, unsigned 
 
 		shadowobject.setmat4("model", model);
 
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
 
 	}
 
 
+}
+
+void Make_Structure(std::vector <glm::vec3>& array,glm::vec3 start, float distance,float num)
+{
+
+	for (float i = 0;i < num;i += 1.0f)
+	{
+		start = glm::vec3(start.x + distance, start.y + distance, start.z);
+		for (float j = 0;j < num;j += 1.0f)
+		{
+			array.push_back(start);
+			array.push_back(glm::vec3(start.x, start.y - 1.0f, start.z));
+			array.push_back(glm::vec3(start.x, start.y - 2.0f, start.z));
+			array.push_back(glm::vec3(start.x + 1.0f, start.y, start.z));
+			array.push_back(glm::vec3(start.x + 1.0f, start.y - 2.0f, start.z));
+			array.push_back(glm::vec3(start.x + 2.0f, start.y, start.z));
+			array.push_back(glm::vec3(start.x + 2.0f, start.y - 1.0f, start.z));
+			array.push_back(glm::vec3(start.x + 2.0f, start.y - 2.0f, start.z));
+		}
+	}
 }

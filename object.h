@@ -15,8 +15,8 @@ public:
 	unsigned int VAO = 2;  //correct value is 2
 	unsigned int EBO = 0;
 
-	float lightscale = 1.0f;
-	float multiplier = 5.0f;
+	float lightscale = 2.0f;
+	float multiplier = 3.0f;
 
 
 	object(const char* vertex, const char* fragment) : Shader(vertex, fragment) {};
