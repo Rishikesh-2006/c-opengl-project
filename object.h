@@ -9,6 +9,14 @@
 #include "Shader.h"
 //std::pair <unsigned int, unsigned int>
 
+struct obj_info
+{
+	glm::vec3 acceleration;
+	glm::vec3 velocity;
+	glm::vec3 position;
+
+};
+
 class object : public Shader
 {
 public:
@@ -17,6 +25,7 @@ public:
 
 	float lightscale = 2.0f;
 	float multiplier = 3.0f;
+	
 
 
 	object(const char* vertex, const char* fragment) : Shader(vertex, fragment) {};
@@ -25,8 +34,12 @@ public:
 
 	void set_VBO_object(unsigned int& VBO, float* vertices, int vertice_size, unsigned int* indices, int indice_size);
 
-	void set_in_loop(object& val, std::string textureloc, int num, glm::vec3 lightobjectcolor, glm::vec3 lightpos, glm::vec3 camerapos);
+	void set_in_loop(std::string textureloc, int num, glm::vec3 lightobjectcolor, glm::vec3 lightpos, glm::vec3 camerapos);
 
-	void light_in_loop(object& val, glm::vec3 lightobjectcolor, glm::mat4 view, glm::mat4 projection, glm::vec3 lightpos);
+	void light_in_loop(glm::vec3 lightobjectcolor, glm::mat4 view, glm::mat4 projection, glm::vec3 lightpos);
+
+	void collision(obj_info &obj_A,obj_info &obj_B,float scale);
+	
+	float distance_calc(glm::vec3 posa,glm::vec3 posb);
 };
 

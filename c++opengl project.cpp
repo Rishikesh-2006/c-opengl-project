@@ -7,7 +7,7 @@
 
 int scheight = 800;
 int scwidth = 800;
-unsigned int depthwidth = 4096, depthheight = 4096;
+unsigned int depthwidth = 1024, depthheight = 4096;
 //camera vals
 glm::vec3 camerapos = { -35.75f, 7.48f, 15.52f };
 glm::vec3 camerafront = { 0.99f, -0.07f, 0.008f };
@@ -25,7 +25,7 @@ float deltatime = 0.0f;
 float lastframe = 0.0f;
 
 //lightobject
-glm::vec3 lightpos(10.0f, 8.0f, 40.0f);
+glm::vec3 lightpos(10.0f, 8.0f, 10.0f);
 glm::vec3 lightobjectcolor(1.0f, 1.0f, 1.0f);
 glm::vec4 background_light = glm::vec4(0.53f, 0.81f, 0.92f, 1.0f);
 //glm::vec4 background_light = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -42,6 +42,7 @@ void Make_Structure(std::vector <glm::vec3>& array, glm::vec3 start, float dista
 
 int main()
 {
+
 	float vertices[] = {
 	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,0.0f,-1.0f,
 	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,0.0f,-1.0f,
@@ -113,12 +114,14 @@ int main()
 		3,2,1
 	};
 
+	obj_info phy_obja, phy_objb;
+
 	//wall pos
 	std::vector <glm::vec3> wallcoors;
-	int x_wall = 45, y_wall = 20;
+	int x_wall = 30, y_wall = 15;
 	for (int i = 0;i < x_wall;i++)
 	{
-		for (int j = -20;j < y_wall;j++)
+		for (int j = 0;j < y_wall;j++)
 		{
 			float posx = i * 1.0f;
 			float posy = j * 1.0f;
@@ -126,13 +129,12 @@ int main()
 			wallcoors.push_back(glm::vec3(posx, posy, posz));
 		}
 	}
-
-	//Make_Structure(wallcoors, glm::vec3(0.0f, -20.0f, 15.0f),3.0f,5.0f);
-	Make_Structure(wallcoors, glm::vec3(6.0f, 0.0f, 15.0f),3.0f, 1.0f);
-	Make_Structure(wallcoors, glm::vec3(12.0f, 0.0f, 15.0f), 3.0f, 1.0f);
-	Make_Structure(wallcoors, glm::vec3(6.0f, 6.0f, 15.0f), 3.0f, 1.0f);
-	Make_Structure(wallcoors, glm::vec3(12.0f, 6.0f, 15.0f), 3.0f, 1.0f);
-	/*for (int i = 0;i < x_wall;i++)
+	wallcoors.push_back(glm::vec3(15.0f, 7.0f, 15.0f));
+	//Make_Structure(wallcoors, glm::vec3(6.0f, 0.0f, 15.0f),3.0f, 1.0f);
+	//Make_Structure(wallcoors, glm::vec3(12.0f, 0.0f, 15.0f), 3.0f, 1.0f);
+	//Make_Structure(wallcoors, glm::vec3(6.0f, 6.0f, 15.0f), 3.0f, 1.0f);
+	//Make_Structure(wallcoors, glm::vec3(12.0f, 6.0f, 15.0f), 3.0f, 1.0f);
+	for (int i = 0;i < x_wall;i++)
 	{
 		for (int j = 0;j < y_wall;j++)
 		{
@@ -163,10 +165,10 @@ int main()
 			float posz = i * 1.0f;
 			wallcoors.push_back(glm::vec3(posx, posy, posz));
 		}
-	}*/
+	}
 	//floor pos
 	std::vector <glm::vec3> floorcoors;
-	/*int x_floor = 30, z_floor = 30;
+	int x_floor = 30, z_floor = 30;
 	for (int i = 0;i < x_floor;i++)
 	{
 		for (int j = 0; j < z_floor;j++)
@@ -188,9 +190,15 @@ int main()
 			floorcoors.push_back(glm::vec3(posxf, posyf, poszf));
 		}
 	}
-	*/
 	
-	floorcoors.push_back(glm::vec3(1.0f,1.0f,0.0f));
+	//collision objects
+	phy_obja.position = glm::vec3 (16.0f, 8.0f, 16.0f);
+	phy_objb.position = glm::vec3 (16.0f, 13.0f, 16.0f);
+	phy_obja.velocity = glm::vec3(0.0f, 2.0f, 0.0f);
+	phy_objb.velocity = glm::vec3(0.0f, 0.0f, 0.0f);
+	phy_obja.acceleration = glm::vec3(0.0f, -0.8f, 0.0f);
+	phy_objb.acceleration = glm::vec3(0.0f, 0.8f, 0.0f);
+	
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -225,6 +233,7 @@ int main()
 	object floor("floor.vert", "floor.frag");
 	object sq("water.vert", "water.frag");
 	object shadow("shadow.vert", "shadow.frag");
+	object phy("water.vert", "water.frag");
 	//this ensures the faces on the front are shown and the back ones are hidden
 
 	glEnable(GL_DEPTH_TEST);
@@ -258,6 +267,14 @@ int main()
 
 	floorVAO = floor.VAO;
 	floorEBO = floor.EBO;
+
+	//collision objects
+
+	unsigned int phyVAO, phyEBO;
+	phy.set_object(CUBEVBO, indices, sizeof(indices), false);
+
+	phyVAO = phy.VAO;
+	phyEBO = phy.EBO;
 
 
 	//depth map
@@ -306,11 +323,17 @@ int main()
 
 	unsigned int watertexture = set_texture(GL_TEXTURE2, "Textures/test_water.png", GL_RGBA);
 
+	unsigned int phyobj_texture = set_texture(GL_TEXTURE3, "Textures/wall.jpg", GL_RGB);
+
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Walltextures);
 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, floortexture);
+
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, phyobj_texture);
+
 
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, depthmap);
@@ -345,9 +368,9 @@ int main()
 		//lightobjectcolor.z = 2 * cos(glfwGetTime());
 		/*glm::vec3(15.0f,7.0f,15.0f)*/
 		glm::mat4 shadowprojection = glm::ortho(-30.0, 30.0, -30.00, 30.00, 0.1, 60.0);
-		glm::mat4 shadowview = glm::lookAt(lightpos, glm::vec3(15.0f, 7.0f, 15.0f), glm::vec3(0.0, 1.0, 0.0));
+		glm::mat4 shadowview = glm::lookAt(lightpos, glm::vec3(15.0f, 7.5f, 15.0f), glm::vec3(0.0, 1.0, 0.0));
 		glm::mat4 sh_projection = shadowprojection * shadowview;
-		std::cout << lightpos.x << std::endl;
+		
 		//shadow
 
 		glBindFramebuffer(GL_FRAMEBUFFER, depthmapFBO);
@@ -374,7 +397,7 @@ int main()
 		//wall
 
 
-		wall.set_in_loop(wall, "ourTexture", 0, lightobjectcolor, lightpos, camerapos);
+		wall.set_in_loop("ourTexture", 0, lightobjectcolor, lightpos, camerapos);
 		wall.setmat4("lightprojection", sh_projection);
 
 		wall.settexture("shadowmap", 3);
@@ -404,7 +427,7 @@ int main()
 
 		//floor
 
-		floor.set_in_loop(floor, "ourTexture", 1, lightobjectcolor, lightpos, camerapos);
+		floor.set_in_loop("ourTexture", 1, lightobjectcolor, lightpos, camerapos);
 		floor.setmat4("lightprojection", sh_projection);
 		floor.settexture("shadowmap", 3);
 
@@ -427,12 +450,46 @@ int main()
 
 		}
 
+		//physics objects
 
+		phy_obja.velocity += phy_obja.acceleration * deltatime;
+		phy_objb.velocity += phy_objb.acceleration * deltatime;
+
+		phy_obja.position -= phy_obja.velocity * deltatime;
+		phy_objb.position -= phy_objb.velocity * deltatime;
+		phy.collision(phy_obja, phy_objb,1.0f);
+
+		phy.useshader();
+				
+		phy.setmat4("view", view);
+		phy.setmat4("projection", projection);
+
+			
+		glBindVertexArray(phyVAO);
+		phy.setvec3("color", glm::vec3(0.0f, 1.0f, 1.0f));
+		glm::mat4 p1model = glm::mat4(1.0f);
+		p1model = glm::translate(p1model, phy_obja.position);
+		float angle1 = 0;
+		p1model = glm::rotate(p1model, glm::radians(angle1), glm::vec3(1.0f, 0.3f, 0.5f));
+		phy.setmat4("model", p1model);
+
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+		
+		phy.setvec3("color", glm::vec3(1.0f, 1.0f, 0.0f));
+		glm::mat4 p2model = glm::mat4(1.0f);
+		p2model = glm::translate(p2model, phy_objb.position);
+		float angle2 = 0;
+		p2model = glm::rotate(p2model, glm::radians(angle2), glm::vec3(1.0f, 0.3f, 0.5f));
+		phy.setmat4("model", p2model);
+			
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
+		std::cout << phy_objb.position.y << std::endl;
 		//testing movement in circular motion
 
 		lightpos.x = 15+7*sin(glfwGetTime());
-		lightpos.y = 7+7* cos(glfwGetTime());
-		lightpos.z -= 12 * cos(glfwGetTime())*deltatime;
+		//lightpos.y = 7+7* cos(glfwGetTime());
+		//lightpos.z -= 12 * cos(glfwGetTime())*deltatime;
 		//velocity += accln * deltatime;
 		//lightpos.y -= velocity * deltatime;
 
@@ -486,6 +543,11 @@ int main()
 	glDeleteVertexArrays(1, &floorVAO);
 	glDeleteBuffers(1, &floorEBO);
 	glDeleteTextures(1, &floortexture);
+
+	phy.deleteshader();
+	glDeleteVertexArrays(1, &phyVAO);
+	glDeleteBuffers(1, &phyEBO);
+	glDeleteTextures(1, &phyobj_texture);
 
 
 	glfwDestroyWindow(window);

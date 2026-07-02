@@ -72,29 +72,29 @@ void object::set_VBO_object(unsigned int& VBO, float* vertices, int vertice_size
 
 }
 
-void object::set_in_loop(object& val, std::string textureloc, int num, glm::vec3 lightobjectcolor, glm::vec3 lightpos, glm::vec3 camerapos)
+void object::set_in_loop(std::string textureloc, int num, glm::vec3 lightobjectcolor, glm::vec3 lightpos, glm::vec3 camerapos)
 {
-	val.useshader();
-	val.settexture(textureloc, num);
+	useshader();
+	settexture(textureloc, num);
 
-	val.setvec3("lightColor", lightobjectcolor);
-	val.setvec3("objectColor", glm::vec3(0.5f, 0.5f, 0.5f));
-	val.setvec3("lightpos", lightpos);
-	val.setvec3("viewpos", camerapos);
+	setvec3("lightColor", lightobjectcolor);
+	setvec3("objectColor", glm::vec3(0.5f, 0.5f, 0.5f));
+	setvec3("lightpos", lightpos);
+	setvec3("viewpos", camerapos);
 
 	//attenuation values-
-	val.setvec3("attenval", glm::vec3(1.0f, 0.014f, 0.0007f));
-	val.setfloat("lightscale", lightscale);
-	val.setfloat("lightmultiplier", multiplier);
+	setvec3("attenval", glm::vec3(1.0f, 0.014f, 0.0007f));
+	setfloat("lightscale", lightscale);
+	setfloat("lightmultiplier", multiplier);
 
 }
 
-void object::light_in_loop(object& val, glm::vec3 lightobjectcolor, glm::mat4 view, glm::mat4 projection, glm::vec3 lightpos)
+void object::light_in_loop(glm::vec3 lightobjectcolor, glm::mat4 view, glm::mat4 projection, glm::vec3 lightpos)
 {
-	val.useshader();
-	val.setvec3("color", lightobjectcolor);
-	val.setmat4("view", view);
-	val.setmat4("projection", projection);
+	useshader();
+	setvec3("color", lightobjectcolor);
+	setmat4("view", view);
+	setmat4("projection", projection);
 
 
 	//std::cout << axis.x<<"," << axis.y<<","<< axis.z << std::endl;
@@ -103,7 +103,22 @@ void object::light_in_loop(object& val, glm::vec3 lightobjectcolor, glm::mat4 vi
 	model = glm::translate(model, lightpos);
 	//model = glm::rotate(model, 4*sin(float(glfwGetTime())),axis);
 	model = glm::scale(model, glm::vec3(lightscale));
-	val.setmat4("model", model);
+	setmat4("model", model);
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
+}
+
+void object::collision(obj_info& obj_A, obj_info& obj_B, float scale)
+{
+	if (distance_calc(obj_A.position, obj_B.position) < scale)
+	{
+		glm::vec3 container = obj_A.velocity;
+		obj_A.velocity = obj_B.velocity;
+		obj_B.velocity = container;
+	}
+}
+
+float object::distance_calc(glm::vec3 posa, glm::vec3 posb)
+{
+	return glm::sqrt(glm::pow((posa.x - posb.x), 2) + glm::pow((posa.y - posb.y), 2) + glm::pow((posa.z - posb.z), 2));
 }
