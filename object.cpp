@@ -112,9 +112,11 @@ void object::collision(obj_info& obj_A, obj_info& obj_B, float scale)
 {
 	if (distance_calc(obj_A.position, obj_B.position) < scale)
 	{
-		glm::vec3 container = obj_A.velocity;
+		/*glm::vec3 container = obj_A.velocity;
 		obj_A.velocity = obj_B.velocity;
-		obj_B.velocity = container;
+		obj_B.velocity = container;*/
+		obj_A.velocity = -obj_A.velocity * 0.75f;
+		obj_B.velocity = -obj_B.velocity * 0.75f;
 	}
 }
 

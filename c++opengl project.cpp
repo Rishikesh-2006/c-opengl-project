@@ -9,7 +9,7 @@ int scheight = 800;
 int scwidth = 800;
 unsigned int depthwidth = 1024, depthheight = 4096;
 //camera vals
-glm::vec3 camerapos = { -35.75f, 7.48f, 15.52f };
+glm::vec3 camerapos = {16.0f,3.0f,16.0f };
 glm::vec3 camerafront = { 0.99f, -0.07f, 0.008f };
 glm::vec3 cameraup = { 0.0f, 1.0f ,0.0f };
 
@@ -193,11 +193,11 @@ int main()
 	
 	//collision objects
 	phy_obja.position = glm::vec3 (16.0f, 8.0f, 16.0f);
-	phy_objb.position = glm::vec3 (16.0f, 13.0f, 16.0f);
+	phy_objb.position = glm::vec3 (16.0f, 19.0f, 16.0f);
 	phy_obja.velocity = glm::vec3(0.0f, 2.0f, 0.0f);
 	phy_objb.velocity = glm::vec3(0.0f, 0.0f, 0.0f);
-	phy_obja.acceleration = glm::vec3(0.0f, -0.8f, 0.0f);
-	phy_objb.acceleration = glm::vec3(0.0f, 0.8f, 0.0f);
+	phy_obja.acceleration = glm::vec3(0.0f, 1.8f, 0.0f);
+	phy_objb.acceleration = glm::vec3(0.0f, 9.8f, 0.0f);
 	
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -464,7 +464,12 @@ int main()
 		phy.setmat4("view", view);
 		phy.setmat4("projection", projection);
 
-			
+		if (phy_obja.position.y < 0.0f)
+		{
+			phy_obja.position.y = 0.0f;
+			phy_obja.velocity.y = -phy_obja.velocity.y*0.75f;
+		}
+		
 		glBindVertexArray(phyVAO);
 		phy.setvec3("color", glm::vec3(0.0f, 1.0f, 1.0f));
 		glm::mat4 p1model = glm::mat4(1.0f);
@@ -475,6 +480,12 @@ int main()
 
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 		
+		if (phy_objb.position.y < 0.0f)
+		{
+			phy_objb.position.y = 0.0f;
+			phy_objb.velocity.y =-phy_objb.velocity.y*0.75f;
+		}
+
 		phy.setvec3("color", glm::vec3(1.0f, 1.0f, 0.0f));
 		glm::mat4 p2model = glm::mat4(1.0f);
 		p2model = glm::translate(p2model, phy_objb.position);
@@ -484,7 +495,7 @@ int main()
 			
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
-		std::cout << phy_objb.position.y << std::endl;
+		std::cout << phy_obja.position.y << std::endl;
 		//testing movement in circular motion
 
 		lightpos.x = 15+7*sin(glfwGetTime());
