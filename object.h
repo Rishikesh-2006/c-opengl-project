@@ -38,7 +38,7 @@ public:
 
 	void light_in_loop(glm::vec3 lightobjectcolor, glm::mat4 view, glm::mat4 projection, glm::vec3 lightpos);
 
-	void collision(obj_info &obj_A,obj_info &obj_B,float scale);
+	void collision(obj_info &obj_A,obj_info &obj_B,float scale,float deltatime);
 	
 	float distance_calc(glm::vec3 posa,glm::vec3 posb);
 };

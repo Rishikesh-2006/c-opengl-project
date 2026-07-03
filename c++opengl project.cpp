@@ -192,12 +192,11 @@ int main()
 	}
 	
 	//collision objects
-	phy_obja.position = glm::vec3 (16.0f, 8.0f, 10.0f);
+	phy_obja.position = glm::vec3 (16.0f, 14.0f, 16.0f);
 	phy_objb.position = glm::vec3 (16.0f, 8.0f, 16.0f);
 	phy_obja.velocity = glm::vec3(0.0f, 0.0f, 0.0f);
 	phy_objb.velocity = glm::vec3(0.0f, 0.0f, 0.0f);
-	phy_obja.acceleration = glm::vec3(0.0f, 0.0f, -1.f);
-	phy_objb.acceleration = glm::vec3(0.0f, 0.0f, 1.f);
+
 	
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -338,8 +337,6 @@ int main()
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, depthmap);
 
-	float velocity = 0.0f;
-	float accln = 9.81f;
 	while (!glfwWindowShouldClose(window))
 	{
 		glm::mat4 view = glm::lookAt(camerapos, camerapos + camerafront, cameraup);
@@ -354,6 +351,9 @@ int main()
 		glfwSetWindowTitle(window, cfps);
 		lastframe = currentframe;
 
+
+		phy_obja.acceleration = glm::vec3(0.0f, 9.0f, 0.0f);
+		phy_objb.acceleration = glm::vec3(0.0f, 9.0f, 0.0f);
 
 		//fpscalc
 
@@ -374,7 +374,6 @@ int main()
 		//shadow
 
 		glBindFramebuffer(GL_FRAMEBUFFER, depthmapFBO);
-		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glViewport(0, 0, depthwidth, depthheight);
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glCullFace(GL_FRONT);
@@ -452,41 +451,24 @@ int main()
 
 		//physics objects
 
-		phy_obja.velocity += phy_obja.acceleration * deltatime;
-		phy_objb.velocity += phy_objb.acceleration * deltatime;
 
-		phy_obja.position -= phy_obja.velocity * deltatime;
-		phy_objb.position -= phy_objb.velocity * deltatime;
-		phy.collision(phy_obja, phy_objb,1.0f);
 
 		phy.useshader();
 				
 		phy.setmat4("view", view);
 		phy.setmat4("projection", projection);
 
-		if (phy_obja.position.y < 0.0f)
-		{
-			phy_obja.position.y = 0.0f;
-			phy_obja.velocity.y = -phy_obja.velocity.y*0.75f;
-		}
-		
+		//std::cout<<phy.distance_calc(phy_obja.position, phy_objb.position)<<std::endl;
+		//std::cout << phy_obja.acceleration.x << std::endl;
 		glBindVertexArray(phyVAO);
 		phy.setvec3("color", glm::vec3(0.0f, 1.0f, 1.0f));
-		phy.setfloat("time",glfwGetTime());
 		glm::mat4 p1model = glm::mat4(1.0f);
 		p1model = glm::translate(p1model, phy_obja.position);
 		float angle1 = 0;
 		p1model = glm::rotate(p1model, glm::radians(angle1), glm::vec3(1.0f, 0.3f, 0.5f));
 		phy.setmat4("model", p1model);
-
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 		
-		if (phy_objb.position.y < 0.0f)
-		{
-			phy_objb.position.y = 0.0f;
-			phy_objb.velocity.y =-phy_objb.velocity.y*0.75f;
-		}
-
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 		phy.setvec3("color", glm::vec3(1.0f, 1.0f, 0.0f));
 		glm::mat4 p2model = glm::mat4(1.0f);
 		p2model = glm::translate(p2model, phy_objb.position);
@@ -495,6 +477,23 @@ int main()
 		phy.setmat4("model", p2model);
 			
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
+
+		phy.collision(phy_obja, phy_objb, 1.0f, deltatime);
+
+
+		if (phy_obja.position.y < 0.0f)
+		{
+			phy_obja.position.y = 0.0f;
+			phy_obja.velocity.y = -phy_obja.velocity.y;
+		}
+
+		if (phy_objb.position.y < 0.0f)
+		{
+			phy_objb.position.y = 0.0f;
+			phy_objb.velocity.y = -phy_objb.velocity.y;
+		}
+
 
 		//std::cout << phy_obja.position.y << std::endl;
 		//testing movement in circular motion

@@ -109,34 +109,41 @@ void object::light_in_loop(glm::vec3 lightobjectcolor, glm::mat4 view, glm::mat4
 
 }
 
-void object::collision(obj_info& obj_A, obj_info& obj_B, float scale)
+void object::collision(obj_info& obj_A, obj_info& obj_B, float scale,float deltatime)
 {
+	obj_A.velocity += obj_A.acceleration * deltatime;
+	obj_B.velocity += obj_B.acceleration * deltatime;
+
+	obj_A.position -= obj_A.velocity * deltatime;
+	obj_B.position -= obj_B.velocity * deltatime;
+
 	if (distance_calc(obj_A.position, obj_B.position) < scale)
 	{
-		/*glm::vec3 container = obj_A.velocity;
-		obj_A.velocity = obj_B.velocity;
-		obj_B.velocity = container;*/
 		glm::vec3 velocityA = obj_A.velocity;
 		glm::vec3 velocityB = obj_B.velocity;
-		obj_A.velocity = -(velocityB+velocityA)/2.0f * 0.75f;
-		obj_B.velocity = -(velocityA+velocityB)/2.0f * 0.75f;
 
-		float x = obj_A.position.x - obj_B.position.x;
-		float y = obj_A.position.y - obj_B.position.y;
-		float z = obj_A.position.z - obj_B.position.z;
+		obj_A.velocity = (velocityA + velocityB) * 0.75f;	
+		obj_B.velocity = (velocityA + velocityB) * 0.75f;
+
+		//std::cout << velocityA.x << velocityA.y << velocityA.z << std::endl;
+		std::cout << obj_A.position.x << obj_A.position.y << obj_A.position.z << std::endl;
+
+		float x = (obj_A.position.x - obj_B.position.x);
+		float y = (obj_A.position.y - obj_B.position.y);
+		float z = (obj_A.position.z - obj_B.position.z);
 
 		obj_A.position.x += x;
-		obj_B.position.x += x;
+		obj_B.position.x -= x;
 
-		obj_A.position.y += y;
-		obj_B.position.y += y;
+		obj_A.position.y += y * deltatime;
+		obj_B.position.y -= y * deltatime;
 
-		obj_A.position.z += z;
-		obj_B.position.z += z;
+		obj_A.position.z += z*0.005;
+		obj_B.position.z -= z*0.005;
 
 
 
-		std::cout << distance_calc(obj_A.position, obj_B.position) << std::endl;
+		//std::cout << distance_calc(obj_A.position, obj_B.position) << std::endl;
 	}
 }
 
