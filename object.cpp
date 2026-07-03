@@ -1,5 +1,6 @@
 #include "object.h"
 
+
 void object::set_object(unsigned int& VBO, unsigned int* indices, int indices_size, bool islightsrc)
 {
 
@@ -115,8 +116,27 @@ void object::collision(obj_info& obj_A, obj_info& obj_B, float scale)
 		/*glm::vec3 container = obj_A.velocity;
 		obj_A.velocity = obj_B.velocity;
 		obj_B.velocity = container;*/
-		obj_A.velocity = -obj_A.velocity * 0.75f;
-		obj_B.velocity = -obj_B.velocity * 0.75f;
+		glm::vec3 velocityA = obj_A.velocity;
+		glm::vec3 velocityB = obj_B.velocity;
+		obj_A.velocity = -(velocityB+velocityA)/2.0f * 0.75f;
+		obj_B.velocity = -(velocityA+velocityB)/2.0f * 0.75f;
+
+		float x = obj_A.position.x - obj_B.position.x;
+		float y = obj_A.position.y - obj_B.position.y;
+		float z = obj_A.position.z - obj_B.position.z;
+
+		obj_A.position.x += x;
+		obj_B.position.x += x;
+
+		obj_A.position.y += y;
+		obj_B.position.y += y;
+
+		obj_A.position.z += z;
+		obj_B.position.z += z;
+
+
+
+		std::cout << distance_calc(obj_A.position, obj_B.position) << std::endl;
 	}
 }
 

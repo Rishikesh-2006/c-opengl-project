@@ -192,12 +192,12 @@ int main()
 	}
 	
 	//collision objects
-	phy_obja.position = glm::vec3 (16.0f, 8.0f, 16.0f);
-	phy_objb.position = glm::vec3 (16.0f, 19.0f, 16.0f);
-	phy_obja.velocity = glm::vec3(0.0f, 2.0f, 0.0f);
+	phy_obja.position = glm::vec3 (16.0f, 8.0f, 10.0f);
+	phy_objb.position = glm::vec3 (16.0f, 8.0f, 16.0f);
+	phy_obja.velocity = glm::vec3(0.0f, 0.0f, 0.0f);
 	phy_objb.velocity = glm::vec3(0.0f, 0.0f, 0.0f);
-	phy_obja.acceleration = glm::vec3(0.0f, 1.8f, 0.0f);
-	phy_objb.acceleration = glm::vec3(0.0f, 9.8f, 0.0f);
+	phy_obja.acceleration = glm::vec3(0.0f, 0.0f, -1.f);
+	phy_objb.acceleration = glm::vec3(0.0f, 0.0f, 1.f);
 	
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -237,9 +237,9 @@ int main()
 	//this ensures the faces on the front are shown and the back ones are hidden
 
 	glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_BACK);
-	//glFrontFace(GL_CCW);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CCW);
 
 
 	//vertex buffers , arrays
@@ -472,6 +472,7 @@ int main()
 		
 		glBindVertexArray(phyVAO);
 		phy.setvec3("color", glm::vec3(0.0f, 1.0f, 1.0f));
+		phy.setfloat("time",glfwGetTime());
 		glm::mat4 p1model = glm::mat4(1.0f);
 		p1model = glm::translate(p1model, phy_obja.position);
 		float angle1 = 0;
@@ -495,7 +496,7 @@ int main()
 			
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
-		std::cout << phy_obja.position.y << std::endl;
+		//std::cout << phy_obja.position.y << std::endl;
 		//testing movement in circular motion
 
 		lightpos.x = 15+7*sin(glfwGetTime());
