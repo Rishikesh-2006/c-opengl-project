@@ -142,8 +142,8 @@ void object::collision(obj_info& obj_A, obj_info& obj_B, float scale,float delta
 		obj_A.position += correction;
 		obj_B.position -= correction;
 
-		obj_A.velocity *= 0.85f;
-		obj_B.velocity *= 0.85f;
+		obj_A.velocity *= 0.75f;
+		obj_B.velocity *= 0.75f;
 
 		
 		
@@ -168,3 +168,4 @@ glm::vec3 object::velocity_after_collision(float mass1, float mass2,glm::vec3 ve
 
 	return velocity;
 }
+

@@ -18,7 +18,7 @@ float yaw = 0.0f;
 float pitch = 0.0f;
 float lastx = scwidth / 2.0f;
 float lasty = scheight / 2.0f;
-float fov = 45.0f;
+float fov = 75.0f;
 
 
 float deltatime = 0.0f;
@@ -38,6 +38,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 unsigned int set_texture(GLenum Tex_num, const char* name, GLenum val);
 void shadowcalc(std::vector <glm::vec3>& vector, object& shadowobject, unsigned int& cubeVAO);
 void Make_Structure(std::vector <glm::vec3>& array, glm::vec3 start, float distance, float num);
+
+bool pick_up = false;
 
 
 int main()
@@ -335,6 +337,8 @@ int main()
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, depthmap);
 
+
+
 	while (!glfwWindowShouldClose(window))
 	{
 		glm::mat4 view = glm::lookAt(camerapos, camerapos + camerafront, cameraup);
@@ -479,6 +483,7 @@ int main()
 
 		phy.collision(phy_obja, phy_objb, 1.0f, deltatime);
 
+		//temporary floor
 
 		if (phy_obja.position.y < 0.0f)
 		{
@@ -491,6 +496,55 @@ int main()
 			phy_objb.position.y = 0.0f;
 			phy_objb.velocity.y = -phy_objb.velocity.y;
 		}
+
+		//camerainteraction
+
+		if (phy.distance_calc(phy_obja.position, camerapos) < 1.5f)
+		{
+			if (pick_up == true)
+
+			{
+				phy_obja.position += camerafront * deltatime;
+
+				glm::vec3 delta = (phy_obja.position - camerapos);
+
+				float distance = glm::length(delta);
+
+				float penetration_amt = 1.0f - distance;
+
+				glm::vec3 collision_normal = (distance > 0) ? (delta / distance) : glm::vec3(0.0f, 1.0f, 0.0f);
+
+				glm::vec3 correction = collision_normal * penetration_amt * 0.5f;
+
+				phy_obja.position += correction;
+				camerapos -= correction;
+			}
+
+		}
+
+
+		if (phy.distance_calc(phy_objb.position, camerapos) < 1.5f)
+		{
+			if (pick_up = true)
+			{
+				phy_objb.position += camerafront * deltatime;
+
+				glm::vec3 delta = (phy_objb.position - camerapos);
+
+				float distance = glm::length(delta);
+
+				float penetration_amt = 1.0f - distance;
+
+				glm::vec3 collision_normal = (distance > 0) ? (delta / distance) : glm::vec3(0.0f, 1.0f, 0.0f);
+
+				glm::vec3 correction = collision_normal * penetration_amt * 0.5f;
+
+				phy_objb.position += correction;
+				camerapos -= correction;
+			}
+		}
+
+
 
 
 		//std::cout << phy_obja.position.y << std::endl;
@@ -594,7 +648,7 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 
-	const float cameraSpeed = 40.0f * deltatime; // adjust accordingly
+	const float cameraSpeed = 4.0f * deltatime; // adjust accordingly
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		camerapos += cameraSpeed * camerafront;
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -603,6 +657,10 @@ void processInput(GLFWwindow* window)
 		camerapos -= glm::normalize(glm::cross(camerafront, cameraup)) * cameraSpeed;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camerapos += glm::normalize(glm::cross(camerafront, cameraup)) * cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+		pick_up = true;
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_RELEASE)
+		pick_up = false;
 
 }
 
