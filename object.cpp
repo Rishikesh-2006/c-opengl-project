@@ -142,8 +142,8 @@ void object::collision(obj_info& obj_A, obj_info& obj_B, float scale,float delta
 		obj_A.position += correction;
 		obj_B.position -= correction;
 
-		obj_A.velocity *= 0.75f;
-		obj_B.velocity *= 0.75f;
+		obj_A.velocity *= 0.35f;
+		obj_B.velocity *= 0.35f;
 
 		
 		

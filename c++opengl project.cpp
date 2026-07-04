@@ -501,10 +501,13 @@ int main()
 
 		if (phy.distance_calc(phy_obja.position, camerapos) < 1.5f)
 		{
-			if (pick_up == true)
-
+			if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 			{
-				phy_obja.position += camerafront * deltatime;
+
+				phy_objb.velocity *= 0.0f;
+				phy_objb.acceleration *= 0.0f;
+
+				phy_obja.position += camerafront ;
 
 				glm::vec3 delta = (phy_obja.position - camerapos);
 
@@ -517,7 +520,7 @@ int main()
 				glm::vec3 correction = collision_normal * penetration_amt * 0.5f;
 
 				phy_obja.position += correction;
-				camerapos -= correction;
+				//camerapos -= correction;
 			}
 
 		}
@@ -525,9 +528,11 @@ int main()
 
 		if (phy.distance_calc(phy_objb.position, camerapos) < 1.5f)
 		{
-			if (pick_up = true)
+			if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 			{
-				phy_objb.position += camerafront * deltatime;
+				phy_objb.velocity *= 0.0f;
+				phy_objb.acceleration *= 0.0f;
+				phy_objb.position = camerafront;
 
 				glm::vec3 delta = (phy_objb.position - camerapos);
 
@@ -540,8 +545,10 @@ int main()
 				glm::vec3 correction = collision_normal * penetration_amt * 0.5f;
 
 				phy_objb.position += correction;
-				camerapos -= correction;
+				//camerapos -= correction;
+
 			}
+
 		}
 
 
@@ -657,11 +664,11 @@ void processInput(GLFWwindow* window)
 		camerapos -= glm::normalize(glm::cross(camerafront, cameraup)) * cameraSpeed;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camerapos += glm::normalize(glm::cross(camerafront, cameraup)) * cameraSpeed;
-	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+	/*if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 		pick_up = true;
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_RELEASE)
 		pick_up = false;
-
+		*/
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
