@@ -41,5 +41,7 @@ public:
 	void collision(obj_info &obj_A,obj_info &obj_B,float scale,float deltatime);
 	
 	float distance_calc(glm::vec3 posa,glm::vec3 posb);
+
+	glm::vec3 velocity_after_collision(float mass1, float mass2, glm::vec3 velocity1, glm::vec3 velocity2);
 };
 

@@ -122,32 +122,44 @@ void object::collision(obj_info& obj_A, obj_info& obj_B, float scale,float delta
 		glm::vec3 velocityA = obj_A.velocity;
 		glm::vec3 velocityB = obj_B.velocity;
 
-		obj_A.velocity = (velocityA + velocityB) * 0.75f;	
-		obj_B.velocity = (velocityA + velocityB) * 0.75f;
+		obj_A.velocity = velocityB;
+		obj_B.velocity = velocityA;
 
 		//std::cout << velocityA.x << velocityA.y << velocityA.z << std::endl;
-		std::cout << obj_A.position.x << obj_A.position.y << obj_A.position.z << std::endl;
+		//std::cout << obj_A.position.x << obj_A.position.y << obj_A.position.z << std::endl;
 
-		float x = (obj_A.position.x - obj_B.position.x);
-		float y = (obj_A.position.y - obj_B.position.y);
-		float z = (obj_A.position.z - obj_B.position.z);
+		glm::vec3 delta = (obj_A.position - obj_B.position);
 
-		obj_A.position.x += x;
-		obj_B.position.x -= x;
+		float distance = glm::length(delta);
 
-		obj_A.position.y += y * deltatime;
-		obj_B.position.y -= y * deltatime;
+		if (distance < scale)
+		{
+			float penetration_amt = scale - distance;
 
-		obj_A.position.z += z*0.005;
-		obj_B.position.z -= z*0.005;
+			glm::vec3 collision_normal = (distance > 0) ? (delta / distance) : glm::vec3(0.0f, 1.0f, 0.0f);
 
+			glm::vec3 correction = collision_normal * penetration_amt * 0.5f;
 
+			obj_A.position += correction;
+			obj_B.position -= correction;
+		}
+		
 
 		//std::cout << distance_calc(obj_A.position, obj_B.position) << std::endl;
 	}
+
 }
+
+
 
 float object::distance_calc(glm::vec3 posa, glm::vec3 posb)
 {
 	return glm::sqrt(glm::pow((posa.x - posb.x), 2) + glm::pow((posa.y - posb.y), 2) + glm::pow((posa.z - posb.z), 2));
+}
+
+glm::vec3 object::velocity_after_collision(float mass1, float mass2,glm::vec3 velocity1, glm::vec3 velocity2)
+{
+	glm::vec3 velocity = ((mass1 - mass2) / (mass1 + mass2)) * velocity1 + ((2 * mass2) / (mass1 + mass2)) * velocity2;
+
+	return velocity;
 }
