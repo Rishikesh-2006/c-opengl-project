@@ -7,7 +7,7 @@
 
 int scheight = 800;
 int scwidth = 800;
-unsigned int depthwidth = 1024, depthheight = 4096;
+unsigned int depthwidth = 2048, depthheight = 2048;
 //camera vals
 glm::vec3 camerapos = {16.0f,3.0f,16.0f };
 glm::vec3 camerafront = { 0.99f, -0.07f, 0.008f };
@@ -130,10 +130,9 @@ int main()
 		}
 	}
 	wallcoors.push_back(glm::vec3(15.0f, 7.0f, 15.0f));
+
 	//Make_Structure(wallcoors, glm::vec3(6.0f, 0.0f, 15.0f),3.0f, 1.0f);
-	//Make_Structure(wallcoors, glm::vec3(12.0f, 0.0f, 15.0f), 3.0f, 1.0f);
-	//Make_Structure(wallcoors, glm::vec3(6.0f, 6.0f, 15.0f), 3.0f, 1.0f);
-	//Make_Structure(wallcoors, glm::vec3(12.0f, 6.0f, 15.0f), 3.0f, 1.0f);
+
 	for (int i = 0;i < x_wall;i++)
 	{
 		for (int j = 0;j < y_wall;j++)
@@ -230,9 +229,8 @@ int main()
 	object wall("wall.vert", "wall.frag");
 	object light("lightobject.vert", "lightobject.frag");
 	object floor("floor.vert", "floor.frag");
-	object sq("water.vert", "water.frag");
 	object shadow("shadow.vert", "shadow.frag");
-	object phy("water.vert", "water.frag");
+	object phy("phy_obj.vert", "phy_obj.frag");
 	//this ensures the faces on the front are shown and the back ones are hidden
 
 	glEnable(GL_DEPTH_TEST);
@@ -366,7 +364,6 @@ int main()
 		//lightobjectcolor.x = sin(glfwGetTime());
 		//lightobjectcolor.y = cos(glfwGetTime());
 		//lightobjectcolor.z = 2 * cos(glfwGetTime());
-		/*glm::vec3(15.0f,7.0f,15.0f)*/
 		glm::mat4 shadowprojection = glm::ortho(-30.0, 30.0, -30.00, 30.00, 0.1, 60.0);
 		glm::mat4 shadowview = glm::lookAt(lightpos, glm::vec3(15.0f, 7.5f, 15.0f), glm::vec3(0.0, 1.0, 0.0));
 		glm::mat4 sh_projection = shadowprojection * shadowview;
@@ -379,6 +376,7 @@ int main()
 		glCullFace(GL_FRONT);
 
 		shadow.useshader();
+		
 		shadow.setmat4("lightprojection", sh_projection);
 		shadowcalc(wallcoors, shadow, CUBEVAO);
 		shadowcalc(floorcoors, shadow, floorVAO);
@@ -501,20 +499,6 @@ int main()
 		lightpos.x = 15+7*sin(glfwGetTime());
 		//lightpos.y = 7+7* cos(glfwGetTime());
 		//lightpos.z -= 12 * cos(glfwGetTime())*deltatime;
-		//velocity += accln * deltatime;
-		//lightpos.y -= velocity * deltatime;
-
-		//if (lightpos.y < 0.5f * light.lightscale - 0.5f)
-		//{
-
-			//lightpos.y = 0.5f * light.lightscale - 0.5f;
-			//velocity = -velocity * 0.70f;
-		//}
-
-		//std::cout << velocity << std::endl;
-
-		//light 
-		//glm::vec3 axis = glm::vec3(1.0f, 0.3f, 0.5f);
 
 		light.useshader();
 		light.setvec3("color", lightobjectcolor);
@@ -624,7 +608,7 @@ void processInput(GLFWwindow* window)
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	fov -= (float)yoffset * 0.1;
+	fov -= (float)yoffset * 0.95;
 
 	if (fov < 1.0f)
 	{

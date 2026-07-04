@@ -70,10 +70,10 @@
     <None Include="floor.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="water.frag">
+    <None Include="phy_obj.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="water.vert">
+    <None Include="phy_obj.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="shadow.vert">

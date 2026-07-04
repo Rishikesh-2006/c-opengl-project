@@ -122,8 +122,9 @@ void object::collision(obj_info& obj_A, obj_info& obj_B, float scale,float delta
 		glm::vec3 velocityA = obj_A.velocity;
 		glm::vec3 velocityB = obj_B.velocity;
 
-		obj_A.velocity = velocityB;
-		obj_B.velocity = velocityA;
+		obj_A.velocity = velocity_after_collision(1.0f, 1.0f, velocityA, velocityB);
+		obj_B.velocity = velocity_after_collision(1.0f, 1.0f, velocityB, velocityA);
+
 
 		//std::cout << velocityA.x << velocityA.y << velocityA.z << std::endl;
 		//std::cout << obj_A.position.x << obj_A.position.y << obj_A.position.z << std::endl;
@@ -132,21 +133,25 @@ void object::collision(obj_info& obj_A, obj_info& obj_B, float scale,float delta
 
 		float distance = glm::length(delta);
 
-		if (distance < scale)
-		{
-			float penetration_amt = scale - distance;
+		float penetration_amt = scale - distance;
 
-			glm::vec3 collision_normal = (distance > 0) ? (delta / distance) : glm::vec3(0.0f, 1.0f, 0.0f);
+		glm::vec3 collision_normal = (distance > 0) ? (delta / distance) : glm::vec3(0.0f, 1.0f, 0.0f);
 
-			glm::vec3 correction = collision_normal * penetration_amt * 0.5f;
+		glm::vec3 correction = collision_normal * penetration_amt * 0.5f;
 
-			obj_A.position += correction;
-			obj_B.position -= correction;
-		}
+		obj_A.position += correction;
+		obj_B.position -= correction;
+
+		obj_A.velocity *= 0.85f;
+		obj_B.velocity *= 0.85f;
+
+		
 		
 
 		//std::cout << distance_calc(obj_A.position, obj_B.position) << std::endl;
 	}
+	//obj_A.velocity *= 0.95f;
+	//obj_B.velocity *= 0.95f;
 
 }
 
