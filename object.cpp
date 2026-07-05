@@ -156,9 +156,25 @@ float object::distance_calc(glm::vec3 posa, glm::vec3 posb)
 glm::vec3 object::velocity_after_collision(obj_info obj1, obj_info obj2, float scale)
 {
 	glm::vec3 velocity = ((obj1.mass - obj2.mass) / (obj1.mass + obj2.mass)) * obj1.velocity + ((2 * obj2.mass) / (obj1.mass + obj2.mass)) * obj2.velocity;
-
-
-	
-
 	return velocity;
+}
+
+void object::multicollision(std::vector <obj_info> &informations,float deltatime)
+{
+	for (obj_info &i : informations)
+	{
+		for (obj_info &j : informations)
+		{
+			if (i.position.y < 0.0f)
+			{
+				i.position.y = 0.0f;
+				i.velocity.y = -i.velocity.y;
+			}
+			if (i.position == j.position)
+			{
+				continue;
+			}
+			collision(i, j, 1.0f, deltatime);
+		}
+	}
 }

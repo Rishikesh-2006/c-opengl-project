@@ -25,7 +25,7 @@ public:
 	unsigned int EBO = 0;
 
 	float lightscale = 2.0f;
-	float multiplier = 3.0f;
+	float multiplier = 1.0f;
 	
 
 
@@ -45,6 +45,6 @@ public:
 
 	glm::vec3 velocity_after_collision(obj_info obj1, obj_info obj2, float scale);
 
-	glm::vec3 velocity_after_collision_multi(std::vector <float> masses,std::vector <glm::vec3> velocitys);
+	void multicollision(std::vector <obj_info> &informations,float deltatime);
 };
 

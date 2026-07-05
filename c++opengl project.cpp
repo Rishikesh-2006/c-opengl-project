@@ -195,6 +195,22 @@ int main()
 	phy_objb.position = glm::vec3(16.0f, 8.0f, 16.0f);
 	phy_obja.velocity = glm::vec3(0.0f, 0.0f, 0.0f);
 	phy_objb.velocity = glm::vec3(0.0f, 0.0f, 0.0f);
+	phy_obja.mass = 1.0f;
+	phy_objb.mass = 1.0f;
+
+	std::vector <obj_info> informations;
+	int x_value = 15, y_value = 12;
+
+	for (int i = 7; i < x_value; i++)
+	{
+		for (int j = 8; j < y_value; j++)
+		{
+			float valx = i * 1.0f;
+			float valy = j * 1.0f;
+			float valz = 7.0f;
+			informations.push_back({ glm::vec3(0.0f, 8.8f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(valx, valy, valz),1.0f });
+		}
+	}
 
 
 	glfwInit();
@@ -358,7 +374,7 @@ int main()
 		//fpscalc
 
 		//std::cout << camerafront.x << "," << camerafront.y << "," << camerafront.z << std::endl;
-		//std::cout << camerapos.x << "," << camerapos.y << "," << camerapos.z << std::endl;
+		std::cout << camerapos.x << "," << camerapos.y << "," << camerapos.z << std::endl;
 
 
 
@@ -454,34 +470,28 @@ int main()
 
 
 		phy.useshader();
-
 		phy.setmat4("view", view);
 		phy.setmat4("projection", projection);
-
-		//std::cout<<phy.distance_calc(phy_obja.position, phy_objb.position)<<std::endl;
-		//std::cout << phy_obja.acceleration.x << std::endl;
-		glBindVertexArray(phyVAO);
 		phy.setvec3("color", glm::vec3(0.0f, 1.0f, 1.0f));
-		glm::mat4 p1model = glm::mat4(1.0f);
-		p1model = glm::translate(p1model, phy_obja.position);
-		float angle1 = 0;
-		p1model = glm::rotate(p1model, glm::radians(angle1), glm::vec3(1.0f, 0.3f, 0.5f));
-		phy.setmat4("model", p1model);
-
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-		phy.setvec3("color", glm::vec3(1.0f, 1.0f, 0.0f));
-		glm::mat4 p2model = glm::mat4(1.0f);
-		p2model = glm::translate(p2model, phy_objb.position);
-		float angle2 = 0;
-		p2model = glm::rotate(p2model, glm::radians(angle2), glm::vec3(1.0f, 0.3f, 0.5f));
-		phy.setmat4("model", p2model);
-
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-
-		float loading = glfwGetTime();
-		if (loading > 9.0f)
+		glBindVertexArray(phyVAO);
+		for (obj_info &i : informations)
 		{
-			phy.collision(phy_obja, phy_objb, 1.0f, deltatime);
+			glm::mat4 p1model = glm::mat4(1.0f);
+			p1model = glm::translate(p1model, i.position);
+			float angle1 = 0;
+			p1model = glm::rotate(p1model, glm::radians(angle1), glm::vec3(1.0f, 0.3f, 0.5f));
+			phy.setmat4("model", p1model);
+
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
+
+		}
+		phy.multicollision(informations, deltatime);
+		std::cout << informations[1].position.y << std::endl;
+
+		//float loading = glfwGetTime();
+
+			/*phy.collision(phy_obja, phy_objb, 1.0f, deltatime);
 
 
 			if (phy_obja.position.y < 0.0f)
@@ -506,7 +516,7 @@ int main()
 				camerapos -= correction;
 			}
 
-			
+
 
 			if (phy_objb.position.y < 0.0f)
 			{
@@ -528,74 +538,71 @@ int main()
 
 				phy_objb.position += correction;
 				camerapos -= correction;
+			}*/
+			gravity += glm::vec3(0.0f, 9.8f, 0.0f) * deltatime;
+			camerapos -= gravity * deltatime;
+
+			if (camerapos.y < 0.5)
+			{
+				camerapos.y = 0.5f;
 			}
+
+			//std::cout << phy_obja.position.y << std::endl;
+			//testing movement in circular motion
+
+			lightpos.x = 15 + 7 * sin(glfwGetTime());
+			//lightpos.y = 7+7* cos(glfwGetTime());
+			//lightpos.z -= 12 * cos(glfwGetTime())*deltatime;
+
+			light.useshader();
+			light.setvec3("color", lightobjectcolor);
+			light.setmat4("view", view);
+			light.setmat4("projection", projection);
+
+
+			//std::cout << axis.x<<"," << axis.y<<","<< axis.z << std::endl;
+
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, lightpos);
+			//model = glm::rotate(model, 4*sin(float(glfwGetTime())),axis);
+			model = glm::scale(model, glm::vec3(light.lightscale));
+			light.setmat4("model", model);
+			glBindVertexArray(lightVAO);
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
+			processInput(window);
+
+
+			glfwSwapBuffers(window);
+			glfwPollEvents();
 		}
 
-		 gravity += glm::vec3(0.0f,9.8f,0.0f) * deltatime;
-		camerapos -= gravity * deltatime;
 
-		if (camerapos.y < 0.5)
-		{
-			camerapos.y = 0.5f;
-		}
+		wall.deleteshader();
+		glDeleteTextures(1, &Walltextures);
+		glDeleteVertexArrays(1, &CUBEVAO);
+		glDeleteBuffers(1, &CUBEVBO);
+		glDeleteBuffers(1, &CUBEEBO);
 
-		//std::cout << phy_obja.position.y << std::endl;
-		//testing movement in circular motion
+		light.deleteshader();
+		glDeleteVertexArrays(1, &lightVAO);
+		glDeleteBuffers(1, &lightEBO);
 
-		lightpos.x = 15 + 7 * sin(glfwGetTime());
-		//lightpos.y = 7+7* cos(glfwGetTime());
-		//lightpos.z -= 12 * cos(glfwGetTime())*deltatime;
+		floor.deleteshader();
+		glDeleteVertexArrays(1, &floorVAO);
+		glDeleteBuffers(1, &floorEBO);
+		glDeleteTextures(1, &floortexture);
 
-		light.useshader();
-		light.setvec3("color", lightobjectcolor);
-		light.setmat4("view", view);
-		light.setmat4("projection", projection);
-
-
-		//std::cout << axis.x<<"," << axis.y<<","<< axis.z << std::endl;
-
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, lightpos);
-		//model = glm::rotate(model, 4*sin(float(glfwGetTime())),axis);
-		model = glm::scale(model, glm::vec3(light.lightscale));
-		light.setmat4("model", model);
-		glBindVertexArray(lightVAO);
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-
-		processInput(window);
+		phy.deleteshader();
+		glDeleteVertexArrays(1, &phyVAO);
+		glDeleteBuffers(1, &phyEBO);
+		glDeleteTextures(1, &phyobj_texture);
 
 
-		glfwSwapBuffers(window);
-		glfwPollEvents();
+		glfwDestroyWindow(window);
+		glfwTerminate();
+		return 0;
 	}
-
-
-	wall.deleteshader();
-	glDeleteTextures(1, &Walltextures);
-	glDeleteVertexArrays(1, &CUBEVAO);
-	glDeleteBuffers(1, &CUBEVBO);
-	glDeleteBuffers(1, &CUBEEBO);
-
-	light.deleteshader();
-	glDeleteVertexArrays(1, &lightVAO);
-	glDeleteBuffers(1, &lightEBO);
-
-	floor.deleteshader();
-	glDeleteVertexArrays(1, &floorVAO);
-	glDeleteBuffers(1, &floorEBO);
-	glDeleteTextures(1, &floortexture);
-
-	phy.deleteshader();
-	glDeleteVertexArrays(1, &phyVAO);
-	glDeleteBuffers(1, &phyEBO);
-	glDeleteTextures(1, &phyobj_texture);
-
-
-	glfwDestroyWindow(window);
-	glfwTerminate();
-	return 0;
-}
-
 
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
