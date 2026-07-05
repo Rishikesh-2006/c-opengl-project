@@ -14,6 +14,7 @@ struct obj_info
 	glm::vec3 acceleration;
 	glm::vec3 velocity;
 	glm::vec3 position;
+	float mass;
 
 };
 
@@ -42,7 +43,7 @@ public:
 	
 	float distance_calc(glm::vec3 posa,glm::vec3 posb);
 
-	glm::vec3 velocity_after_collision(float mass1, float mass2, glm::vec3 velocity1, glm::vec3 velocity2);
+	glm::vec3 velocity_after_collision(obj_info obj1, obj_info obj2, float scale);
 
 	glm::vec3 velocity_after_collision_multi(std::vector <float> masses,std::vector <glm::vec3> velocitys);
 };

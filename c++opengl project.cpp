@@ -9,7 +9,7 @@ int scheight = 800;
 int scwidth = 800;
 unsigned int depthwidth = 2048, depthheight = 2048;
 //camera vals
-glm::vec3 camerapos = {16.0f,3.0f,16.0f };
+glm::vec3 camerapos = { 16.0f,3.0f,16.0f };
 glm::vec3 camerafront = { 0.99f, -0.07f, 0.008f };
 glm::vec3 cameraup = { 0.0f, 1.0f ,0.0f };
 
@@ -18,7 +18,7 @@ float yaw = 0.0f;
 float pitch = 0.0f;
 float lastx = scwidth / 2.0f;
 float lasty = scheight / 2.0f;
-float fov = 75.0f;
+float fov = 45.0f;
 
 
 float deltatime = 0.0f;
@@ -38,8 +38,6 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 unsigned int set_texture(GLenum Tex_num, const char* name, GLenum val);
 void shadowcalc(std::vector <glm::vec3>& vector, object& shadowobject, unsigned int& cubeVAO);
 void Make_Structure(std::vector <glm::vec3>& array, glm::vec3 start, float distance, float num);
-
-bool pick_up = false;
 
 
 int main()
@@ -180,7 +178,7 @@ int main()
 			floorcoors.push_back(glm::vec3(posxf, posyf, poszf));
 		}
 	}
-	
+
 	for (int i = 0;i < x_floor;i++)
 	{
 		for (int j = 0; j < z_floor;j++)
@@ -191,14 +189,14 @@ int main()
 			floorcoors.push_back(glm::vec3(posxf, posyf, poszf));
 		}
 	}
-	
+
 	//collision objects
-	phy_obja.position = glm::vec3 (16.0f, 14.0f, 16.0f);
-	phy_objb.position = glm::vec3 (16.0f, 8.0f, 16.0f);
+	phy_obja.position = glm::vec3(16.0f, 14.0f, 16.0f);
+	phy_objb.position = glm::vec3(16.0f, 8.0f, 16.0f);
 	phy_obja.velocity = glm::vec3(0.0f, 0.0f, 0.0f);
 	phy_objb.velocity = glm::vec3(0.0f, 0.0f, 0.0f);
 
-	
+
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -338,7 +336,7 @@ int main()
 	glBindTexture(GL_TEXTURE_2D, depthmap);
 
 
-
+	glm::vec3 gravity = glm::vec3(0.0f, 0.0f, 0.0f);
 	while (!glfwWindowShouldClose(window))
 	{
 		glm::mat4 view = glm::lookAt(camerapos, camerapos + camerafront, cameraup);
@@ -354,8 +352,8 @@ int main()
 		lastframe = currentframe;
 
 
-		phy_obja.acceleration = glm::vec3(0.0f, 9.0f, 0.0f);
-		phy_objb.acceleration = glm::vec3(0.0f, 9.0f, 0.0f);
+		phy_obja.acceleration = glm::vec3(0.0f, 9.8f, 0.0f);
+		phy_objb.acceleration = glm::vec3(0.0f, 9.8f, 0.0f);
 
 		//fpscalc
 
@@ -371,7 +369,7 @@ int main()
 		glm::mat4 shadowprojection = glm::ortho(-30.0, 30.0, -30.00, 30.00, 0.1, 60.0);
 		glm::mat4 shadowview = glm::lookAt(lightpos, glm::vec3(15.0f, 7.5f, 15.0f), glm::vec3(0.0, 1.0, 0.0));
 		glm::mat4 sh_projection = shadowprojection * shadowview;
-		
+
 		//shadow
 
 		glBindFramebuffer(GL_FRAMEBUFFER, depthmapFBO);
@@ -380,7 +378,7 @@ int main()
 		glCullFace(GL_FRONT);
 
 		shadow.useshader();
-		
+
 		shadow.setmat4("lightprojection", sh_projection);
 		shadowcalc(wallcoors, shadow, CUBEVAO);
 		shadowcalc(floorcoors, shadow, floorVAO);
@@ -393,7 +391,7 @@ int main()
 		glClearColor(background_light.x, background_light.y,
 			background_light.z, background_light.w);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
+
 
 		//wall
 
@@ -437,7 +435,7 @@ int main()
 
 		glBindVertexArray(floorVAO);
 
-		for (glm::vec3 &i : floorcoors)
+		for (glm::vec3& i : floorcoors)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, i);
@@ -456,7 +454,7 @@ int main()
 
 
 		phy.useshader();
-				
+
 		phy.setmat4("view", view);
 		phy.setmat4("projection", projection);
 
@@ -469,7 +467,7 @@ int main()
 		float angle1 = 0;
 		p1model = glm::rotate(p1model, glm::radians(angle1), glm::vec3(1.0f, 0.3f, 0.5f));
 		phy.setmat4("model", p1model);
-		
+
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 		phy.setvec3("color", glm::vec3(1.0f, 1.0f, 0.0f));
 		glm::mat4 p2model = glm::mat4(1.0f);
@@ -477,87 +475,74 @@ int main()
 		float angle2 = 0;
 		p2model = glm::rotate(p2model, glm::radians(angle2), glm::vec3(1.0f, 0.3f, 0.5f));
 		phy.setmat4("model", p2model);
-			
+
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
-
-		phy.collision(phy_obja, phy_objb, 1.0f, deltatime);
-
-		//temporary floor
-
-		if (phy_obja.position.y < 0.0f)
+		float loading = glfwGetTime();
+		if (loading > 9.0f)
 		{
-			phy_obja.position.y = 0.0f;
-			phy_obja.velocity.y = -phy_obja.velocity.y;
-		}
+			phy.collision(phy_obja, phy_objb, 1.0f, deltatime);
 
-		if (phy_objb.position.y < 0.0f)
-		{
-			phy_objb.position.y = 0.0f;
-			phy_objb.velocity.y = -phy_objb.velocity.y;
-		}
 
-		//camerainteraction
-
-		if (phy.distance_calc(phy_obja.position, camerapos) < 1.5f)
-		{
-			if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+			if (phy_obja.position.y < 0.0f)
 			{
+				phy_obja.position.y = 0.0f;
+				phy_obja.velocity.y = -phy_obja.velocity.y * 0.75f;
+			}
 
-				phy_objb.velocity *= 0.0f;
-				phy_objb.acceleration *= 0.0f;
 
-				phy_obja.position += camerafront ;
-
+			if (phy.distance_calc(phy_obja.position, camerapos) < 1.0f)
+			{
 				glm::vec3 delta = (phy_obja.position - camerapos);
-
 				float distance = glm::length(delta);
 
 				float penetration_amt = 1.0f - distance;
 
 				glm::vec3 collision_normal = (distance > 0) ? (delta / distance) : glm::vec3(0.0f, 1.0f, 0.0f);
 
-				glm::vec3 correction = collision_normal * penetration_amt * 0.5f;
+				glm::vec3 correction = collision_normal * penetration_amt ;
 
 				phy_obja.position += correction;
-				//camerapos -= correction;
+				camerapos -= correction;
 			}
 
-		}
+			
 
-
-		if (phy.distance_calc(phy_objb.position, camerapos) < 1.5f)
-		{
-			if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+			if (phy_objb.position.y < 0.0f)
 			{
-				phy_objb.velocity *= 0.0f;
-				phy_objb.acceleration *= 0.0f;
-				phy_objb.position = camerafront;
+				phy_objb.position.y = 0.0f;
+				phy_objb.velocity.y = -phy_objb.velocity.y * 0.75f;
+			}
 
+
+			if (phy.distance_calc(phy_objb.position, camerapos) < 1.0f)
+			{
 				glm::vec3 delta = (phy_objb.position - camerapos);
-
 				float distance = glm::length(delta);
 
 				float penetration_amt = 1.0f - distance;
 
-				glm::vec3 collision_normal = (distance > 0) ? (delta / distance) : glm::vec3(0.0f, 1.0f, 0.0f);
+				glm::vec3 collision_normal = (distance > 0.0f) ? (delta / distance) : glm::vec3(0.0f, 1.0f, 0.0f);
 
-				glm::vec3 correction = collision_normal * penetration_amt * 0.5f;
+				glm::vec3 correction = collision_normal * penetration_amt ;
 
 				phy_objb.position += correction;
-				//camerapos -= correction;
-
+				camerapos -= correction;
 			}
-
 		}
 
+		 gravity += glm::vec3(0.0f,9.8f,0.0f) * deltatime;
+		camerapos -= gravity * deltatime;
 
-
+		if (camerapos.y < 0.5)
+		{
+			camerapos.y = 0.5f;
+		}
 
 		//std::cout << phy_obja.position.y << std::endl;
 		//testing movement in circular motion
 
-		lightpos.x = 15+7*sin(glfwGetTime());
+		lightpos.x = 15 + 7 * sin(glfwGetTime());
 		//lightpos.y = 7+7* cos(glfwGetTime());
 		//lightpos.z -= 12 * cos(glfwGetTime())*deltatime;
 
@@ -664,16 +649,12 @@ void processInput(GLFWwindow* window)
 		camerapos -= glm::normalize(glm::cross(camerafront, cameraup)) * cameraSpeed;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camerapos += glm::normalize(glm::cross(camerafront, cameraup)) * cameraSpeed;
-	/*if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-		pick_up = true;
-	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_RELEASE)
-		pick_up = false;
-		*/
+
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	fov -= (float)yoffset * 0.95;
+	fov -= (float)yoffset;
 
 	if (fov < 1.0f)
 	{
@@ -747,7 +728,7 @@ void shadowcalc(std::vector <glm::vec3>& vector, object& shadowobject, unsigned 
 
 }
 
-void Make_Structure(std::vector <glm::vec3>& array,glm::vec3 start, float distance,float num)
+void Make_Structure(std::vector <glm::vec3>& array, glm::vec3 start, float distance, float num)
 {
 
 	for (float i = 0;i < num;i += 1.0f)

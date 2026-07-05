@@ -119,18 +119,13 @@ void object::collision(obj_info& obj_A, obj_info& obj_B, float scale,float delta
 
 	if (distance_calc(obj_A.position, obj_B.position) < scale)
 	{
-		glm::vec3 velocityA = obj_A.velocity;
-		glm::vec3 velocityB = obj_B.velocity;
+		obj_A.velocity = velocity_after_collision(obj_A, obj_B, scale);
+		obj_B.velocity = velocity_after_collision(obj_B, obj_A, scale);
 
-		obj_A.velocity = velocity_after_collision(1.0f, 1.0f, velocityA, velocityB);
-		obj_B.velocity = velocity_after_collision(1.0f, 1.0f, velocityB, velocityA);
-
-
-		//std::cout << velocityA.x << velocityA.y << velocityA.z << std::endl;
-		//std::cout << obj_A.position.x << obj_A.position.y << obj_A.position.z << std::endl;
+		//obj_A.velocity = velocityB;
+		//obj_B.velocity = velocityA;
 
 		glm::vec3 delta = (obj_A.position - obj_B.position);
-
 		float distance = glm::length(delta);
 
 		float penetration_amt = scale - distance;
@@ -142,16 +137,10 @@ void object::collision(obj_info& obj_A, obj_info& obj_B, float scale,float delta
 		obj_A.position += correction;
 		obj_B.position -= correction;
 
-		obj_A.velocity *= 0.35f;
-		obj_B.velocity *= 0.35f;
-
-		
-		
-
 		//std::cout << distance_calc(obj_A.position, obj_B.position) << std::endl;
 	}
-	//obj_A.velocity *= 0.95f;
-	//obj_B.velocity *= 0.95f;
+	obj_A.velocity *= 0.95f;
+	obj_B.velocity *= 0.95f;
 
 }
 
@@ -162,10 +151,14 @@ float object::distance_calc(glm::vec3 posa, glm::vec3 posb)
 	return glm::sqrt(glm::pow((posa.x - posb.x), 2) + glm::pow((posa.y - posb.y), 2) + glm::pow((posa.z - posb.z), 2));
 }
 
-glm::vec3 object::velocity_after_collision(float mass1, float mass2,glm::vec3 velocity1, glm::vec3 velocity2)
+
+
+glm::vec3 object::velocity_after_collision(obj_info obj1, obj_info obj2, float scale)
 {
-	glm::vec3 velocity = ((mass1 - mass2) / (mass1 + mass2)) * velocity1 + ((2 * mass2) / (mass1 + mass2)) * velocity2;
+	glm::vec3 velocity = ((obj1.mass - obj2.mass) / (obj1.mass + obj2.mass)) * obj1.velocity + ((2 * obj2.mass) / (obj1.mass + obj2.mass)) * obj2.velocity;
+
+
+	
 
 	return velocity;
 }
-
