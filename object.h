@@ -26,7 +26,7 @@ public:
 
 	float lightscale = 2.0f;
 	float multiplier = 1.0f;
-	
+
 
 
 	object(const char* vertex, const char* fragment) : Shader(vertex, fragment) {};
@@ -39,12 +39,11 @@ public:
 
 	void light_in_loop(glm::vec3 lightobjectcolor, glm::mat4 view, glm::mat4 projection, glm::vec3 lightpos);
 
-	void collision(obj_info &obj_A,obj_info &obj_B,float scale,float deltatime);
-	
-	float distance_calc(glm::vec3 posa,glm::vec3 posb);
+	void collision(obj_info& obj_A, obj_info& obj_B, float scale, float deltatime);
+
+	float distance_calc(glm::vec3 posa, glm::vec3 posb);
 
 	glm::vec3 velocity_after_collision(obj_info obj1, obj_info obj2, float scale);
 
-	void multicollision(std::vector <obj_info> &informations,float deltatime);
+	void multicollision(std::vector <obj_info>& informations, float deltatime);
 };
-

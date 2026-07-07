@@ -109,7 +109,7 @@ void object::light_in_loop(glm::vec3 lightobjectcolor, glm::mat4 view, glm::mat4
 
 }
 
-void object::collision(obj_info& obj_A, obj_info& obj_B, float scale,float deltatime)
+void object::collision(obj_info& obj_A, obj_info& obj_B, float scale, float deltatime)
 {
 	obj_A.velocity += obj_A.acceleration * deltatime;
 	obj_B.velocity += obj_B.acceleration * deltatime;
@@ -159,11 +159,11 @@ glm::vec3 object::velocity_after_collision(obj_info obj1, obj_info obj2, float s
 	return velocity;
 }
 
-void object::multicollision(std::vector <obj_info> &informations,float deltatime)
+void object::multicollision(std::vector <obj_info>& informations, float deltatime)
 {
-	for (obj_info &i : informations)
+	for (obj_info& i : informations)
 	{
-		for (obj_info &j : informations)
+		for (obj_info& j : informations)
 		{
 			if (i.position.y < 0.0f)
 			{

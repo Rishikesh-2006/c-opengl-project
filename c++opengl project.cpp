@@ -33,13 +33,14 @@ glm::vec4 background_light = glm::vec4(0.53f, 0.81f, 0.92f, 1.0f);
 //functions
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xposin, double yposin);
-void processInput(GLFWwindow* window);
+void processInput(GLFWwindow* window,float speed);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 unsigned int set_texture(GLenum Tex_num, const char* name, GLenum val);
 void shadowcalc(std::vector <glm::vec3>& vector, object& shadowobject, unsigned int& cubeVAO);
 void Make_Structure(std::vector <glm::vec3>& array, glm::vec3 start, float distance, float num);
 
-
+float player_factor = 0.5;
+float speed = 4.0f;
 int main()
 {
 
@@ -374,7 +375,7 @@ int main()
 		//fpscalc
 
 		//std::cout << camerafront.x << "," << camerafront.y << "," << camerafront.z << std::endl;
-		std::cout << camerapos.x << "," << camerapos.y << "," << camerapos.z << std::endl;
+		//std::cout << camerapos.x << "," << camerapos.y << "," << camerapos.z << std::endl;
 
 
 
@@ -487,7 +488,7 @@ int main()
 
 		}
 		phy.multicollision(informations, deltatime);
-		std::cout << informations[1].position.y << std::endl;
+		//std::cout << informations[1].position.y << std::endl;
 
 		//float loading = glfwGetTime();
 
@@ -542,10 +543,15 @@ int main()
 			gravity += glm::vec3(0.0f, 9.8f, 0.0f) * deltatime;
 			camerapos -= gravity * deltatime;
 
-			if (camerapos.y < 0.5)
+			if (camerapos.y < player_factor)
 			{
-				camerapos.y = 0.5f;
+				camerapos.y = player_factor;
 			}
+			
+			if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+				speed = 15.0f;
+			if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
+				speed = 4.0f;
 
 			//std::cout << phy_obja.position.y << std::endl;
 			//testing movement in circular motion
@@ -570,7 +576,7 @@ int main()
 			glBindVertexArray(lightVAO);
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
-			processInput(window);
+			processInput(window,speed);
 
 
 			glfwSwapBuffers(window);
@@ -642,12 +648,11 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 }
 
 
-void processInput(GLFWwindow* window)
+void processInput(GLFWwindow* window,float speed)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
-
-	const float cameraSpeed = 4.0f * deltatime; // adjust accordingly
+	const float cameraSpeed = speed * deltatime; // adjust accordingly
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		camerapos += cameraSpeed * camerafront;
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -656,6 +661,14 @@ void processInput(GLFWwindow* window)
 		camerapos -= glm::normalize(glm::cross(camerafront, cameraup)) * cameraSpeed;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camerapos += glm::normalize(glm::cross(camerafront, cameraup)) * cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+		camerapos.y += 2.0f;
+	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+		player_factor = 0.5f;
+	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_RELEASE)
+		player_factor = 1.8f;
+
+
 
 }
 
