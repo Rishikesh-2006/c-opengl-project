@@ -131,6 +131,8 @@ int main()
 		}
 	}
 	wallcoors.push_back(glm::vec3(15.0f, 7.0f, 15.0f));
+	std::vector <glm::vec3> blockcoors;
+	blockcoors.push_back(glm::vec3(15.0f, 7.0f, 15.0f));
 
 	//Make_Structure(wallcoors, glm::vec3(6.0f, 0.0f, 15.0f),3.0f, 1.0f);
 
@@ -397,8 +399,8 @@ int main()
 		shadow.useshader();
 
 		shadow.setmat4("lightprojection", sh_projection);
-		shadowcalc(wallcoors, shadow, CUBEVAO);
-		shadowcalc(floorcoors, shadow, floorVAO);
+		shadowcalc(blockcoors, shadow, CUBEVAO);
+		//shadowcalc(floorcoors, shadow, floorVAO);
 		glCullFace(GL_BACK);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
