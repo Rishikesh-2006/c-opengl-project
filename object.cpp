@@ -117,7 +117,8 @@ void object::collision(obj_info& obj_A, obj_info& obj_B, float scale, float delt
 	obj_A.position -= obj_A.velocity * deltatime;
 	obj_B.position -= obj_B.velocity * deltatime;
 
-	if (distance_calc(obj_A.position, obj_B.position) < scale)
+	glm::vec3 objects = obj_A.position - obj_B.position;
+	if (distance_calc(obj_A.position , obj_B.position) < scale)
 	{
 		obj_A.velocity = velocity_after_collision(obj_A, obj_B, scale);
 		obj_B.velocity = velocity_after_collision(obj_B, obj_A, scale);
@@ -148,7 +149,8 @@ void object::collision(obj_info& obj_A, obj_info& obj_B, float scale, float delt
 
 float object::distance_calc(glm::vec3 posa, glm::vec3 posb)
 {
-	return glm::sqrt(glm::pow((posa.x - posb.x), 2) + glm::pow((posa.y - posb.y), 2) + glm::pow((posa.z - posb.z), 2));
+	glm::vec3 value = posa - posb;
+	return glm::length(value);
 }
 
 
@@ -159,7 +161,7 @@ glm::vec3 object::velocity_after_collision(obj_info obj1, obj_info obj2, float s
 	return velocity;
 }
 
-void object::multicollision(std::vector <obj_info>& informations, float deltatime)
+void object::multicollision(std::vector <obj_info>& informations,glm::vec3 camerapos, float deltatime)
 {
 	for (obj_info& i : informations)
 	{
@@ -175,6 +177,25 @@ void object::multicollision(std::vector <obj_info>& informations, float deltatim
 				continue;
 			}
 			collision(i, j, 1.0f, deltatime);
+		}
+	}
+	for (obj_info& i : informations)
+	{
+
+		if (distance_calc(i.position,camerapos) < 1.0f)
+		{
+			glm::vec3 delta = (i.position - camerapos);
+			float distance = glm::length(delta);
+
+			float penetration_amt = 1.0f - distance;
+
+			glm::vec3 collision_normal = (distance > 0.0f) ? (delta / distance) : glm::vec3(0.0f, 1.0f, 0.0f);
+
+			glm::vec3 correction = collision_normal * penetration_amt;
+
+			i.position += correction;
+			camerapos -= correction;
+
 		}
 	}
 }

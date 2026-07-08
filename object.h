@@ -45,5 +45,5 @@ public:
 
 	glm::vec3 velocity_after_collision(obj_info obj1, obj_info obj2, float scale);
 
-	void multicollision(std::vector <obj_info>& informations, float deltatime);
+	void multicollision(std::vector <obj_info>& informations, glm::vec3 camerapos, float deltatime);
 };

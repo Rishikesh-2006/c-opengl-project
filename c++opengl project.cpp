@@ -204,9 +204,9 @@ int main()
 	std::vector <obj_info> informations;
 	int x_value = 15, y_value = 12;
 
-	for (int i = 7; i < x_value; i++)
+	for (int i = 13; i < x_value; i++)
 	{
-		for (int j = 8; j < y_value; j++)
+		for (int j = 10; j < y_value; j++)
 		{
 			float valx = i * 1.0f;
 			float valy = j * 1.0f;
@@ -257,6 +257,8 @@ int main()
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
 
+	//std::cout<<glGetString(GL_RENDERER)<<std::endl;
+	
 
 	//vertex buffers , arrays
 
@@ -358,6 +360,7 @@ int main()
 	glm::vec3 gravity = glm::vec3(0.0f, 0.0f, 0.0f);
 	while (!glfwWindowShouldClose(window))
 	{
+
 		glm::mat4 view = glm::lookAt(camerapos, camerapos + camerafront, cameraup);
 		glm::mat4 projection = glm::perspective(glm::radians(fov), float(scwidth) / float(scheight), 0.1f, 400.0f);
 
@@ -475,7 +478,6 @@ int main()
 		phy.useshader();
 		phy.setmat4("view", view);
 		phy.setmat4("projection", projection);
-		phy.setvec3("color", glm::vec3(0.0f, 1.0f, 1.0f));
 		glBindVertexArray(phyVAO);
 		for (obj_info &i : informations)
 		{
@@ -484,64 +486,15 @@ int main()
 			float angle1 = 0;
 			p1model = glm::rotate(p1model, glm::radians(angle1), glm::vec3(1.0f, 0.3f, 0.5f));
 			phy.setmat4("model", p1model);
+			phy.setvec3("color", glm::vec3(sin(glfwGetTime()), 1.0f, 1.0f));
 
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
 
 		}
-		phy.multicollision(informations, deltatime);
-		//std::cout << informations[1].position.y << std::endl;
-
-		//float loading = glfwGetTime();
-
-			/*phy.collision(phy_obja, phy_objb, 1.0f, deltatime);
-
-
-			if (phy_obja.position.y < 0.0f)
-			{
-				phy_obja.position.y = 0.0f;
-				phy_obja.velocity.y = -phy_obja.velocity.y * 0.75f;
-			}
-
-
-			if (phy.distance_calc(phy_obja.position, camerapos) < 1.0f)
-			{
-				glm::vec3 delta = (phy_obja.position - camerapos);
-				float distance = glm::length(delta);
-
-				float penetration_amt = 1.0f - distance;
-
-				glm::vec3 collision_normal = (distance > 0) ? (delta / distance) : glm::vec3(0.0f, 1.0f, 0.0f);
-
-				glm::vec3 correction = collision_normal * penetration_amt ;
-
-				phy_obja.position += correction;
-				camerapos -= correction;
-			}
-
-
-
-			if (phy_objb.position.y < 0.0f)
-			{
-				phy_objb.position.y = 0.0f;
-				phy_objb.velocity.y = -phy_objb.velocity.y * 0.75f;
-			}
-
-
-			if (phy.distance_calc(phy_objb.position, camerapos) < 1.0f)
-			{
-				glm::vec3 delta = (phy_objb.position - camerapos);
-				float distance = glm::length(delta);
-
-				float penetration_amt = 1.0f - distance;
-
-				glm::vec3 collision_normal = (distance > 0.0f) ? (delta / distance) : glm::vec3(0.0f, 1.0f, 0.0f);
-
-				glm::vec3 correction = collision_normal * penetration_amt ;
-
-				phy_objb.position += correction;
-				camerapos -= correction;
-			}*/
+		phy.multicollision(informations,camerapos,deltatime);
+		
+		//camera movement
 			gravity += glm::vec3(0.0f, 9.8f, 0.0f) * deltatime;
 			camerapos -= gravity * deltatime;
 
@@ -549,18 +502,16 @@ int main()
 			{
 				camerapos.y = player_factor;
 			}
-			
 			if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 				speed = 15.0f;
 			if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
 				speed = 4.0f;
 
-			//std::cout << phy_obja.position.y << std::endl;
-			//testing movement in circular motion
+			//circular motion
 
-			lightpos.x = 15 + 7 * sin(glfwGetTime());
-			//lightpos.y = 7+7* cos(glfwGetTime());
-			//lightpos.z -= 12 * cos(glfwGetTime())*deltatime;
+			lightpos.x = 15 + 7 * sin(glfwGetTime()) ;
+			lightpos.y = 7+7* cos(glfwGetTime()) ;
+			lightpos.z -= 12 * cos(glfwGetTime())* deltatime;
 
 			light.useshader();
 			light.setvec3("color", lightobjectcolor);
