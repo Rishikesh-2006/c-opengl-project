@@ -172,6 +172,8 @@
     <None Include="lightobject.vert" />
     <None Include="phy_obj.frag" />
     <None Include="phy_obj.vert" />
+    <None Include="water.frag" />
+    <None Include="water.vert" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\..\wall.jpg" />

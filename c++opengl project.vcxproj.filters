@@ -82,6 +82,12 @@
     <None Include="shadow.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="water.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="water.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\..\wall.jpg">

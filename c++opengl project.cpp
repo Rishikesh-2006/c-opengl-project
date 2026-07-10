@@ -40,7 +40,7 @@ void shadowcalc(std::vector <glm::vec3>& vector, object& shadowobject, unsigned 
 void Make_Structure(std::vector <glm::vec3>& array, glm::vec3 start, float distance, float num);
 
 float player_factor = 0.5;
-float speed = 4.0f;
+float speed = 40.0f;
 int main()
 {
 
@@ -103,17 +103,45 @@ int main()
 		33,35,34
 	};
 
-	float sq_vertex[] = {
-	0.5f,-0.5f,0.0f,
-	0.5f,0.5f,0.0f,
-	-0.5f,-0.5f,0.0f,
-	-0.5f,0.5f,0.0f
-	};
 
-	unsigned int sq_indice[] = {
-		0,1,2,
-		3,2,1
-	};
+	std::vector <float> water_vertices;
+	std::vector <unsigned int> water_indices;
+
+	float grid_size = 50.0f;
+	float size = 1.0f;
+
+	for (int i = 0; i <= grid_size; ++i)
+	{
+		for (int j = 0; j <= grid_size; ++j)
+		{
+			float xpos = ((i / grid_size) - 0.5f) * size;
+			float zpos = ((j / grid_size) - 0.5f) * size;
+
+			water_vertices.push_back(xpos);
+			water_vertices.push_back(1.0f);
+			water_vertices.push_back(zpos);
+		}
+	}
+
+	for (int z = 0; z < grid_size; ++z) {
+		for (int x = 0; x < grid_size; ++x) {
+			int topLeft = z * (grid_size + 1) + x;
+			int topRight = topLeft + 1;
+			int bottomLeft = (z + 1) * (grid_size + 1) + x;
+			int bottomRight = bottomLeft + 1;
+
+			// triangle 1
+			water_indices.push_back(topLeft);
+			water_indices.push_back(bottomLeft);
+			water_indices.push_back(topRight);
+
+			// triangle 2
+			water_indices.push_back(topRight);
+			water_indices.push_back(bottomLeft);
+			water_indices.push_back(bottomRight);
+		}
+	}
+
 
 	obj_info phy_obja, phy_objb;
 
@@ -250,12 +278,13 @@ int main()
 	object floor("floor.vert", "floor.frag");
 	object shadow("shadow.vert", "shadow.frag");
 	object phy("phy_obj.vert", "phy_obj.frag");
+	object water("water.vert", "water.frag");
 	//this ensures the faces on the front are shown and the back ones are hidden
 
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-	glFrontFace(GL_CCW);
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
+	//glFrontFace(GL_CCW);
 
 	//std::cout<<glGetString(GL_RENDERER)<<std::endl;
 	
@@ -293,6 +322,23 @@ int main()
 
 	phyVAO = phy.VAO;
 	phyEBO = phy.EBO;
+
+	unsigned int waterVAO , waterVBO, waterEBO;
+
+	glGenVertexArrays(1, &waterVAO);
+	glGenBuffers(1, &waterVBO);
+	glGenBuffers(1, &waterEBO);
+
+
+	glBindBuffer(GL_ARRAY_BUFFER, waterVBO);
+	glBufferData(GL_ARRAY_BUFFER, water_vertices.size() * sizeof(float), water_vertices.data(), GL_STATIC_DRAW);
+	glBindVertexArray(waterVAO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, waterEBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, water_indices.size() * sizeof(unsigned int), water_indices.data(), GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
 
 
 	//depth map
@@ -381,8 +427,6 @@ int main()
 
 		//std::cout << camerafront.x << "," << camerafront.y << "," << camerafront.z << std::endl;
 		//std::cout << camerapos.x << "," << camerapos.y << "," << camerapos.z << std::endl;
-
-
 
 
 		//lightobjectcolor.x = sin(glfwGetTime());
@@ -496,7 +540,7 @@ int main()
 		phy.multicollision(informations,camerapos,deltatime);
 		
 		//camera movement
-			gravity += glm::vec3(0.0f, 9.8f, 0.0f) * deltatime;
+			/*gravity += glm::vec3(0.0f, 9.8f, 0.0f) * deltatime;
 			camerapos -= gravity * deltatime;
 
 			if (camerapos.y < player_factor)
@@ -507,7 +551,7 @@ int main()
 				speed = 15.0f;
 			if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
 				speed = 4.0f;
-
+			*/
 			//circular motion
 
 			lightpos.x = 15 + 7 * sin(glfwGetTime()) ;
@@ -529,6 +573,29 @@ int main()
 			light.setmat4("model", model);
 			glBindVertexArray(lightVAO);
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
+
+		//water
+
+			water.useshader();
+			water.setvec3("color", glm::vec3(0.0f, 0.0f, 1.0f));
+			water.setmat4("view", view);
+			water.setmat4("projection", projection);
+			water.setfloat("time", glfwGetTime());
+			glm::vec3 axis = glm::vec3(1.0f, 0.3f, 0.5f);
+
+			glm::mat4 wmodel = glm::mat4(1.0f);
+			wmodel = glm::translate(wmodel, glm::vec3(1.0f, 1.0f, -20.0f));
+
+			float angle = 0;
+			std::cout << glfwGetTime() << std::endl;
+			//wmodel = glm::rotate(wmodel, float(14.138), glm::vec3(1.0f, 0.0f, 0.0f));
+			wmodel = glm::scale(wmodel, glm::vec3(40.0f, 1.0f, 30.0f));
+			water.setmat4("model", wmodel);
+			glBindVertexArray(waterVAO);
+			//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			glDrawElements(GL_TRIANGLES,static_cast<GLsizei>(water_indices.size()), GL_UNSIGNED_INT, 0);
+			//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 			processInput(window,speed);
 
@@ -557,6 +624,11 @@ int main()
 		glDeleteVertexArrays(1, &phyVAO);
 		glDeleteBuffers(1, &phyEBO);
 		glDeleteTextures(1, &phyobj_texture);
+
+		water.deleteshader();
+		glDeleteVertexArrays(1, &waterVAO);
+		glDeleteBuffers(1, &waterVBO);
+		glDeleteBuffers(1, &waterEBO);
 
 
 		glfwDestroyWindow(window);
