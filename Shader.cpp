@@ -108,3 +108,9 @@ void Shader::settexture(const std::string& name,int loc)
 {
 	glUniform1i(glGetUniformLocation(shaderprogram, name.c_str()), loc);
 }
+
+
+void Shader::setvec2(const std::string& name, const glm::vec2& value)
+{
+	glUniform2fv(glGetUniformLocation(shaderprogram, name.c_str()), 1, &value[0]);
+}

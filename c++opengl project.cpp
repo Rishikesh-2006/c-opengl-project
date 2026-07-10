@@ -202,7 +202,7 @@ int main()
 	phy_objb.mass = 1.0f;
 
 	std::vector <obj_info> informations;
-	int x_value = 15, y_value = 12;
+	int x_value = 14, y_value = 12;
 
 	for (int i = 13; i < x_value; i++)
 	{
@@ -478,6 +478,7 @@ int main()
 		phy.useshader();
 		phy.setmat4("view", view);
 		phy.setmat4("projection", projection);
+		phy.setvec2("uResolution", glm::vec2(scwidth, scheight));
 		glBindVertexArray(phyVAO);
 		for (obj_info &i : informations)
 		{

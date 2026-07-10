@@ -33,5 +33,7 @@ public:
 	void setfloat(const std::string& name, const float value);
 
 	void settexture(const std::string& name,  int loc);
+
+	void setvec2(const std::string& name, const glm::vec2& value);
 };
 
