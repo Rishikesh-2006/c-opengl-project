@@ -11,12 +11,21 @@ out vec3 fragpos;
 
 void main()
 {
-float frequency = 10.0;
-float speed = 3.0;
-float amplitude = 0.5;
+float frequency = 40.5;  //roughly multiplication with the scale value gives correct intution
+float speed = 1.0;
+float amplitude = 0.4;
 
 float wave = amplitude * sin((aPos.x*frequency) + (time*speed));
-wave += amplitude * sin((aPos.z*frequency) + (time*speed));
+
+wave += amplitude*0.9 * sin((aPos.z*frequency) + (time*speed*2));
+wave += (amplitude*0.8) * sin((aPos.x*(frequency*2.18)) + (time*speed*3));
+wave += (amplitude*0.7) * sin((aPos.z*(frequency*3.18)) + (time*speed)*5);
+wave += (amplitude*0.6) * sin((aPos.x*(frequency*4.18)) + (time*speed)*1.3);
+wave += (amplitude*0.5) * sin((aPos.z*(frequency*5.18)) + (time*speed)*3);
+wave += (amplitude*0.4) * sin((aPos.x*(frequency*6.8)) + (time*speed)*2);
+wave += (amplitude*0.3) * sin((aPos.z*(frequency*7.1)) + (time*speed)*5.3);
+wave += (amplitude*0.2) * sin((aPos.x*(frequency*8.18)) + (time*speed));
+
 
 vec3 position = aPos;
 position.y += wave;

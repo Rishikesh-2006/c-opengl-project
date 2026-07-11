@@ -25,8 +25,8 @@ float deltatime = 0.0f;
 float lastframe = 0.0f;
 
 //lightobject
-//glm::vec3 lightpos(10.0f, 8.0f, 10.0f);
-glm::vec3 lightpos = camerapos;
+glm::vec3 lightpos(10.0f, 8.0f, 10.0f);
+//glm::vec3 lightpos = camerapos;
 
 glm::vec3 lightobjectcolor(1.0f, 1.0f, 1.0f);
 glm::vec4 background_light = glm::vec4(0.53f, 0.81f, 0.92f, 1.0f);
@@ -109,7 +109,7 @@ int main()
 	std::vector <float> water_vertices;
 	std::vector <unsigned int> water_indices;
 
-	float grid_size = 50.0f;
+	float grid_size = 500.0f;
 	float size = 1.0f;
 
 	for (int i = 0; i <= grid_size; ++i)
@@ -583,13 +583,15 @@ int main()
 			glBindVertexArray(lightVAO);
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
-			lightpos = glm::vec3(camerapos.x,camerapos.y-1.0f,camerapos.z);
+			if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+			{
+				lightpos = glm::vec3(camerapos.x, camerapos.y - 1.0f, camerapos.z);
+			}
 		//water
-
 			water.useshader();
 
 			water.setvec3("lightColor", lightobjectcolor);
-			water.setvec3("objectColor", glm::vec3(0.0f, 0.0f, 1.0f));
+			water.setvec3("objectColor", glm::vec3(0.0f, 0.15f, 0.4f));
 			water.setvec3("lightpos", lightpos);
 			water.setvec3("viewpos", camerapos);
 
@@ -608,12 +610,13 @@ int main()
 
 			float angle = 0;
 			//wmodel = glm::rotate(wmodel, float(14.138), glm::vec3(1.0f, 0.0f, 0.0f));
-			wmodel = glm::scale(wmodel, glm::vec3(40.0f, 1.0f, 30.0f));
+			wmodel = glm::scale(wmodel, glm::vec3(400.0f, 1.0f, 300.0f));
 			water.setmat4("model", wmodel);
 			glBindVertexArray(waterVAO);
-			//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			glDrawElements(GL_TRIANGLES,static_cast<GLsizei>(water_indices.size()), GL_UNSIGNED_INT, 0);
-			//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 			processInput(window,speed);
 

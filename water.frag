@@ -30,7 +30,7 @@ void main()
 	vec3 viewdir = normalize(viewpos-fragpos);
 
 	vec3 halfwaydir = normalize(lightDir+viewdir);
-	float spec = pow(max(dot(norm, halfwaydir), 0.0), 4);
+	float spec = pow(max(dot(norm, halfwaydir), 0.0), 128);
 	vec3 specularlight = specularstrength*spec*lightColor;
 
 	float distance  = length(lightpos-fragpos);
