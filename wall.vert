@@ -24,7 +24,7 @@ void main()
 	fragpos = vec3(model * vec4(aPos, 1.0));
 	ourColor = aColor;
 	TexCoord = vec2(aTexCoord.x, aTexCoord.y);
-	//Normal = aNormal;
+
 	Normal = mat3(transpose(inverse(model))) * aNormal;
 
 	fragposlight = lightprojection * vec4(fragpos,1.0);

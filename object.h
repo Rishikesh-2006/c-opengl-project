@@ -24,8 +24,8 @@ public:
 	unsigned int VAO = 2;  //correct value is 2
 	unsigned int EBO = 0;
 
-	float lightscale = 2.0f;
-	float multiplier = 1.0f;
+	float lightscale = 0.5f;
+	float multiplier = 4.0f;
 
 
 

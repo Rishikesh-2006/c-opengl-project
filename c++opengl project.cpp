@@ -25,7 +25,9 @@ float deltatime = 0.0f;
 float lastframe = 0.0f;
 
 //lightobject
-glm::vec3 lightpos(10.0f, 8.0f, 10.0f);
+//glm::vec3 lightpos(10.0f, 8.0f, 10.0f);
+glm::vec3 lightpos = camerapos;
+
 glm::vec3 lightobjectcolor(1.0f, 1.0f, 1.0f);
 glm::vec4 background_light = glm::vec4(0.53f, 0.81f, 0.92f, 1.0f);
 //glm::vec4 background_light = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -120,6 +122,10 @@ int main()
 			water_vertices.push_back(xpos);
 			water_vertices.push_back(1.0f);
 			water_vertices.push_back(zpos);
+
+			water_vertices.push_back(0.0f);
+			water_vertices.push_back(1.0f);
+			water_vertices.push_back(0.0f);
 		}
 	}
 
@@ -336,8 +342,11 @@ int main()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, waterEBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, water_indices.size() * sizeof(unsigned int), water_indices.data(), GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 
 
@@ -554,9 +563,9 @@ int main()
 			*/
 			//circular motion
 
-			lightpos.x = 15 + 7 * sin(glfwGetTime()) ;
-			lightpos.y = 7+7* cos(glfwGetTime()) ;
-			lightpos.z -= 12 * cos(glfwGetTime())* deltatime;
+			//lightpos.x = 15 + 7 * sin(glfwGetTime()) ;
+			//lightpos.y = 7+7* cos(glfwGetTime()) ;
+			//lightpos.z -= 12 * cos(glfwGetTime())* deltatime;
 
 			light.useshader();
 			light.setvec3("color", lightobjectcolor);
@@ -574,21 +583,30 @@ int main()
 			glBindVertexArray(lightVAO);
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
-
+			lightpos = glm::vec3(camerapos.x,camerapos.y-1.0f,camerapos.z);
 		//water
 
 			water.useshader();
-			water.setvec3("color", glm::vec3(0.0f, 0.0f, 1.0f));
+
+			water.setvec3("lightColor", lightobjectcolor);
+			water.setvec3("objectColor", glm::vec3(0.0f, 0.0f, 1.0f));
+			water.setvec3("lightpos", lightpos);
+			water.setvec3("viewpos", camerapos);
+
+			//attenuation values-
+			water.setvec3("attenval", glm::vec3(1.0f, 0.014f, 0.0007f));
+			water.setfloat("lightscale", water.lightscale);
+			water.setfloat("lightmultiplier", water.multiplier);
+
 			water.setmat4("view", view);
 			water.setmat4("projection", projection);
 			water.setfloat("time", glfwGetTime());
 			glm::vec3 axis = glm::vec3(1.0f, 0.3f, 0.5f);
 
 			glm::mat4 wmodel = glm::mat4(1.0f);
-			wmodel = glm::translate(wmodel, glm::vec3(1.0f, 1.0f, -20.0f));
+			wmodel = glm::translate(wmodel, glm::vec3(1.0f, -3.0f, -20.0f));
 
 			float angle = 0;
-			std::cout << glfwGetTime() << std::endl;
 			//wmodel = glm::rotate(wmodel, float(14.138), glm::vec3(1.0f, 0.0f, 0.0f));
 			wmodel = glm::scale(wmodel, glm::vec3(40.0f, 1.0f, 30.0f));
 			water.setmat4("model", wmodel);
