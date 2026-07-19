@@ -9,7 +9,7 @@ int scheight = 1080;
 int scwidth = 1920;
 unsigned int depthwidth = 2048, depthheight = 2048;
 //camera vals
-glm::vec3 camerapos = { 16.0f,3.0f,16.0f };
+glm::vec3 camerapos = { -52.0f,7.0f,-17.0f };
 glm::vec3 camerafront = { 0.99f, -0.07f, 0.008f };
 glm::vec3 cameraup = { 0.0f, 1.0f ,0.0f };
 
@@ -25,8 +25,7 @@ float deltatime = 0.0f;
 float lastframe = 0.0f;
 
 //lightobject
-glm::vec3 lightpos(10.0f, 8.0f, 10.0f);
-//glm::vec3 lightpos = camerapos;
+glm::vec3 lightpos(-22.0f, 18.0f, 7.0f);
 
 glm::vec3 lightobjectcolor(1.0f, 1.0f, 1.0f);
 glm::vec4 background_light = glm::vec4(0.53f, 0.81f, 0.92f, 1.0f);
@@ -491,7 +490,7 @@ int main()
 		//fpscalc
 
 		//std::cout << camerafront.x << "," << camerafront.y << "," << camerafront.z << std::endl;
-		//std::cout << camerapos.x << "," << camerapos.y << "," << camerapos.z << std::endl;
+		std::cout << camerapos.x << "," << camerapos.y << "," << camerapos.z << std::endl;
 
 
 		//lightobjectcolor.x = sin(glfwGetTime());
@@ -512,7 +511,7 @@ int main()
 
 		shadow.setmat4("lightprojection", sh_projection);
 		shadowcalc(blockcoors, shadow, CUBEVAO);
-		//shadowcalc(floorcoors, shadow, floorVAO);
+
 		glCullFace(GL_BACK);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -649,10 +648,12 @@ int main()
 			water.useshader();
 
 			water.settexture("Texture",6);
+			water.settexture("shadowmap", 3);
 			water.setvec3("lightColor", lightobjectcolor);
 			water.setvec3("objectColor", glm::vec3(0.0f, 0.15f, 0.4f));
 			water.setvec3("lightpos", lightpos);
 			water.setvec3("viewpos", camerapos);
+			water.setmat4("lightprojection", sh_projection);
 
 			//attenuation values-
 			water.setvec3("attenval", glm::vec3(1.0f, 0.014f, 0.0007f));
@@ -669,7 +670,7 @@ int main()
 
 			float angle = 0;
 			//wmodel = glm::rotate(wmodel, float(14.138), glm::vec3(1.0f, 0.0f, 0.0f));
-			wmodel = glm::scale(wmodel, glm::vec3(400.0f, 1.0f, 300.0f));
+			wmodel = glm::scale(wmodel, glm::vec3(40.0f, 1.0f, 30.0f));
 			water.setmat4("model", wmodel);
 			glBindVertexArray(waterVAO);
 			
