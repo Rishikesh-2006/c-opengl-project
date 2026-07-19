@@ -4,6 +4,7 @@ out vec4 FragColor;
 
 in vec3 Normal;
 in vec3 fragpos;
+in vec2 Texcoord;
 
 uniform vec3 lightpos;
 uniform vec3 viewpos;
@@ -13,11 +14,12 @@ uniform vec3 lightColor;
 uniform vec3 attenval;
 uniform float lightscale;
 uniform float lightmultiplier;
+uniform sampler2D Texture;
 
 void main()
 {
 		//Blinn-phong calc
-	float ambientstrength = 0.15;
+	float ambientstrength = 1.15;
 	vec3 ambient = ambientstrength*lightColor;
 	
 	vec3 norm = normalize(Normal);
@@ -42,6 +44,6 @@ void main()
 	
 
 	vec3 result = (ambient + diffuse + specularlight ) * objectColor;
-	FragColor =vec4(result*lightscale*lightmultiplier, 1.0);
+	FragColor = texture(Texture,Texcoord) * vec4(result*lightscale*lightmultiplier, 1.0);
 	//FragColor = vec4(0.0,0.0,1.0,1.0);
 }

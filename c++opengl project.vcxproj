@@ -182,6 +182,8 @@
     <Image Include="test_water.png" />
     <Image Include="Textures\bricks.png" />
     <Image Include="Textures\high floor.png" />
+    <Image Include="Textures\ocean-blue.jpg" />
+    <Image Include="Textures\water_tex2.png" />
     <Image Include="wooden floor.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

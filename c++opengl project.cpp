@@ -5,8 +5,8 @@
 #include <string.h>
 
 
-int scheight = 800;
-int scwidth = 800;
+int scheight = 1080;
+int scwidth = 1920;
 unsigned int depthwidth = 2048, depthheight = 2048;
 //camera vals
 glm::vec3 camerapos = { 16.0f,3.0f,16.0f };
@@ -105,13 +105,58 @@ int main()
 		33,35,34
 	};
 
+	float texcoord[] = {
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		1.0f, 1.0f,
+		1.0f, 1.0f,
+		0.0f, 1.0f,
+		0.0f, 0.0f,
 
-	std::vector <float> water_vertices;
-	std::vector <unsigned int> water_indices;
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		1.0f, 1.0f,
+		1.0f, 1.0f,
+		0.0f, 1.0f,
+		0.0f, 0.0f,
+
+		1.0f, 0.0f,
+		1.0f,1.0f,
+		0.0f,1.0f,
+		0.0f,1.0f,
+		0.0f,0.0f,
+		1.0f,0.0f,
+
+		1.0f, 0.0f,
+		1.0f,1.0f,
+		0.0f,1.0f,
+		0.0f,1.0f,
+		0.0f,0.0f,
+		1.0f,0.0f,
+
+		0.0f,1.0f,
+		1.0f,1.0f,
+		1.0f,0.0f,
+		1.0f,0.0f,
+		0.0f,0.0f,
+		0.0f,1.0f,
+
+		0.0f,1.0f,
+		1.0f,1.0f,
+		1.0f,0.0f,
+		1.0f,0.0f,
+		0.0f,0.0f,
+		0.0f,1.0f
+
+	};
+
+
+
+
+	std::vector <float> water_vertices; std::vector <unsigned int> water_indices;
 
 	float grid_size = 500.0f;
 	float size = 1.0f;
-
 	for (int i = 0; i <= grid_size; ++i)
 	{
 		for (int j = 0; j <= grid_size; ++j)
@@ -126,7 +171,14 @@ int main()
 			water_vertices.push_back(0.0f);
 			water_vertices.push_back(1.0f);
 			water_vertices.push_back(0.0f);
+
+			float u = i / grid_size;
+			float v = j / grid_size;
+
+			water_vertices.push_back(u);
+			water_vertices.push_back(v);
 		}
+
 	}
 
 	for (int z = 0; z < grid_size; ++z) {
@@ -342,12 +394,14 @@ int main()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, waterEBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, water_indices.size() * sizeof(unsigned int), water_indices.data(), GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_TRUE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 
 
 	//depth map
@@ -394,7 +448,7 @@ int main()
 
 	//water texture
 
-	unsigned int watertexture = set_texture(GL_TEXTURE2, "Textures/test_water.png", GL_RGBA);
+	unsigned int watertexture = set_texture(GL_TEXTURE6, "Textures/test_water.png", GL_RGBA);
 
 	unsigned int phyobj_texture = set_texture(GL_TEXTURE3, "Textures/wall.jpg", GL_RGB);
 
@@ -407,9 +461,11 @@ int main()
 	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, phyobj_texture);
 
-
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, depthmap);
+
+	glActiveTexture(GL_TEXTURE6);
+	glBindTexture(GL_TEXTURE_2D, watertexture);
 
 
 	glm::vec3 gravity = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -587,9 +643,12 @@ int main()
 			{
 				lightpos = glm::vec3(camerapos.x, camerapos.y - 1.0f, camerapos.z);
 			}
+
+
 		//water
 			water.useshader();
 
+			water.settexture("Texture",6);
 			water.setvec3("lightColor", lightobjectcolor);
 			water.setvec3("objectColor", glm::vec3(0.0f, 0.15f, 0.4f));
 			water.setvec3("lightpos", lightpos);
@@ -614,9 +673,9 @@ int main()
 			water.setmat4("model", wmodel);
 			glBindVertexArray(waterVAO);
 			
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			glDrawElements(GL_TRIANGLES,static_cast<GLsizei>(water_indices.size()), GL_UNSIGNED_INT, 0);
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 			processInput(window,speed);
 
@@ -650,6 +709,7 @@ int main()
 		glDeleteVertexArrays(1, &waterVAO);
 		glDeleteBuffers(1, &waterVBO);
 		glDeleteBuffers(1, &waterEBO);
+		glDeleteTextures(1, &watertexture);
 
 
 		glfwDestroyWindow(window);

@@ -111,5 +111,11 @@
     <Image Include="Textures\high floor.png">
       <Filter>Resource Files\textures</Filter>
     </Image>
+    <Image Include="Textures\ocean-blue.jpg">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="Textures\water_tex2.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
   </ItemGroup>
 </Project>
