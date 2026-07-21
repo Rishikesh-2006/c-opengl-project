@@ -3,15 +3,11 @@
 #include "Shader.h"
 #include "object.h"
 #include <string.h>
-
+#include "camera.h"
 
 int scheight = 1080;
 int scwidth = 1920;
 unsigned int depthwidth = 2048, depthheight = 2048;
-//camera vals
-glm::vec3 camerapos = { -52.0f,7.0f,-17.0f };
-glm::vec3 camerafront = { 0.99f, -0.07f, 0.008f };
-glm::vec3 cameraup = { 0.0f, 1.0f ,0.0f };
 
 bool firstmouse = true;
 float yaw = 0.0f;
@@ -33,9 +29,6 @@ glm::vec4 background_light = glm::vec4(0.53f, 0.81f, 0.92f, 1.0f);
 
 //functions
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void mouse_callback(GLFWwindow* window, double xposin, double yposin);
-void processInput(GLFWwindow* window,float speed);
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 unsigned int set_texture(GLenum Tex_num, const char* name, GLenum val);
 void shadowcalc(std::vector <glm::vec3>& vector, object& shadowobject, unsigned int& cubeVAO);
 void Make_Structure(std::vector <glm::vec3>& array, glm::vec3 start, float distance, float num);
@@ -103,54 +96,6 @@ int main()
 		30,32,31,
 		33,35,34
 	};
-
-	float texcoord[] = {
-		0.0f, 0.0f,
-		1.0f, 0.0f,
-		1.0f, 1.0f,
-		1.0f, 1.0f,
-		0.0f, 1.0f,
-		0.0f, 0.0f,
-
-		0.0f, 0.0f,
-		1.0f, 0.0f,
-		1.0f, 1.0f,
-		1.0f, 1.0f,
-		0.0f, 1.0f,
-		0.0f, 0.0f,
-
-		1.0f, 0.0f,
-		1.0f,1.0f,
-		0.0f,1.0f,
-		0.0f,1.0f,
-		0.0f,0.0f,
-		1.0f,0.0f,
-
-		1.0f, 0.0f,
-		1.0f,1.0f,
-		0.0f,1.0f,
-		0.0f,1.0f,
-		0.0f,0.0f,
-		1.0f,0.0f,
-
-		0.0f,1.0f,
-		1.0f,1.0f,
-		1.0f,0.0f,
-		1.0f,0.0f,
-		0.0f,0.0f,
-		0.0f,1.0f,
-
-		0.0f,1.0f,
-		1.0f,1.0f,
-		1.0f,0.0f,
-		1.0f,0.0f,
-		0.0f,0.0f,
-		0.0f,1.0f
-
-	};
-
-
-
 
 	std::vector <float> water_vertices; std::vector <unsigned int> water_indices;
 
@@ -317,9 +262,7 @@ int main()
 
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	glfwSetCursorPosCallback(window, mouse_callback);
-	glfwSetScrollCallback(window, scroll_callback);
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 
 	//loading opengl using glad
 
@@ -332,10 +275,16 @@ int main()
 	//shader class to initialize and combine vertex and fragement shader
 	object wall("wall.vert", "wall.frag");
 	object light("lightobject.vert", "lightobject.frag");
-	object floor("floor.vert", "floor.frag");
+	object floor("wall.vert", "wall.frag");
 	object shadow("shadow.vert", "shadow.frag");
 	object phy("phy_obj.vert", "phy_obj.frag");
 	object water("water.vert", "water.frag");
+
+	camera camera;
+
+	camera.set_caminputs(window);
+
+
 	//this ensures the faces on the front are shown and the back ones are hidden
 
 	glEnable(GL_DEPTH_TEST);
@@ -470,9 +419,8 @@ int main()
 	glm::vec3 gravity = glm::vec3(0.0f, 0.0f, 0.0f);
 	while (!glfwWindowShouldClose(window))
 	{
-
-		glm::mat4 view = glm::lookAt(camerapos, camerapos + camerafront, cameraup);
-		glm::mat4 projection = glm::perspective(glm::radians(fov), float(scwidth) / float(scheight), 0.1f, 400.0f);
+		glm::mat4 view  = camera.set_view();
+		glm::mat4 projection = camera.set_projection();
 
 		float currentframe = static_cast<float>(glfwGetTime());
 		deltatime = currentframe - lastframe;
@@ -487,10 +435,11 @@ int main()
 		phy_obja.acceleration = glm::vec3(0.0f, 9.8f, 0.0f);
 		phy_objb.acceleration = glm::vec3(0.0f, 9.8f, 0.0f);
 
-		//fpscalc
 
-		//std::cout << camerafront.x << "," << camerafront.y << "," << camerafront.z << std::endl;
-		std::cout << camerapos.x << "," << camerapos.y << "," << camerapos.z << std::endl;
+		//campos
+
+
+
 
 
 		//lightobjectcolor.x = sin(glfwGetTime());
@@ -526,7 +475,7 @@ int main()
 		//wall
 
 
-		wall.set_in_loop("ourTexture", 0, lightobjectcolor, lightpos, camerapos);
+		wall.set_in_loop("ourTexture", 0, lightobjectcolor, lightpos, camera.camerapos);
 		wall.setmat4("lightprojection", sh_projection);
 
 		wall.settexture("shadowmap", 3);
@@ -556,7 +505,7 @@ int main()
 
 		//floor
 
-		floor.set_in_loop("ourTexture", 1, lightobjectcolor, lightpos, camerapos);
+		floor.set_in_loop("ourTexture", 1, lightobjectcolor, lightpos, camera.camerapos);
 		floor.setmat4("lightprojection", sh_projection);
 		floor.settexture("shadowmap", 3);
 
@@ -581,8 +530,6 @@ int main()
 
 		//physics objects
 
-
-
 		phy.useshader();
 		phy.setmat4("view", view);
 		phy.setmat4("projection", projection);
@@ -601,26 +548,9 @@ int main()
 
 
 		}
-		phy.multicollision(informations,camerapos,deltatime);
+		phy.multicollision(informations,camera.camerapos,deltatime);
 		
-		//camera movement
-			/*gravity += glm::vec3(0.0f, 9.8f, 0.0f) * deltatime;
-			camerapos -= gravity * deltatime;
-
-			if (camerapos.y < player_factor)
-			{
-				camerapos.y = player_factor;
-			}
-			if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-				speed = 15.0f;
-			if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
-				speed = 4.0f;
-			*/
-			//circular motion
-
-			//lightpos.x = 15 + 7 * sin(glfwGetTime()) ;
-			//lightpos.y = 7+7* cos(glfwGetTime()) ;
-			//lightpos.z -= 12 * cos(glfwGetTime())* deltatime;
+		//light object 
 
 			light.useshader();
 			light.setvec3("color", lightobjectcolor);
@@ -640,7 +570,7 @@ int main()
 
 			if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 			{
-				lightpos = glm::vec3(camerapos.x, camerapos.y - 1.0f, camerapos.z);
+				lightpos = glm::vec3(camera.camerapos.x, camera.camerapos.y - 1.0f, camera.camerapos.z);
 			}
 
 
@@ -652,7 +582,7 @@ int main()
 			water.setvec3("lightColor", lightobjectcolor);
 			water.setvec3("objectColor", glm::vec3(0.0f, 0.15f, 0.4f));
 			water.setvec3("lightpos", lightpos);
-			water.setvec3("viewpos", camerapos);
+			water.setvec3("viewpos", camera.camerapos);
 			water.setmat4("lightprojection", sh_projection);
 
 			//attenuation values-
@@ -670,7 +600,7 @@ int main()
 
 			float angle = 0;
 			//wmodel = glm::rotate(wmodel, float(14.138), glm::vec3(1.0f, 0.0f, 0.0f));
-			wmodel = glm::scale(wmodel, glm::vec3(40.0f, 1.0f, 30.0f));
+			wmodel = glm::scale(wmodel, glm::vec3(400.0f, 1.0f, 300.0f));
 			water.setmat4("model", wmodel);
 			glBindVertexArray(waterVAO);
 			
@@ -678,7 +608,7 @@ int main()
 			glDrawElements(GL_TRIANGLES,static_cast<GLsizei>(water_indices.size()), GL_UNSIGNED_INT, 0);
 			//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-			processInput(window,speed);
+			camera.processInput(window,speed,deltatime);
 
 
 			glfwSwapBuffers(window);
@@ -717,83 +647,6 @@ int main()
 		glfwTerminate();
 		return 0;
 	}
-
-void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
-{
-	float xpos = static_cast<float>(xposIn);
-	float ypos = static_cast<float>(yposIn);
-
-	if (firstmouse)
-	{
-		lastx = xpos;
-		lasty = ypos;
-		firstmouse = false;
-	}
-
-	float xoffset = xpos - lastx;
-	float yoffset = lasty - ypos; // reversed since y-coordinates go from bottom to top
-	lastx = xpos;
-	lasty = ypos;
-
-	float sensitivity = 0.1f; // change this value to your liking
-	xoffset *= sensitivity;
-	yoffset *= sensitivity;
-
-	yaw += xoffset;
-	pitch += yoffset;
-
-	// make sure that when pitch is out of bounds, screen doesn't get flipped
-	if (pitch > 89.0f)
-		pitch = 89.0f;
-	if (pitch < -89.0f)
-		pitch = -89.0f;
-
-	glm::vec3 front;
-	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	front.y = sin(glm::radians(pitch));
-	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	camerafront = glm::normalize(front);
-}
-
-
-void processInput(GLFWwindow* window,float speed)
-{
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, true);
-	const float cameraSpeed = speed * deltatime; // adjust accordingly
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camerapos += cameraSpeed * camerafront;
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camerapos -= cameraSpeed * camerafront;
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camerapos -= glm::normalize(glm::cross(camerafront, cameraup)) * cameraSpeed;
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camerapos += glm::normalize(glm::cross(camerafront, cameraup)) * cameraSpeed;
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-		camerapos.y += 2.0f;
-	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-		player_factor = 0.5f;
-	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_RELEASE)
-		player_factor = 1.8f;
-
-
-
-}
-
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-{
-	fov -= (float)yoffset;
-
-	if (fov < 1.0f)
-	{
-		fov = 1.0f;
-	}
-	if (fov > 45.0f)
-	{
-		fov = 45.0f;
-	}
-}
-
 
 unsigned int set_texture(GLenum Tex_num, const char* name, GLenum val)
 {
@@ -855,6 +708,8 @@ void shadowcalc(std::vector <glm::vec3>& vector, object& shadowobject, unsigned 
 
 
 }
+
+//reuse this for block generation 
 
 void Make_Structure(std::vector <glm::vec3>& array, glm::vec3 start, float distance, float num)
 {

@@ -151,19 +151,19 @@
   <ItemGroup>
     <ClCompile Include="..\glad.c" />
     <ClCompile Include="c++opengl project.cpp" />
+    <ClCompile Include="camera.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="stb.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="camera.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="resource1.h" />
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="floor.frag" />
-    <None Include="floor.vert" />
     <None Include="shadow.frag" />
     <None Include="shadow.vert" />
     <None Include="wall.frag" />

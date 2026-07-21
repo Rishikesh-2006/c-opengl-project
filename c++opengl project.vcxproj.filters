@@ -36,6 +36,9 @@
     <ClCompile Include="object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -50,6 +53,9 @@
     <ClInclude Include="object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="wall.vert">
@@ -62,12 +68,6 @@
       <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="lightobject.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="floor.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="floor.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="phy_obj.frag">
