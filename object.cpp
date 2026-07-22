@@ -199,3 +199,58 @@ void object::multicollision(std::vector <obj_info>& informations,glm::vec3 camer
 		}
 	}
 }
+
+
+void object::set_water_objects(unsigned int &waterVBO,std::vector <unsigned int> water_indices, std::vector <float> water_vertices)
+{
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &waterVBO);
+	glGenBuffers(1, &EBO);
+
+
+	glBindBuffer(GL_ARRAY_BUFFER, waterVBO);
+	glBufferData(GL_ARRAY_BUFFER, water_vertices.size() * sizeof(float), water_vertices.data(), GL_STATIC_DRAW);
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, water_indices.size() * sizeof(unsigned int), water_indices.data(), GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 8 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_TRUE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+}
+
+void object::set_shadowFBO(unsigned int& depthmapFBO, unsigned int& depthmap,int depthwidth,int depthheight)
+{
+	glGenFramebuffers(1, &depthmapFBO);
+
+
+	;
+	glGenTextures(1, &depthmap);
+	glBindTexture(GL_TEXTURE_2D, depthmap);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, depthwidth, depthheight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
+
+	float clampcolor[] = { 1.0f,1.0f,1.0f,1.0f };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, clampcolor);
+	glBindFramebuffer(GL_FRAMEBUFFER, depthmapFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthmap, 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cout << "Framebuffer issue";
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+}

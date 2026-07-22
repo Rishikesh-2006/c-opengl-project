@@ -15,7 +15,7 @@ out vec4 fragposlight;
 
 void main()
 {
-float frequency = 100.5;  //roughly multiplication with the scale value gives correct intution
+float frequency = 10.5;  //roughly multiplication with the scale value gives correct intution
 float speed = 1.0;
 float amplitude = 0.3;
 

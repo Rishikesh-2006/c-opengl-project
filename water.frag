@@ -49,7 +49,7 @@ return shadow;
 void main()
 {
 		//Blinn-phong calc
-	float ambientstrength = 1.15;
+	float ambientstrength = 0.15;
 	vec3 ambient = ambientstrength*lightColor;
 	
 	vec3 norm = normalize(Normal);

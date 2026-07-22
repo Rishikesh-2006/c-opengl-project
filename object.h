@@ -24,8 +24,8 @@ public:
 	unsigned int VAO = 2;  //correct value is 2
 	unsigned int EBO = 0;
 
-	float lightscale = 0.5f;
-	float multiplier = 4.0f;
+	float lightscale = 1.0f;
+	float multiplier = 10.0f;
 
 
 
@@ -46,4 +46,8 @@ public:
 	glm::vec3 velocity_after_collision(obj_info obj1, obj_info obj2, float scale);
 
 	void multicollision(std::vector <obj_info>& informations, glm::vec3 camerapos, float deltatime);
+
+	void set_water_objects(unsigned int& waterVBO, std::vector <unsigned int> water_indices, std::vector <float> water_vertices);
+
+	void set_shadowFBO(unsigned int& depthmapFBO, unsigned int& depthmap, int depthwidth, int depthheight);
 };

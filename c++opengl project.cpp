@@ -30,7 +30,7 @@ glm::vec4 background_light = glm::vec4(0.53f, 0.81f, 0.92f, 1.0f);
 //functions
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 unsigned int set_texture(GLenum Tex_num, const char* name, GLenum val);
-void shadowcalc(std::vector <glm::vec3>& vector, object& shadowobject, unsigned int& cubeVAO);
+void shadowcalc(std::vector <glm::vec3>& vector, object& shadowobject, unsigned int& cubeVAO,unsigned int idx_size);
 void Make_Structure(std::vector <glm::vec3>& array, glm::vec3 start, float distance, float num);
 
 float player_factor = 0.5;
@@ -144,6 +144,7 @@ int main()
 		}
 	}
 
+	std::vector <glm::vec3> waterpos = { glm::vec3(1.0f, -3.0f, -20.0f) };
 
 	obj_info phy_obja, phy_objb;
 
@@ -163,8 +164,6 @@ int main()
 	wallcoors.push_back(glm::vec3(15.0f, 7.0f, 15.0f));
 	std::vector <glm::vec3> blockcoors;
 	blockcoors.push_back(glm::vec3(15.0f, 7.0f, 15.0f));
-
-	//Make_Structure(wallcoors, glm::vec3(6.0f, 0.0f, 15.0f),3.0f, 1.0f);
 
 	for (int i = 0;i < x_wall;i++)
 	{
@@ -329,58 +328,19 @@ int main()
 	phyVAO = phy.VAO;
 	phyEBO = phy.EBO;
 
+	//water
+
 	unsigned int waterVAO , waterVBO, waterEBO;
 
-	glGenVertexArrays(1, &waterVAO);
-	glGenBuffers(1, &waterVBO);
-	glGenBuffers(1, &waterEBO);
-
-
-	glBindBuffer(GL_ARRAY_BUFFER, waterVBO);
-	glBufferData(GL_ARRAY_BUFFER, water_vertices.size() * sizeof(float), water_vertices.data(), GL_STATIC_DRAW);
-	glBindVertexArray(waterVAO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, waterEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, water_indices.size() * sizeof(unsigned int), water_indices.data(), GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 8 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_TRUE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-
+	water.set_water_objects(waterVBO, water_indices, water_vertices);
+	waterVAO = water.VAO;
+	waterEBO = water.EBO;
 
 	//depth map
 
-	unsigned int depthmapFBO;
-	glGenFramebuffers(1, &depthmapFBO);
+	unsigned int depthmapFBO,depthmap;
 
-
-	unsigned int depthmap;
-	glGenTextures(1, &depthmap);
-	glBindTexture(GL_TEXTURE_2D, depthmap);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, depthwidth, depthheight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-
-
-	float clampcolor[] = { 1.0f,1.0f,1.0f,1.0f };
-	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, clampcolor);
-	glBindFramebuffer(GL_FRAMEBUFFER, depthmapFBO);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthmap, 0);
-	glDrawBuffer(GL_NONE);
-	glReadBuffer(GL_NONE);
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	{
-		std::cout << "Framebuffer issue";
-	}
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	shadow.set_shadowFBO(depthmapFBO, depthmap, depthwidth, depthheight);
 
 	//Textures
 	//set orientation
@@ -459,7 +419,8 @@ int main()
 		shadow.useshader();
 
 		shadow.setmat4("lightprojection", sh_projection);
-		shadowcalc(blockcoors, shadow, CUBEVAO);
+		shadowcalc(blockcoors, shadow, CUBEVAO,sizeof(indices));
+		shadowcalc(waterpos, shadow, waterVAO,sizeof(water_indices));
 
 		glCullFace(GL_BACK);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -596,11 +557,12 @@ int main()
 			glm::vec3 axis = glm::vec3(1.0f, 0.3f, 0.5f);
 
 			glm::mat4 wmodel = glm::mat4(1.0f);
+			//1.0f, -3.0f, -20.0f
+			//wmodel = glm::translate(wmodel, glm::vec3(camera.camerapos.x, camera.camerapos.y-15.0f, camera.camerapos.z));
 			wmodel = glm::translate(wmodel, glm::vec3(1.0f, -3.0f, -20.0f));
-
 			float angle = 0;
 			//wmodel = glm::rotate(wmodel, float(14.138), glm::vec3(1.0f, 0.0f, 0.0f));
-			wmodel = glm::scale(wmodel, glm::vec3(400.0f, 1.0f, 300.0f));
+			wmodel = glm::scale(wmodel, glm::vec3(40.0f, 1.0f, 30.0f));
 			water.setmat4("model", wmodel);
 			glBindVertexArray(waterVAO);
 			
@@ -687,7 +649,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
-void shadowcalc(std::vector <glm::vec3>& vector, object& shadowobject, unsigned int& cubeVAO)
+void shadowcalc(std::vector <glm::vec3>& vector, object& shadowobject, unsigned int& cubeVAO,unsigned int idx_size)
 {
 	glBindVertexArray(cubeVAO);
 
@@ -701,7 +663,7 @@ void shadowcalc(std::vector <glm::vec3>& vector, object& shadowobject, unsigned 
 
 		shadowobject.setmat4("model", model);
 
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES,idx_size, GL_UNSIGNED_INT, 0);
 
 
 	}
