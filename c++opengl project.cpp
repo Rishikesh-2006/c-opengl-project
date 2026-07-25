@@ -4,18 +4,11 @@
 #include "object.h"
 #include <string.h>
 #include "camera.h"
+#include "water.h"
 
 int scheight = 1080;
 int scwidth = 1920;
 unsigned int depthwidth = 2048, depthheight = 2048;
-
-bool firstmouse = true;
-float yaw = 0.0f;
-float pitch = 0.0f;
-float lastx = scwidth / 2.0f;
-float lasty = scheight / 2.0f;
-float fov = 45.0f;
-
 
 float deltatime = 0.0f;
 float lastframe = 0.0f;
@@ -98,9 +91,8 @@ int main()
 	};
 
 	std::vector <float> water_vertices; std::vector <unsigned int> water_indices;
-
-	float grid_size = 500.0f;
 	float size = 1.0f;
+	float grid_size = 500.0f;
 	for (int i = 0; i <= grid_size; ++i)
 	{
 		for (int j = 0; j <= grid_size; ++j)
@@ -277,7 +269,7 @@ int main()
 	object floor("wall.vert", "wall.frag");
 	object shadow("shadow.vert", "shadow.frag");
 	object phy("phy_obj.vert", "phy_obj.frag");
-	object water("water.vert", "water.frag");
+	water water("water.vert", "water.frag");
 
 	camera camera;
 
@@ -420,7 +412,7 @@ int main()
 
 		shadow.setmat4("lightprojection", sh_projection);
 		shadowcalc(blockcoors, shadow, CUBEVAO,sizeof(indices));
-		shadowcalc(waterpos, shadow, waterVAO,sizeof(water_indices));
+		//shadowcalc(waterpos, shadow, waterVAO,sizeof(water_indices));
 
 		glCullFace(GL_BACK);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -548,8 +540,8 @@ int main()
 
 			//attenuation values-
 			water.setvec3("attenval", glm::vec3(1.0f, 0.014f, 0.0007f));
-			water.setfloat("lightscale", water.lightscale);
-			water.setfloat("lightmultiplier", water.multiplier);
+			water.setfloat("lightscale", wall.lightscale);
+			water.setfloat("lightmultiplier", wall.multiplier);
 
 			water.setmat4("view", view);
 			water.setmat4("projection", projection);

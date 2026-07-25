@@ -47,7 +47,5 @@ public:
 
 	void multicollision(std::vector <obj_info>& informations, glm::vec3 camerapos, float deltatime);
 
-	void set_water_objects(unsigned int& waterVBO, std::vector <unsigned int> water_indices, std::vector <float> water_vertices);
-
 	void set_shadowFBO(unsigned int& depthmapFBO, unsigned int& depthmap, int depthwidth, int depthheight);
 };

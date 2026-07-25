@@ -200,30 +200,6 @@ void object::multicollision(std::vector <obj_info>& informations,glm::vec3 camer
 	}
 }
 
-
-void object::set_water_objects(unsigned int &waterVBO,std::vector <unsigned int> water_indices, std::vector <float> water_vertices)
-{
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &waterVBO);
-	glGenBuffers(1, &EBO);
-
-
-	glBindBuffer(GL_ARRAY_BUFFER, waterVBO);
-	glBufferData(GL_ARRAY_BUFFER, water_vertices.size() * sizeof(float), water_vertices.data(), GL_STATIC_DRAW);
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, water_indices.size() * sizeof(unsigned int), water_indices.data(), GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 8 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_TRUE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-}
-
 void object::set_shadowFBO(unsigned int& depthmapFBO, unsigned int& depthmap,int depthwidth,int depthheight)
 {
 	glGenFramebuffers(1, &depthmapFBO);
