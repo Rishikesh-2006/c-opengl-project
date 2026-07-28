@@ -301,9 +301,13 @@ int main()
 
 	//water texture
 
-	unsigned int watertexture = set_texture(GL_TEXTURE6, "Textures/test_water.png", GL_RGBA);
+	unsigned int watertexture = set_texture(GL_TEXTURE6, "Textures/water_normal.png", GL_RGBA);
 
 	unsigned int phyobj_texture = set_texture(GL_TEXTURE3, "Textures/wall.jpg", GL_RGB);
+
+	unsigned int brickwall = set_texture(GL_TEXTURE4, "Textures / brickwall.jpg", GL_RGB);
+
+	unsigned int brickwall_normal = set_texture(GL_TEXTURE5, "Textures / brickwall_normal.jpg", GL_RGB);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Walltextures);
@@ -317,8 +321,15 @@ int main()
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, depthmap);
 
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, brickwall);
+
+	glActiveTexture(GL_TEXTURE5);
+	glBindTexture(GL_TEXTURE_2D, brickwall_normal);
+
 	glActiveTexture(GL_TEXTURE6);
 	glBindTexture(GL_TEXTURE_2D, watertexture);
+
 
 
 	glm::vec3 gravity = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -385,11 +396,12 @@ int main()
 		wall.setmat4("lightprojection", sh_projection);
 
 		wall.settexture("shadowmap", 3);
-
+		wall.settexture("normalMap", 5);
 		//camera
 		wall.setmat4("view", view);
 
 		wall.setmat4("projection", projection);
+
 
 		glBindVertexArray(CUBEVAO);
 		for (glm::vec3& i : wallcoors)
@@ -414,6 +426,7 @@ int main()
 		floor.set_in_loop("ourTexture", 1, lightobjectcolor, lightpos, camera.camerapos);
 		floor.setmat4("lightprojection", sh_projection);
 		floor.settexture("shadowmap", 3);
+		wall.settexture("normalMap", 5);
 
 		floor.setmat4("view", view);
 		floor.setmat4("projection", projection);
@@ -489,7 +502,6 @@ int main()
 			glfwSwapBuffers(window);
 			glfwPollEvents();
 		}
-
 
 		wall.deleteshader();
 		glDeleteTextures(1, &Walltextures);

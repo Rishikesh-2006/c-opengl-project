@@ -46,9 +46,8 @@ return shadow;
 
 
 void main()
-{	
-
-
+{	   
+  
 	//Blinn-phong calc
 	float ambientstrength = 0.15;
 	vec3 ambient = ambientstrength*lightColor;

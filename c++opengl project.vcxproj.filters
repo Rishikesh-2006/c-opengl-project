@@ -123,5 +123,14 @@
     <Image Include="Textures\water_tex2.png">
       <Filter>Resource Files\textures</Filter>
     </Image>
+    <Image Include="Textures\brickwall.jpg">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="Textures\brickwall_normal.jpg">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="Textures\water_normal.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
   </ItemGroup>
 </Project>

@@ -83,7 +83,7 @@ void water::set_visual(water &water,glm::mat4 view , glm::mat4 projection,glm::v
 	water.settexture("Texture", 6);
 	water.settexture("shadowmap", 3);
 	water.setvec3("lightColor", lightobjectcolor);
-	water.setvec3("objectColor", glm::vec3(0.0f, 0.15f, 0.4f));
+	water.setvec3("objectColor", glm::vec3(0.5f, 0.5f, 0.5f));
 	water.setvec3("lightpos", lightpos);
 	water.setvec3("viewpos", camerapos);
 	water.setmat4("lightprojection", sh_projection);
@@ -104,7 +104,7 @@ void water::set_visual(water &water,glm::mat4 view , glm::mat4 projection,glm::v
 	wmodel = glm::translate(wmodel, glm::vec3(1.0f, -3.0f, -20.0f));
 	float angle = 0;
 	//wmodel = glm::rotate(wmodel, float(14.138), glm::vec3(1.0f, 0.0f, 0.0f));
-	wmodel = glm::scale(wmodel, glm::vec3(40.0f, 1.0f, 30.0f));
+	wmodel = glm::scale(wmodel, glm::vec3(400.0f, 1.0f, 300.0f));
 	water.setmat4("model", wmodel);
 	glBindVertexArray(waterVAO);
 
