@@ -74,28 +74,28 @@ void water::set_watercoors(float grid_size)
 	set_water_objects(waterVBO);
 }
 
-void water::set_visual(water &water,glm::mat4 view , glm::mat4 projection,glm::vec3 lightobjectcolor,glm::vec3 lightpos,glm::vec3 camerapos,glm::mat4 sh_projection,unsigned int waterVAO)
+void water::set_visual(water &water,glm::mat4 view , glm::mat4 projection,glm::vec3 lightobjectcolor,glm::vec3 lightpos,glm::vec3 camerapos,glm::mat4 sh_projection,unsigned int waterVAO,unsigned int fbo)
 {
 	//in construction
 	
 	water.useshader();
-
-	water.settexture("Texture", 6);
-	water.settexture("shadowmap", 3);
-	water.setvec3("lightColor", lightobjectcolor);
-	water.setvec3("objectColor", glm::vec3(0.5f, 0.5f, 0.5f));
-	water.setvec3("lightpos", lightpos);
-	water.setvec3("viewpos", camerapos);
-	water.setmat4("lightprojection", sh_projection);
+	//water.settexture("Texture", 6);
+	//water.settexture("shadowmap", 3); //set to shadowtexture
+	//water.setvec3("lightColor", lightobjectcolor);
+	water.setvec3("color", glm::vec3(0.0f, 0.0f, 0.5f));
+	water.settexture("reflecttexture", 6);
+	//water.setvec3("lightpos", lightpos);
+	//water.setvec3("viewpos", camerapos);
+	//water.setmat4("lightprojection", sh_projection);
 
 	//attenuation values-
-	water.setvec3("attenval", glm::vec3(1.0f, 0.014f, 0.0007f));
-	water.setfloat("lightscale", lightscale);
-	water.setfloat("lightmultiplier", multiplier);
+	//water.setvec3("attenval", glm::vec3(1.0f, 0.014f, 0.0007f));
+	//water.setfloat("lightscale", lightscale);
+	//water.setfloat("lightmultiplier", multiplier);
 
 	water.setmat4("view", view);
 	water.setmat4("projection", projection);
-	water.setfloat("time", glfwGetTime());
+	//water.setfloat("time", glfwGetTime());
 	glm::vec3 axis = glm::vec3(1.0f, 0.3f, 0.5f);
 
 	glm::mat4 wmodel = glm::mat4(1.0f);
@@ -180,4 +180,89 @@ unsigned int water::set_shader(const char* vertexpath,const char* fragmentpath)
 
 	return shaderprogram;
 
+}
+
+unsigned int water::framebuffer()
+{
+	unsigned int framebuffer;
+	glGenFramebuffers(1, &framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	glDrawBuffer(GL_COLOR_ATTACHMENT0);
+	return framebuffer;
+}
+
+unsigned int water::framebuffertexture(int width, int height)
+{
+	unsigned int texture;
+	glGenTextures(1,&texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height,0,GL_RGB,GL_UNSIGNED_INT,NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture, 0);
+	return texture;
+}
+
+unsigned int water::depthTEXTURE(int width, int height)
+{
+	unsigned int texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texture, 0);
+	return texture;
+}
+
+unsigned int water::renderbuffer(int width, int height)
+{
+	unsigned int depthbuffer;
+	glGenRenderbuffers(1, &depthbuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthbuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT,width,height);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthbuffer);
+	return depthbuffer;
+}
+
+void water::bindframebuffer(unsigned int framebuffer, int width, int height)
+{
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	glViewport(0, 0, width, height);
+}
+
+void water::UNbindframebuffer(int width, int height)
+{
+	glBindFramebuffer(GL_FRAMEBUFFER,0);
+	glViewport(0, 0, width, height);
+}
+
+void water::setfbo()
+{
+	
+	framebufferid = framebuffer();
+	textureid = framebuffertexture(reflection_width, reflection_height);
+	depthid = depthTEXTURE(reflection_width, reflection_height);
+	UNbindframebuffer(scwidth, scheight);
+}
+
+void water::bindfbo()
+{
+	bindframebuffer(framebufferid, reflection_width, reflection_height);
+}
+
+void water::set_resolution(int width, int height)
+{
+	this->scwidth = width;
+	this->scheight = height;
+}
+
+void water::cleanbuffers()
+{
+	glDeleteFramebuffers(1, &framebufferid);
+	glDeleteRenderbuffers(1, &depthid);
+	glDeleteTextures(1, &textureid);
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &EBO);
 }

@@ -8,7 +8,7 @@
 
 int scheight = 1080;
 int scwidth = 1920;
-unsigned int depthwidth = 2048, depthheight = 2048;
+unsigned int depthwidth = 4096, depthheight = 4096;
 
 float deltatime = 0.0f;
 float lastframe = 0.0f;
@@ -224,6 +224,7 @@ int main()
 	object phy("phy_obj.vert", "phy_obj.frag");
 	water water("water.vert", "water.frag");
 
+	water.set_resolution(scwidth, scheight);
 	camera camera;
 
 	camera.set_caminputs(window);
@@ -299,15 +300,17 @@ int main()
 
 	unsigned int floortexture = set_texture(GL_TEXTURE1, "Textures/wooden floor.png", GL_RGB);
 
-	//water texture
-
-	unsigned int watertexture = set_texture(GL_TEXTURE6, "Textures/water_normal.png", GL_RGBA);
+	//others
+	unsigned int high_floor = set_texture(GL_TEXTURE2, "Textures/rr.png", GL_RGBA);
 
 	unsigned int phyobj_texture = set_texture(GL_TEXTURE3, "Textures/wall.jpg", GL_RGB);
 
-	unsigned int brickwall = set_texture(GL_TEXTURE4, "Textures / brickwall.jpg", GL_RGB);
+	unsigned int brickwall = set_texture(GL_TEXTURE4, "Textures/brickwall.jpg", GL_RGB);
 
-	unsigned int brickwall_normal = set_texture(GL_TEXTURE5, "Textures / brickwall_normal.jpg", GL_RGB);
+	unsigned int brickwall_normal = set_texture(GL_TEXTURE5, "Textures/brickwall_normal.jpg", GL_RGB);
+
+	//water texture
+	unsigned int watertexture = set_texture(GL_TEXTURE6, "Textures/water_normal.png", GL_RGBA);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Walltextures);
@@ -315,11 +318,14 @@ int main()
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, floortexture);
 
-	glActiveTexture(GL_TEXTURE4);
-	glBindTexture(GL_TEXTURE_2D, phyobj_texture);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, high_floor);
 
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, depthmap);
+
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, phyobj_texture);
 
 	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, brickwall);
@@ -330,6 +336,11 @@ int main()
 	glActiveTexture(GL_TEXTURE6);
 	glBindTexture(GL_TEXTURE_2D, watertexture);
 
+
+	water.setfbo();
+
+	glActiveTexture(GL_TEXTURE7);
+	glBindTexture(GL_TEXTURE_2D, water.textureid);
 
 
 	glm::vec3 gravity = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -388,7 +399,51 @@ int main()
 			background_light.z, background_light.w);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		//water
+		
+		water.useshader();
+		water.bindfbo();
+		shadowcalc(wallcoors, water, CUBEVAO, sizeof(indices));
+		shadowcalc(floorcoors, water, CUBEVAO, sizeof(indices));
 
+		water.UNbindframebuffer(scwidth, scheight);
+
+		//water.set_visual(water, view, projection, lightobjectcolor, lightpos, camera.camerapos, sh_projection, waterVAO,water.framebufferid);
+		//water.settexture("Texture", 6);
+		//water.settexture("shadowmap", 3); //set to shadowtexture
+		//water.setvec3("lightColor", lightobjectcolor);
+		water.setvec3("color", glm::vec3(0.0f, 0.0f, 0.5f));
+		water.settexture("reflecttexture", 7);
+		//water.setvec3("lightpos", lightpos);
+		//water.setvec3("viewpos", camerapos);
+		//water.setmat4("lightprojection", sh_projection);
+
+		//attenuation values-
+		//water.setvec3("attenval", glm::vec3(1.0f, 0.014f, 0.0007f));
+		//water.setfloat("lightscale", lightscale);
+		//water.setfloat("lightmultiplier", multiplier);
+
+		water.setmat4("view", view);
+		water.setmat4("projection", projection);
+		//water.setfloat("time", glfwGetTime());
+		glm::vec3 axis = glm::vec3(1.0f, 0.3f, 0.5f);
+
+		glm::mat4 wmodel = glm::mat4(1.0f);
+		//1.0f, -3.0f, -20.0f
+		//wmodel = glm::translate(wmodel, glm::vec3(camera.camerapos.x, camera.camerapos.y-15.0f, camera.camerapos.z));
+		wmodel = glm::translate(wmodel, glm::vec3(1.0f, -3.0f, -20.0f));
+		float angle = 0;
+		//wmodel = glm::rotate(wmodel, float(14.138), glm::vec3(1.0f, 0.0f, 0.0f));
+		wmodel = glm::scale(wmodel, glm::vec3(40.0f, 1.0f, 30.0f));
+		water.setmat4("model", wmodel);
+		glBindVertexArray(waterVAO);
+
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(water.water_indices.size()), GL_UNSIGNED_INT, 0);
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		
+		
 		//wall
 
 
@@ -492,10 +547,7 @@ int main()
 				lightpos = glm::vec3(camera.camerapos.x, camera.camerapos.y - 1.0f, camera.camerapos.z);
 			}
 
-
-		//water
-			water.set_visual(water, view, projection, lightobjectcolor, lightpos, camera.camerapos, sh_projection, waterVAO);
-
+			//movement
 			camera.processInput(window,speed,deltatime);
 
 
@@ -524,11 +576,12 @@ int main()
 		glDeleteTextures(1, &phyobj_texture);
 
 		water.deleteshader();
-		glDeleteVertexArrays(1, &waterVAO);
+		water.cleanbuffers();
 		glDeleteBuffers(1, &waterVBO);
-		glDeleteBuffers(1, &waterEBO);
 		glDeleteTextures(1, &watertexture);
 
+		glDeleteTextures(1, &brickwall);
+		glDeleteTextures(1, &brickwall_normal);
 
 		glfwDestroyWindow(window);
 		glfwTerminate();

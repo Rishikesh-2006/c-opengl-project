@@ -204,8 +204,6 @@ void object::set_shadowFBO(unsigned int& depthmapFBO, unsigned int& depthmap,int
 {
 	glGenFramebuffers(1, &depthmapFBO);
 
-
-	;
 	glGenTextures(1, &depthmap);
 	glBindTexture(GL_TEXTURE_2D, depthmap);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, depthwidth, depthheight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
