@@ -9,5 +9,5 @@ uniform sampler2D reflecttexture;
 void main()
 {
 vec4 reflecttex = texture(reflecttexture,texcoord);
-    FragColor = reflecttex;//*vec4(1.0,1.0,1.0,1.0);
+    FragColor = reflecttex;
 }

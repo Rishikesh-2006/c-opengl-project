@@ -83,7 +83,7 @@ void water::set_visual(water &water,glm::mat4 view , glm::mat4 projection,glm::v
 	//water.settexture("shadowmap", 3); //set to shadowtexture
 	//water.setvec3("lightColor", lightobjectcolor);
 	water.setvec3("color", glm::vec3(0.0f, 0.0f, 0.5f));
-	water.settexture("reflecttexture", 6);
+	water.settexture("reflecttexture", 7);
 	//water.setvec3("lightpos", lightpos);
 	//water.setvec3("viewpos", camerapos);
 	//water.setmat4("lightprojection", sh_projection);
@@ -208,7 +208,7 @@ unsigned int water::depthTEXTURE(int width, int height)
 	unsigned int texture;
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texture, 0);
@@ -245,6 +245,19 @@ void water::setfbo()
 	textureid = framebuffertexture(reflection_width, reflection_height);
 	depthid = depthTEXTURE(reflection_width, reflection_height);
 	UNbindframebuffer(scwidth, scheight);
+
+	glActiveTexture(GL_TEXTURE7);
+	glBindTexture(GL_TEXTURE_2D, textureid);
+
+	if (!textureid)
+
+	{
+		std::cout << "reflection 0texture error";
+	}
+
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (status != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "Water reflection FBO incomplete: " << std::hex << status << std::endl;
 }
 
 void water::bindfbo()

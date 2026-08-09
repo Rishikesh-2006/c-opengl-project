@@ -7,6 +7,7 @@
 #include <utility>
 #include <iostream>
 #include "Shader.h"
+#include <stb/stb_image.h>
 //std::pair <unsigned int, unsigned int>
 
 struct obj_info
@@ -25,7 +26,7 @@ public:
 	unsigned int EBO = 0;
 
 	float lightscale = 1.0f;
-	float multiplier = 10.0f;
+	float multiplier = 1.0f;
 
 
 

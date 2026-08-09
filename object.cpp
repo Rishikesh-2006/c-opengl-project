@@ -12,23 +12,29 @@ void object::set_object(unsigned int& VBO, unsigned int* indices, int indices_si
 
 	if (islightsrc == true)
 	{
-		glVertexAttribPointer(0, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, 0, 17 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
 	}
 
 	else
 	{
-		glVertexAttribPointer(0, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, 0, 17 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
 
-		glVertexAttribPointer(1, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)(3 * sizeof(float)));
+		glVertexAttribPointer(1, 3, GL_FLOAT, 0, 17 * sizeof(float), (void*)(3 * sizeof(float)));
 		glEnableVertexAttribArray(1);
 
-		glVertexAttribPointer(2, 2, GL_FLOAT, 0, 11 * sizeof(float), (void*)(6 * sizeof(float)));
+		glVertexAttribPointer(2, 2, GL_FLOAT, 0, 17 * sizeof(float), (void*)(6 * sizeof(float)));
 		glEnableVertexAttribArray(2);
 
-		glVertexAttribPointer(3, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)(8 * sizeof(float)));
+		glVertexAttribPointer(3, 3, GL_FLOAT, 0, 17 * sizeof(float), (void*)(8 * sizeof(float)));
 		glEnableVertexAttribArray(3);
+
+		glVertexAttribPointer(4, 3, GL_FLOAT, 0, 17 * sizeof(float), (void*)(11 * sizeof(float)));
+		glEnableVertexAttribArray(4);
+
+		glVertexAttribPointer(5, 3, GL_FLOAT, 0, 17 * sizeof(float), (void*)(14 * sizeof(float)));
+		glEnableVertexAttribArray(5);
 	}
 
 	glGenBuffers(1, &EBO);
@@ -53,23 +59,20 @@ void object::set_VBO_object(unsigned int& VBO, float* vertices, int vertice_size
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indice_size, indices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 17 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(1, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, 0, 17 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
-	glVertexAttribPointer(2, 2, GL_FLOAT, 0, 11 * sizeof(float), (void*)(6 * sizeof(float)));
+	glVertexAttribPointer(2, 2, GL_FLOAT, 0, 17 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
-	glVertexAttribPointer(3, 3, GL_FLOAT, 0, 11 * sizeof(float), (void*)(8 * sizeof(float)));
+	glVertexAttribPointer(3, 3, GL_FLOAT, 0, 17 * sizeof(float), (void*)(8 * sizeof(float)));
 	glEnableVertexAttribArray(3);
 
-
-
-	//this->VAO = VAO;
-	//this->EBO = EBO;
-	//std::cout << VAO << "," << EBO << "," << VBO << std::endl;
+	glVertexAttribPointer(4, 3, GL_FLOAT, 0, 17 * sizeof(float), (void*)(11 * sizeof(float)));
+	glEnableVertexAttribArray(4);
 
 }
 

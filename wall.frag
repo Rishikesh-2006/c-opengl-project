@@ -2,11 +2,14 @@
 
 #version 330 core
 out vec4 FragColor;
-in vec2 TexCoord;
 
+in vec2 TexCoord;
 in vec3 fragpos;
 in vec3 Normal;
+in vec3 Tangent;
 in vec4 fragposlight;
+in vec3 BITangent;
+
 uniform vec3 lightpos;
 uniform vec3 viewpos;
 
@@ -17,6 +20,7 @@ uniform sampler2D shadowmap;
 uniform vec3 attenval;
 uniform float lightscale;
 uniform float lightmultiplier;
+uniform sampler2D normalmap;
 
 
 float shadowcalc(vec4 fragposlight, vec3 normal,vec3 lightdir)
@@ -53,19 +57,23 @@ void main()
 	vec3 ambient = ambientstrength*lightColor;
 	
 	vec3 norm = normalize(Normal);
-	vec3 lightDir = normalize(lightpos - fragpos);
+	mat3 TBN = mat3(Tangent,BITangent,norm);
+	TBN = transpose(TBN);
+
+	norm = normalize(TBN*texture(normalmap,TexCoord).xyz*2-1);
+	vec3 lightDir = normalize(TBN*lightpos - TBN*fragpos);
 	
 	float diff = max(dot(norm, lightDir), 0.0);
 	vec3 diffuse = diff * lightColor;
 
 	float specularstrength = 0.6;
-	vec3 viewdir = normalize(viewpos-fragpos);
+	vec3 viewdir = normalize(viewpos-TBN*fragpos);
 
 	vec3 halfwaydir = normalize(lightDir+viewdir);
 	float spec = pow(max(dot(norm, halfwaydir), 0.0), 4);
 	vec3 specularlight = specularstrength*spec*lightColor;
 
-	float distance  = length(lightpos-fragpos);
+	float distance  = length(TBN*lightpos-TBN*fragpos);
 	float attenuation = 1.0 / (attenval.x + attenval.y * distance + 
     		    attenval.z* (distance * distance * 8)); 
 

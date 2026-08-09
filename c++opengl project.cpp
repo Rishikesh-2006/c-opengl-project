@@ -22,7 +22,7 @@ glm::vec4 background_light = glm::vec4(0.53f, 0.81f, 0.92f, 1.0f);
 
 //functions
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-unsigned int set_texture(GLenum Tex_num, const char* name, GLenum val);
+unsigned int set_texture(GLenum Tex_num, const char* name, GLenum val1, GLenum val2);
 void shadowcalc(std::vector <glm::vec3>& vector, object& shadowobject, unsigned int& cubeVAO,unsigned int idx_size);
 void Make_Structure(std::vector <glm::vec3>& array, glm::vec3 start, float distance, float num);
 
@@ -32,47 +32,49 @@ int main()
 {
 
 	float vertices[] = {
-	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,0.0f,-1.0f,
-	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,0.0f,-1.0f,
-	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,0.0f,-1.0f,
-	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,0.0f,-1.0f,
-	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,0.0f,-1.0f,
-	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,0.0f,-1.0f,
+	//position				//color					//texturecoords/uvs  //normals		//tangents			//bitangents
+	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,0.0f,-1.0f,  1.0f,0.0f,0.0f,  0.0f,1.0f,0.0f,
+	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,0.0f,-1.0f,  1.0f,0.0f,0.0f,  0.0f,1.0f,0.0f,
+	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,0.0f,-1.0f,  1.0f,0.0f,0.0f,  0.0f,1.0f,0.0f,
+	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,0.0f,-1.0f,  1.0f,0.0f,0.0f,  0.0f,1.0f,0.0f,
+	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,0.0f,-1.0f,  1.0f,0.0f,0.0f,  0.0f,1.0f,0.0f,
+	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,0.0f,-1.0f,  1.0f,0.0f,0.0f,  0.0f,1.0f,0.0f,
 
-	-0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,0.0f,1.0f,
-	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,0.0f,1.0f,
-	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,0.0f,1.0f,
-	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,0.0f,1.0f,
-	-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,0.0f,1.0f,
-	-0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,0.0f,1.0f,
+	-0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,0.0f,1.0f,   1.0f,0.0f,0.0f,  0.0f,1.0f,0.0f,
+	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,0.0f,1.0f,   1.0f,0.0f,0.0f,  0.0f,1.0f,0.0f,
+	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,0.0f,1.0f,   1.0f,0.0f,0.0f,  0.0f,1.0f,0.0f,
+	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,0.0f,1.0f,   1.0f,0.0f,0.0f,  0.0f,1.0f,0.0f,
+	-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,0.0f,1.0f,   1.0f,0.0f,0.0f,  0.0f,1.0f,0.0f,
+	-0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,0.0f,1.0f,   1.0f,0.0f,0.0f,  0.0f,1.0f,0.0f,
 
-	-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		-1.0f,0.0f,0.0f,
-	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		-1.0f,0.0f,0.0f,
-	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		-1.0f,0.0f,0.0f,
-	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		-1.0f,0.0f,0.0f,
-	-0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		-1.0f,0.0f,0.0f,
-	-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		-1.0f,0.0f,0.0f,
+	-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		-1.0f,0.0f,0.0f,  0.0f,1.0f,0.0f,  0.0f,0.0f,-1.0f,
+	- 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		-1.0f,0.0f,0.0f,  0.0f,1.0f,0.0f,  0.0f,0.0f,-1.0f,
+	- 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		-1.0f,0.0f,0.0f,  0.0f,1.0f,0.0f,  0.0f,0.0f,-1.0f,
+	- 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		-1.0f,0.0f,0.0f,  0.0f,1.0f,0.0f,  0.0f,0.0f,-1.0f,
+	- 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		-1.0f,0.0f,0.0f,  0.0f,1.0f,0.0f,  0.0f,0.0f,-1.0f,
+	- 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		-1.0f,0.0f,0.0f,  0.0f,1.0f,0.0f,  0.0f,0.0f,-1.0f,
 
-	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		1.0f,0.0f,0.0f,
-	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		1.0f,0.0f,0.0f,
-	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		1.0f,0.0f,0.0f,
-	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		1.0f,0.0f,0.0f,
-	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		1.0f,0.0f,0.0f,
-	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		1.0f,0.0f,0.0f,
+	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		1.0f,0.0f,0.0f,   0.0f,1.0f,0.0f,  0.0f,0.0f,1.0f,
+	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		1.0f,0.0f,0.0f,   0.0f,1.0f,0.0f,  0.0f,0.0f,1.0f,
+	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		1.0f,0.0f,0.0f,   0.0f,1.0f,0.0f,  0.0f,0.0f,1.0f,
+	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		1.0f,0.0f,0.0f,   0.0f,1.0f,0.0f,  0.0f,0.0f,1.0f,
+	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		1.0f,0.0f,0.0f,   0.0f,1.0f,0.0f,  0.0f,0.0f,1.0f,
+	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		1.0f,0.0f,0.0f,   0.0f,1.0f,0.0f,  0.0f,0.0f,1.0f,
 
-	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,-1.0f,0.0f,
-	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,-1.0f,0.0f,
-	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,-1.0f,0.0f,
-	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,-1.0f,0.0f,
-	-0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,-1.0f,0.0f,
-	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,-1.0f,0.0f,
+	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,-1.0f,0.0f,  1.0f,0.0f,0.0f,  0.0f,0.0f,1.0f,
+	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,-1.0f,0.0f,  1.0f,0.0f,0.0f,  0.0f,0.0f,1.0f,
+	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,-1.0f,0.0f,  1.0f,0.0f,0.0f,  0.0f,0.0f,1.0f,
+	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,-1.0f,0.0f,  1.0f,0.0f,0.0f,  0.0f,0.0f,1.0f,
+	-0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,-1.0f,0.0f,  1.0f,0.0f,0.0f,  0.0f,0.0f,1.0f,
+	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,-1.0f,0.0f,  1.0f,0.0f,0.0f,  0.0f,0.0f,1.0f,
 
-	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,1.0f,0.0f,
-	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,1.0f,0.0f,
-	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,1.0f,0.0f,
-	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,1.0f,0.0f,
-	-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,1.0f,0.0f,
-	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,1.0f,0.0f
+
+	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,1.0f,0.0f,   1.0f,0.0f,0.0f,  0.0f,0.0f,-1.0f,
+	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,1.0f,0.0f,   1.0f,0.0f,0.0f,  0.0f,0.0f,-1.0f,
+	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,1.0f,0.0f,   1.0f,0.0f,0.0f,  0.0f,0.0f,-1.0f,
+	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,1.0f,0.0f,   1.0f,0.0f,0.0f,  0.0f,0.0f,-1.0f,
+	-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,1.0f,0.0f,   1.0f,0.0f,0.0f,  0.0f,0.0f,-1.0f,
+	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,1.0f,0.0f,   1.0f,0.0f,0.0f,  0.0f,0.0f,-1.0f
 	};
 
 	unsigned int indices[] = {
@@ -294,23 +296,22 @@ int main()
 
 	//wall texture
 
-	unsigned int Walltextures = set_texture(GL_TEXTURE0, "Textures/bricks.png", GL_RGB);
+	unsigned int Walltextures = set_texture(GL_TEXTURE0, "Textures/bricks.png", GL_RGB, GL_RGB);
 
 	//floor texture
 
-	unsigned int floortexture = set_texture(GL_TEXTURE1, "Textures/wooden floor.png", GL_RGB);
+	unsigned int floortexture = set_texture(GL_TEXTURE1, "Textures/wooden floor.png", GL_RGB, GL_RGB);
 
 	//others
-	unsigned int high_floor = set_texture(GL_TEXTURE2, "Textures/rr.png", GL_RGBA);
+	unsigned int high_floor = set_texture(GL_TEXTURE2, "Textures/rr.png", GL_RGBA, GL_RGBA);
 
-	unsigned int phyobj_texture = set_texture(GL_TEXTURE3, "Textures/wall.jpg", GL_RGB);
+	unsigned int brickwall = set_texture(GL_TEXTURE4, "Textures/brickwall.jpg", GL_RGB, GL_RGB);
 
-	unsigned int brickwall = set_texture(GL_TEXTURE4, "Textures/brickwall.jpg", GL_RGB);
-
-	unsigned int brickwall_normal = set_texture(GL_TEXTURE5, "Textures/brickwall_normal.jpg", GL_RGB);
-
+	unsigned int brickwall_normal = set_texture(GL_TEXTURE5, "Textures/brickwall_normal.jpg", GL_RGB, GL_RGB);
 	//water texture
-	unsigned int watertexture = set_texture(GL_TEXTURE6, "Textures/water_normal.png", GL_RGBA);
+	unsigned int watertexture = set_texture(GL_TEXTURE6, "Textures/water_normal.png", GL_RGBA, GL_RGB);
+
+
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Walltextures);
@@ -324,8 +325,6 @@ int main()
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, depthmap);
 
-	glActiveTexture(GL_TEXTURE4);
-	glBindTexture(GL_TEXTURE_2D, phyobj_texture);
 
 	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, brickwall);
@@ -338,14 +337,12 @@ int main()
 
 
 	water.setfbo();
-
-	glActiveTexture(GL_TEXTURE7);
-	glBindTexture(GL_TEXTURE_2D, water.textureid);
-
+	water.renderbuffer(320, 180);
 
 	glm::vec3 gravity = glm::vec3(0.0f, 0.0f, 0.0f);
 	while (!glfwWindowShouldClose(window))
 	{
+		glEnable(GL_CLIP_DISTANCE0);
 		glm::mat4 view  = camera.set_view();
 		glm::mat4 projection = camera.set_projection();
 
@@ -400,37 +397,30 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//water
-		
+		glActiveTexture(GL_TEXTURE7);
 		water.useshader();
+
+		water.setmat4("view", view);
+		water.setmat4("projection", projection);
+
 		water.bindfbo();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		shadowcalc(wallcoors, water, CUBEVAO, sizeof(indices));
 		shadowcalc(floorcoors, water, CUBEVAO, sizeof(indices));
 
 		water.UNbindframebuffer(scwidth, scheight);
 
-		//water.set_visual(water, view, projection, lightobjectcolor, lightpos, camera.camerapos, sh_projection, waterVAO,water.framebufferid);
-		//water.settexture("Texture", 6);
-		//water.settexture("shadowmap", 3); //set to shadowtexture
-		//water.setvec3("lightColor", lightobjectcolor);
 		water.setvec3("color", glm::vec3(0.0f, 0.0f, 0.5f));
+		glActiveTexture(GL_TEXTURE7);
+		glBindTexture(GL_TEXTURE_2D, water.framebufferid);
 		water.settexture("reflecttexture", 7);
-		//water.setvec3("lightpos", lightpos);
-		//water.setvec3("viewpos", camerapos);
-		//water.setmat4("lightprojection", sh_projection);
 
-		//attenuation values-
-		//water.setvec3("attenval", glm::vec3(1.0f, 0.014f, 0.0007f));
-		//water.setfloat("lightscale", lightscale);
-		//water.setfloat("lightmultiplier", multiplier);
 
-		water.setmat4("view", view);
-		water.setmat4("projection", projection);
 		//water.setfloat("time", glfwGetTime());
 		glm::vec3 axis = glm::vec3(1.0f, 0.3f, 0.5f);
 
 		glm::mat4 wmodel = glm::mat4(1.0f);
-		//1.0f, -3.0f, -20.0f
-		//wmodel = glm::translate(wmodel, glm::vec3(camera.camerapos.x, camera.camerapos.y-15.0f, camera.camerapos.z));
+		
 		wmodel = glm::translate(wmodel, glm::vec3(1.0f, -3.0f, -20.0f));
 		float angle = 0;
 		//wmodel = glm::rotate(wmodel, float(14.138), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -447,11 +437,11 @@ int main()
 		//wall
 
 
-		wall.set_in_loop("ourTexture", 0, lightobjectcolor, lightpos, camera.camerapos);
+		wall.set_in_loop("ourTexture", 4, lightobjectcolor, lightpos, camera.camerapos);
 		wall.setmat4("lightprojection", sh_projection);
 
 		wall.settexture("shadowmap", 3);
-		wall.settexture("normalMap", 5);
+		wall.settexture("normalmap", 5);
 		//camera
 		wall.setmat4("view", view);
 
@@ -573,7 +563,6 @@ int main()
 		phy.deleteshader();
 		glDeleteVertexArrays(1, &phyVAO);
 		glDeleteBuffers(1, &phyEBO);
-		glDeleteTextures(1, &phyobj_texture);
 
 		water.deleteshader();
 		water.cleanbuffers();
@@ -588,7 +577,7 @@ int main()
 		return 0;
 	}
 
-unsigned int set_texture(GLenum Tex_num, const char* name, GLenum val)
+unsigned int set_texture(GLenum Tex_num, const char* name, GLenum val1, GLenum val2)
 {
 	unsigned int texture;
 
@@ -607,7 +596,7 @@ unsigned int set_texture(GLenum Tex_num, const char* name, GLenum val)
 	unsigned char* Fdata = stbi_load(name, &Fwidth, &Fheight, &Fnrchannels, 0);
 	if (Fdata)
 	{
-		glTexImage2D(GL_TEXTURE_2D, 0, val, Fwidth, Fheight, 0, val, GL_UNSIGNED_BYTE, Fdata);
+		glTexImage2D(GL_TEXTURE_2D, 0, val1, Fwidth, Fheight, 0, val2, GL_UNSIGNED_BYTE, Fdata);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 

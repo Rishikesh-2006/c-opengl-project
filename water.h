@@ -4,7 +4,7 @@ class water : public object
 {
 public:
     unsigned int VAO = 2, EBO = 0;
-    unsigned int framebufferid, textureid, depthid;
+    unsigned int framebufferid = 0, textureid = 0 , depthid = 0;
     std::vector <float> water_vertices; std::vector <unsigned int> water_indices;
     int scheight;
     int scwidth;
