@@ -16,7 +16,6 @@ float lastframe = 0.0f;
 //lightobject
 glm::vec3 lightpos(-22.0f, 18.0f, 7.0f);
 
-glm::vec3 lightobjectcolor(1.0f, 1.0f, 1.0f);
 glm::vec4 background_light = glm::vec4(0.53f, 0.81f, 0.92f, 1.0f);
 std::vector <glm::vec3> waterpos = { glm::vec3(1.0f, -3.0f, -20.0f) };
 
@@ -33,68 +32,6 @@ float player_factor = 0.5;
 float speed = 40.0f;
 int main()
 {
-
-	float vertices[] = {
-	//Position				 Color					   UVs              Normals		
-	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,0.0f,-1.0f,
-	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,0.0f,-1.0f,
-	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,0.0f,-1.0f,
-	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,0.0f,-1.0f,
-	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,0.0f,-1.0f,
-	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,0.0f,-1.0f,
-
-	-0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,0.0f,1.0f,
-	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,0.0f,1.0f,
-	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,0.0f,1.0f,
-	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,0.0f,1.0f,
-	-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,0.0f,1.0f,
-	-0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,0.0f,1.0f,
-
-	-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		-1.0f,0.0f,0.0f,
-	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		-1.0f,0.0f,0.0f,
-	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		-1.0f,0.0f,0.0f,
-	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		-1.0f,0.0f,0.0f,
-	-0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		-1.0f,0.0f,0.0f,
-	-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		-1.0f,0.0f,0.0f,
-
-	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		1.0f,0.0f,0.0f,
-	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		1.0f,0.0f,0.0f,
-	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		1.0f,0.0f,0.0f,
-	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		1.0f,0.0f,0.0f,
-	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		1.0f,0.0f,0.0f,
-	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		1.0f,0.0f,0.0f,
-
-	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,-1.0f,0.0f,
-	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,-1.0f,0.0f,
-	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,-1.0f,0.0f,
-	 0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,-1.0f,0.0f,
-	-0.5f, -0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,-1.0f,0.0f,
-	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,-1.0f,0.0f,
-
-	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,1.0f,0.0f,
-	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 1.0f,		0.0f,1.0f,0.0f,
-	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,1.0f,0.0f,
-	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,1.0f,0.0f,
-	-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,1.0f,0.0f,
-	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,1.0f,0.0f
-	};
-
-	unsigned int indices[] = {
-		0,2,1,
-		3,5,4,
-		8,6,7,
-		11,9,10,
-		12,13,14,
-		15,16,17,
-		18,20,19,
-		21,23,22,
-		24,25,26,
-		27,28,29,
-		30,32,31,
-		33,35,34
-	};
-
-
 
 	obj_info phy_obja, phy_objb;
 
@@ -251,14 +188,14 @@ int main()
 
 	unsigned int CUBEVBO;
 
-	wall.set_VBO_object(CUBEVBO, vertices, sizeof(vertices), indices, sizeof(indices));
+	wall.set_VBO_object(CUBEVBO);
 
 	unsigned int CUBEVAO = wall.VAO;
 	unsigned int CUBEEBO = wall.EBO;
 
 	//lightobject
 
-	light.set_object(CUBEVBO, indices, sizeof(indices), true);
+	light.set_object(CUBEVBO, true);
 	unsigned int lightVAO = light.VAO;
 	unsigned int lightEBO = light.EBO;
 
@@ -266,7 +203,7 @@ int main()
 	//floor 
 
 	unsigned int floorVAO, floorEBO;
-	floor.set_object(CUBEVBO, indices, sizeof(indices), false);
+	floor.set_object(CUBEVBO, false);
 
 	floorVAO = floor.VAO;
 	floorEBO = floor.EBO;
@@ -274,7 +211,7 @@ int main()
 	//collision objects
 
 	unsigned int phyVAO, phyEBO;
-	phy.set_object(CUBEVBO, indices, sizeof(indices), false);
+	phy.set_object(CUBEVBO, false);
 
 	phyVAO = phy.VAO;
 	phyEBO = phy.EBO;
@@ -365,13 +302,6 @@ int main()
 
 		//campos
 
-
-
-
-
-		//lightobjectcolor.x = sin(glfwGetTime());
-		//lightobjectcolor.y = cos(glfwGetTime());
-		//lightobjectcolor.z = 2 * cos(glfwGetTime());
 		glm::mat4 shadowprojection = glm::ortho(-30.0, 30.0, -30.00, 30.00, 0.1, 60.0);
 		glm::mat4 shadowview = glm::lookAt(lightpos, glm::vec3(15.0f, 7.5f, 15.0f), glm::vec3(0.0, 1.0, 0.0));
 		glm::mat4 sh_projection = shadowprojection * shadowview;
@@ -386,7 +316,7 @@ int main()
 		shadow.useshader();
 
 		shadow.setmat4("lightprojection", sh_projection);
-		shadowcalc(blockcoors, shadow, CUBEVAO,sizeof(indices));
+		shadowcalc(blockcoors, shadow, CUBEVAO,wall.index_size);
 		//shadowcalc(waterpos, shadow, waterVAO,sizeof(water_indices));
 
 		glCullFace(GL_BACK);
@@ -408,8 +338,8 @@ int main()
 
 		water.bindfbo();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		shadowcalc(wallcoors, water, CUBEVAO, sizeof(indices));
-		shadowcalc(floorcoors, water, CUBEVAO, sizeof(indices));
+		shadowcalc(wallcoors, water, CUBEVAO, wall.index_size);
+		shadowcalc(floorcoors, water, CUBEVAO, wall.index_size);
 
 		water.UNbindframebuffer(scwidth, scheight);
 
@@ -440,11 +370,10 @@ int main()
 		//wall
 
 
-		wall.set_in_loop("ourTexture", 4, lightobjectcolor, lightpos, camera.camerapos);
+		wall.set_in_loop("ourTexture", 4, lightpos, camera.camerapos);
 		wall.setmat4("lightprojection", sh_projection);
 
-		wall.settexture("shadowmap", 3);
-		wall.settexture("normalmap", 5);
+
 		//camera
 		wall.setmat4("view", view);
 
@@ -471,10 +400,8 @@ int main()
 
 		//floor
 
-		floor.set_in_loop("ourTexture", 1, lightobjectcolor, lightpos, camera.camerapos);
+		floor.set_in_loop("ourTexture", 1,lightpos, camera.camerapos);
 		floor.setmat4("lightprojection", sh_projection);
-		floor.settexture("shadowmap", 3);
-		wall.settexture("normalMap", 5);
 
 		floor.setmat4("view", view);
 		floor.setmat4("projection", projection);
@@ -519,21 +446,7 @@ int main()
 		
 		//light object
 
-			light.useshader();
-			light.setvec3("color", lightobjectcolor);
-			light.setmat4("view", view);
-			light.setmat4("projection", projection);
-
-
-			//std::cout << axis.x<<"," << axis.y<<","<< axis.z << std::endl;
-
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, lightpos);
-			//model = glm::rotate(model, 4*sin(float(glfwGetTime())),axis);
-			model = glm::scale(model, glm::vec3(light.lightscale));
-			light.setmat4("model", model);
-			glBindVertexArray(lightVAO);
-			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+		light.set_light_in_loop(lightpos, lightVAO, view, projection);
 
 			if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 			{
@@ -592,8 +505,8 @@ unsigned int set_texture(GLenum Tex_num, const char* name, GLenum val1, GLenum v
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
 	int Fwidth, Fheight, Fnrchannels;
 	unsigned char* Fdata = stbi_load(name, &Fwidth, &Fheight, &Fnrchannels, 0);
