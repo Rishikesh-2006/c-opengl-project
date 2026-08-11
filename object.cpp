@@ -27,14 +27,9 @@ void object::set_object(unsigned int& VBO, unsigned int* indices, int indices_si
 		glVertexAttribPointer(2, 2, GL_FLOAT, 0, 17 * sizeof(float), (void*)(6 * sizeof(float)));
 		glEnableVertexAttribArray(2);
 
-		glVertexAttribPointer(3, 3, GL_FLOAT, 0, 17 * sizeof(float), (void*)(8 * sizeof(float)));
+		glVertexAttribPointer(3, 3, GL_FLOAT, 0, 17* sizeof(float), (void*)(8 * sizeof(float)));
 		glEnableVertexAttribArray(3);
 
-		glVertexAttribPointer(4, 3, GL_FLOAT, 0, 17 * sizeof(float), (void*)(11 * sizeof(float)));
-		glEnableVertexAttribArray(4);
-
-		glVertexAttribPointer(5, 3, GL_FLOAT, 0, 17 * sizeof(float), (void*)(14 * sizeof(float)));
-		glEnableVertexAttribArray(5);
 	}
 
 	glGenBuffers(1, &EBO);
@@ -70,9 +65,6 @@ void object::set_VBO_object(unsigned int& VBO, float* vertices, int vertice_size
 
 	glVertexAttribPointer(3, 3, GL_FLOAT, 0, 17 * sizeof(float), (void*)(8 * sizeof(float)));
 	glEnableVertexAttribArray(3);
-
-	glVertexAttribPointer(4, 3, GL_FLOAT, 0, 17 * sizeof(float), (void*)(11 * sizeof(float)));
-	glEnableVertexAttribArray(4);
 
 }
 

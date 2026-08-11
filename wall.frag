@@ -6,9 +6,7 @@ out vec4 FragColor;
 in vec2 TexCoord;
 in vec3 fragpos;
 in vec3 Normal;
-in vec3 Tangent;
 in vec4 fragposlight;
-in vec3 BITangent;
 
 uniform vec3 lightpos;
 uniform vec3 viewpos;
@@ -48,6 +46,23 @@ return shadow;
 
 }
 
+mat3 TBNCALC(vec3 Normal)
+{
+	vec3 px_dx = dFdx(fragpos);
+	vec3 px_dy = dFdy(fragpos);
+
+	vec2 tx_dx = dFdx(TexCoord);
+	vec2 tx_dy = dFdy(TexCoord);
+
+	vec3 T = normalize(px_dx * tx_dy.t - px_dy * tx_dx.t);
+    vec3 N = normalize(Normal);
+
+	T = normalize(T-dot(T,N)*N);
+	vec3 B = cross(N,T);
+
+	return mat3(T,B,N);
+}
+
 
 void main()
 {	   
@@ -57,23 +72,27 @@ void main()
 	vec3 ambient = ambientstrength*lightColor;
 	
 	vec3 norm = normalize(Normal);
-	mat3 TBN = mat3(Tangent,BITangent,norm);
-	TBN = transpose(TBN);
+	mat3 TBN = TBNCALC(Normal);
 
-	norm = normalize(TBN*texture(normalmap,TexCoord).xyz*2-1);
-	vec3 lightDir = normalize(TBN*lightpos - TBN*fragpos);
+	vec3 normaltexture = texture(normalmap,TexCoord).xyz;
+	normaltexture.g = 1.0 - normaltexture.g;
+	norm = normalize(normaltexture*2-1);
+	norm = TBN*norm;
+
+
+	vec3 lightDir = normalize(lightpos - fragpos);
 	
 	float diff = max(dot(norm, lightDir), 0.0);
 	vec3 diffuse = diff * lightColor;
 
 	float specularstrength = 0.6;
-	vec3 viewdir = normalize(viewpos-TBN*fragpos);
+	vec3 viewdir = normalize(viewpos-fragpos);
 
 	vec3 halfwaydir = normalize(lightDir+viewdir);
 	float spec = pow(max(dot(norm, halfwaydir), 0.0), 4);
 	vec3 specularlight = specularstrength*spec*lightColor;
 
-	float distance  = length(TBN*lightpos-TBN*fragpos);
+	float distance  = length(lightpos-fragpos);
 	float attenuation = 1.0 / (attenval.x + attenval.y * distance + 
     		    attenval.z* (distance * distance * 8)); 
 
@@ -84,5 +103,6 @@ void main()
 
 	vec3 result = (ambient +(1.0-shadow)*( diffuse + specularlight )) * objectColor;
 	FragColor = texture(ourTexture, TexCoord)*vec4(result*lightscale*lightmultiplier, 1.0);
+
 
 }

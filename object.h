@@ -26,7 +26,7 @@ public:
 	unsigned int EBO = 0;
 
 	float lightscale = 1.0f;
-	float multiplier = 1.0f;
+	float multiplier = 3.0f;
 
 
 
