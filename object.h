@@ -115,6 +115,12 @@ public:
 
 	void set_light_in_loop(glm::vec3 lightpos, unsigned int lightVAO, glm::mat4 view, glm::mat4 projection);
 
+	void set_lightscale(float val);
+
+	void set_lightmultiplier(float val);
+
+	void set_lightcolor(float val);
+
 private:
 	//light object 
 	float lightscale = 1.0f;

@@ -255,3 +255,21 @@ void object::set_light_in_loop(glm::vec3 lightpos,unsigned int lightVAO,glm::mat
 
 
 }
+
+void object::set_lightscale(float val)
+{
+	this->lightscale += val;
+}
+
+void object::set_lightmultiplier(float val)
+{
+	this->multiplier += val;
+}
+
+
+void object::set_lightcolor(float val)
+{
+	this->lightobjectcolor.x += val;
+	this->lightobjectcolor.y -= val;
+	this->lightobjectcolor.z -= 0.9f * val;
+}

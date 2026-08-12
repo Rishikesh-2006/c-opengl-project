@@ -102,7 +102,7 @@ void main()
 	float shadow = shadowcalc(fragposlight,norm,lightDir);
 
 	vec3 result = (ambient +(1.0-shadow)*( diffuse + specularlight )) * objectColor;
-	FragColor = texture(ourTexture, TexCoord)*vec4(result*lightscale*lightmultiplier, 1.0);
+	FragColor = texture(ourTexture, TexCoord)*vec4(result*lightscale*lightmultiplier, 1.0)*vec4(0.2,0.2,0.2,1.0);
 
 
 }
