@@ -2,12 +2,12 @@
 uniform vec3 color;
 
 in vec2 texcoord;
-out vec4 FragColor; 
-
-uniform sampler2D reflecttexture;
-
+out vec4 FragColor;
+//uniform sampler2D reflection_texture;
+//unifrom sampler2D refraction_texture;
+in vec4 worldpos;
 void main()
 {
-vec4 reflecttex = texture(reflecttexture,texcoord);
-    FragColor = reflecttex;
+
+    FragColor = vec4(0.0,0.0,1.0,1.0);
 }

@@ -8,9 +8,10 @@
 #include <iostream>
 #include "Shader.h"
 #include <stb/stb_image.h>
+#include <vector>
 //std::pair <unsigned int, unsigned int>
 
-inline float vertex[] = {
+static float vertex[] = {
 	//Position				 Color					   UVs              Normals		
 	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 0.0f,		0.0f,0.0f,-1.0f,
 	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  1.0f, 0.0f,		0.0f,0.0f,-1.0f,
@@ -55,7 +56,7 @@ inline float vertex[] = {
 	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		  0.0f, 1.0f,		0.0f,1.0f,0.0f
 };
 
-inline unsigned int index[] = {
+static unsigned int index[] = {
 	0,2,1,
 	3,5,4,
 	8,6,7,
@@ -72,6 +73,7 @@ inline unsigned int index[] = {
 
 
 
+
 struct obj_info
 {
 	glm::vec3 acceleration;
@@ -83,9 +85,12 @@ struct obj_info
 
 class object : public Shader
 {
+
 public:
 	unsigned int VAO = 2;  //correct value is 2
 	unsigned int EBO = 0;
+
+
 
 	//vertex information
 

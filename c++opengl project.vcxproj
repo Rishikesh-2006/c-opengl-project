@@ -180,15 +180,17 @@
   <ItemGroup>
     <Image Include="..\..\..\..\wall.jpg" />
     <Image Include="..\..\..\..\wood.png" />
-    <Image Include="rr.png" />
+    <Image Include="high floor.png" />
     <Image Include="test_water.png" />
     <Image Include="Textures\bricks.png" />
     <Image Include="Textures\brickwall.jpg" />
     <Image Include="Textures\brickwall_normal.jpg" />
     <Image Include="Textures\high floor.png" />
+    <Image Include="Textures\normal_water.png" />
     <Image Include="Textures\ocean-blue.jpg" />
     <Image Include="Textures\water_normal.png" />
     <Image Include="Textures\water_tex2.png" />
+    <Image Include="Textures\water_texture.png" />
     <Image Include="wooden floor.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

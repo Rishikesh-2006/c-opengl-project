@@ -166,7 +166,6 @@ int main()
 	object phy("phy_obj.vert", "phy_obj.frag");
 	water water("water.vert", "water.frag");
 
-	water.set_resolution(scwidth, scheight);
 	camera camera;
 
 	camera.set_caminputs(window);
@@ -216,6 +215,64 @@ int main()
 	phyVAO = phy.VAO;
 	phyEBO = phy.EBO;
 
+	//water
+	
+
+	std::vector<float> water_vertices;
+	std::vector<unsigned int> water_indices;
+	int grid_size = 500;
+
+	float size = 1.0f;
+	for (int i = 0; i <= grid_size; ++i)
+	{
+		for (int j = 0; j <= grid_size; ++j)
+		{
+			float xpos = ((i / grid_size) - 0.5f) * size;
+			float zpos = ((j / grid_size) - 0.5f) * size;
+
+			water_vertices.push_back(xpos);
+			water_vertices.push_back(1.0f);
+			water_vertices.push_back(zpos);
+
+			water_vertices.push_back(0.0f);
+			water_vertices.push_back(1.0f);
+			water_vertices.push_back(0.0f);
+
+			float u = i / grid_size;
+			float v = j / grid_size;
+
+			water_vertices.push_back(u);
+			water_vertices.push_back(v);
+		}
+
+	}
+
+	for (int z = 0; z < grid_size; ++z) {
+		for (int x = 0; x < grid_size; ++x) {
+			int topLeft = z * (grid_size + 1) + x;
+			int topRight = topLeft + 1;
+			int bottomLeft = (z + 1) * (grid_size + 1) + x;
+			int bottomRight = bottomLeft + 1;
+
+			// triangle 1
+			water_indices.push_back(topLeft);
+			water_indices.push_back(bottomLeft);
+			water_indices.push_back(topRight);
+
+			// triangle 2
+			water_indices.push_back(topRight);
+			water_indices.push_back(bottomLeft);
+			water_indices.push_back(bottomRight);
+		}
+	}
+
+	water.setvertexdata(water_vertices, water_indices,scwidth,scheight);
+
+	unsigned int waterVAO, waterVBO, waterEBO;
+	water.set_water_objects(waterVBO);
+
+	waterVAO = water.VAO;
+	water.EBO = water.EBO;
 	//depth map
 
 	unsigned int depthmapFBO,depthmap;
@@ -241,9 +298,10 @@ int main()
 
 	unsigned int brickwall_normal = set_texture(GL_TEXTURE5, "Textures/brickwall_normal.jpg", GL_RGB, GL_RGB);
 	//water texture
-	unsigned int watertexture = set_texture(GL_TEXTURE6, "Textures/water_normal.png", GL_RGBA, GL_RGB);
 
+	unsigned int water1 = set_texture(GL_TEXTURE6, "Textures/normal_water.png", GL_RGB, GL_RGB);
 
+	unsigned int water2 = set_texture(GL_TEXTURE7, "Textures/water_texture.png", GL_RGB, GL_RGB);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Walltextures);
@@ -265,13 +323,17 @@ int main()
 	glBindTexture(GL_TEXTURE_2D, brickwall_normal);
 
 	glActiveTexture(GL_TEXTURE6);
-	glBindTexture(GL_TEXTURE_2D, watertexture);
+	glBindTexture(GL_TEXTURE_2D, water1);
+
+	glActiveTexture(GL_TEXTURE7);
+	glBindTexture(GL_TEXTURE_2D, water2);
+
+
 
 
 	glm::vec3 gravity = glm::vec3(0.0f, 0.0f, 0.0f);
 	while (!glfwWindowShouldClose(window))
 	{
-		glEnable(GL_CLIP_DISTANCE0);
 		glm::mat4 view  = camera.set_view();
 		glm::mat4 projection = camera.set_projection();
 
@@ -283,6 +345,29 @@ int main()
 		const char* cfps = sfps.c_str();
 		glfwSetWindowTitle(window, cfps);
 		lastframe = currentframe;
+
+		//water
+
+		water.useshader();
+
+
+		water.settexture("water_texture", 7);
+		water.setmat4("view", view);
+		water.setmat4("projection", projection);
+		glm::vec3 axis = glm::vec3(1.0f, 0.3f, 0.5f);
+
+		glm::mat4 wmodel = glm::mat4(1.0f);
+		wmodel = glm::translate(wmodel, glm::vec3(1.0f, -3.0f, -20.0f));
+		//float angle = 0;
+		//wmodel = glm::rotate(wmodel, float(14.138), glm::vec3(1.0f, 0.0f, 0.0f));
+		wmodel = glm::scale(wmodel, glm::vec3(40.0f, 1.0f, 30.0f));
+		water.setmat4("model", wmodel);
+		glBindVertexArray(waterVAO);
+
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(water_indices.size()), GL_UNSIGNED_INT, 0);
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 
 
 		phy_obja.acceleration = glm::vec3(0.0f, 9.8f, 0.0f);
@@ -332,7 +417,7 @@ int main()
 		wall.setmat4("projection", projection);
 
 
-		glBindVertexArray(CUBEVAO);
+		glBindVertexArray(floorVAO);
 		for (glm::vec3& i : wallcoors)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
@@ -430,6 +515,7 @@ int main()
 				light.set_lightcolor(-0.5f);
 			}
 
+
 			camera.processInput(window,speed,deltatime);
 
 
@@ -457,6 +543,7 @@ int main()
 		glDeleteBuffers(1, &phyEBO);
 
 		water.deleteshader();
+		water.cleanUp();
 
 		glDeleteTextures(1, &brickwall);
 		glDeleteTextures(1, &brickwall_normal);
