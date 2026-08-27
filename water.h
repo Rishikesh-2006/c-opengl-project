@@ -4,11 +4,8 @@
 class water : public object
 {
 public:
+
     unsigned int framebufferid = 0, textureid = 0 , depthid = 0;
-    
-    int scheight;
-    int scwidth;
-    //unsigned int shaderprgm;
 
     water(const char* vertex, const char* fragment) : object(vertex, fragment) {};
 
@@ -56,20 +53,22 @@ public:
 
     GLuint createDepthBufferAttachment(int width,
         int height);
+    
 
+    void set_water_renderer(glm::mat4 view, glm::mat4 projection, unsigned int VAO);
 
 protected:
 
     unsigned int set_shader(const char* vertexpath, const char* fragmentpath);
 
 private:
-    unsigned int reflectionFrameBuffer;
-    unsigned int reflectionTexture;
-    unsigned int reflectionDepthBuffer;
+    unsigned int reflectionFrameBuffer = 0;
+    unsigned int reflectionTexture = 0;
+    unsigned int reflectionDepthBuffer = 0;
 
-    unsigned int refractionFrameBuffer;
-    unsigned int refractionTexture;
-    unsigned int refractionDepthTexture;
+    unsigned int refractionFrameBuffer = 0;
+    unsigned int refractionTexture = 0;
+    unsigned int refractionDepthTexture = 0;
 
     int REFLECTION_WIDTH = 320;
     int REFLECTION_HEIGHT = 180;
@@ -77,8 +76,9 @@ private:
     int REFRACTION_WIDTH = 1280;
     int REFRACTION_HEIGHT = 720;
 
-    int width;
-    int height;
+
+    int height = 1080;
+    int width = 1920;
 
     std::vector <float> water_vertices; std::vector <unsigned int> water_indices;
 };

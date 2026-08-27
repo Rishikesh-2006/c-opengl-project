@@ -7,19 +7,21 @@ void water::set_water_objects(unsigned int& waterVBO)
 	glGenBuffers(1, &EBO);
 
 
+	glBindVertexArray(VAO);
+
 	glBindBuffer(GL_ARRAY_BUFFER, waterVBO);
 	glBufferData(GL_ARRAY_BUFFER, water_vertices.size() * sizeof(float), water_vertices.data(), GL_STATIC_DRAW);
-	glBindVertexArray(VAO);
+
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, water_indices.size() * sizeof(unsigned int), water_indices.data(), GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, 0, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_TRUE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glVertexAttribPointer(2, 2, GL_FLOAT, 0, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
 }
@@ -439,4 +441,28 @@ GLuint water::createDepthBufferAttachment(
     );
 
     return depthBuffer;
+}
+
+void water::set_water_renderer(glm::mat4 view , glm::mat4 projection,unsigned int VAO)
+{
+
+    
+    useshader();
+    setmat4("view", view);
+    setmat4("projection", projection);
+    setvec3("color", glm::vec3(0.0f, 0.0f, 1.0f));
+    glBindVertexArray(VAO);
+
+    glm::mat4 wmodel = glm::mat4(1.0f);
+
+    wmodel = glm::translate(wmodel, glm::vec3(1.0f, -3.0f, -20.0f));//glm::vec3(camera.camerapos.x,camera.camerapos.y,camera.camerapos.z)
+    //float angle = 0;
+    //wmodel = glm::rotate(wmodel, float(14.138), glm::vec3(1.0f, 0.0f, 0.0f));
+    wmodel = glm::scale(wmodel, glm::vec3(40.0f, 1.0f, 30.0f));
+    setmat4("model", wmodel);
+
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(water_indices.size()), GL_UNSIGNED_INT, 0);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 }

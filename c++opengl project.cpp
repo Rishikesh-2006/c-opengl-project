@@ -28,6 +28,8 @@ void shadowcalc(std::vector <glm::vec3>& vector, object& shadowobject, unsigned 
 void Make_Structure(std::vector <glm::vec3>& array, glm::vec3 start, float distance, float num);
 
 
+using namespace std;
+
 float player_factor = 0.5;
 float speed = 40.0f;
 int main()
@@ -165,7 +167,6 @@ int main()
 	object shadow("shadow.vert", "shadow.frag");
 	object phy("phy_obj.vert", "phy_obj.frag");
 	water water("water.vert", "water.frag");
-
 	camera camera;
 
 	camera.set_caminputs(window);
@@ -220,15 +221,15 @@ int main()
 
 	std::vector<float> water_vertices;
 	std::vector<unsigned int> water_indices;
-	int grid_size = 500;
+	int grid_size = 50;
 
 	float size = 1.0f;
 	for (int i = 0; i <= grid_size; ++i)
 	{
 		for (int j = 0; j <= grid_size; ++j)
 		{
-			float xpos = ((i / grid_size) - 0.5f) * size;
-			float zpos = ((j / grid_size) - 0.5f) * size;
+			float xpos = ((static_cast<float> (i) / static_cast<float> (grid_size)) - 0.5f) * size;
+			float zpos = ((static_cast<float> (j) / static_cast<float> (grid_size)) - 0.5f) * size;
 
 			water_vertices.push_back(xpos);
 			water_vertices.push_back(1.0f);
@@ -238,8 +239,8 @@ int main()
 			water_vertices.push_back(1.0f);
 			water_vertices.push_back(0.0f);
 
-			float u = i / grid_size;
-			float v = j / grid_size;
+			float u = static_cast<float> (i) / static_cast<float> (grid_size);
+			float v = static_cast<float>(j) / static_cast<float> (grid_size);
 
 			water_vertices.push_back(u);
 			water_vertices.push_back(v);
@@ -272,7 +273,7 @@ int main()
 	water.set_water_objects(waterVBO);
 
 	waterVAO = water.VAO;
-	water.EBO = water.EBO;
+	waterEBO = water.EBO;
 	//depth map
 
 	unsigned int depthmapFBO,depthmap;
@@ -292,7 +293,7 @@ int main()
 	unsigned int floortexture = set_texture(GL_TEXTURE1, "Textures/wooden floor.png", GL_RGB, GL_RGB);
 
 	//others
-	unsigned int high_floor = set_texture(GL_TEXTURE2, "Textures/rr.png", GL_RGBA, GL_RGBA);
+	//unsigned int high_floor = set_texture(GL_TEXTURE2, "Textures/rr.png", GL_RGBA, GL_RGBA);
 
 	unsigned int brickwall = set_texture(GL_TEXTURE4, "Textures/brickwall.jpg", GL_RGB, GL_RGB);
 
@@ -309,8 +310,8 @@ int main()
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, floortexture);
 
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, high_floor);
+	//glActiveTexture(GL_TEXTURE2);
+	//glBindTexture(GL_TEXTURE_2D, high_floor);
 
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, depthmap);
@@ -328,10 +329,11 @@ int main()
 	glActiveTexture(GL_TEXTURE7);
 	glBindTexture(GL_TEXTURE_2D, water2);
 
-
+	std::cout << water_vertices.size()<<" "<< water_indices.size();
 
 
 	glm::vec3 gravity = glm::vec3(0.0f, 0.0f, 0.0f);
+
 	while (!glfwWindowShouldClose(window))
 	{
 		glm::mat4 view  = camera.set_view();
@@ -346,36 +348,17 @@ int main()
 		glfwSetWindowTitle(window, cfps);
 		lastframe = currentframe;
 
-		//water
+		
 
-		water.useshader();
-
-
-		water.settexture("water_texture", 7);
-		water.setmat4("view", view);
-		water.setmat4("projection", projection);
-		glm::vec3 axis = glm::vec3(1.0f, 0.3f, 0.5f);
-
-		glm::mat4 wmodel = glm::mat4(1.0f);
-		wmodel = glm::translate(wmodel, glm::vec3(1.0f, -3.0f, -20.0f));
-		//float angle = 0;
-		//wmodel = glm::rotate(wmodel, float(14.138), glm::vec3(1.0f, 0.0f, 0.0f));
-		wmodel = glm::scale(wmodel, glm::vec3(40.0f, 1.0f, 30.0f));
-		water.setmat4("model", wmodel);
-		glBindVertexArray(waterVAO);
-
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(water_indices.size()), GL_UNSIGNED_INT, 0);
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-
-
+		//physics test
 		phy_obja.acceleration = glm::vec3(0.0f, 9.8f, 0.0f);
 		phy_objb.acceleration = glm::vec3(0.0f, 9.8f, 0.0f);
 
 
 		//campos
+		//std::cout << camera.camerapos.y;
 
+		//shadow
 		glm::mat4 shadowprojection = glm::ortho(-30.0, 30.0, -30.00, 30.00, 0.1, 60.0);
 		glm::mat4 shadowview = glm::lookAt(lightpos, glm::vec3(15.0f, 7.5f, 15.0f), glm::vec3(0.0, 1.0, 0.0));
 		glm::mat4 sh_projection = shadowprojection * shadowview;
@@ -403,6 +386,11 @@ int main()
 			background_light.z, background_light.w);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
+		//water
+
+		water.set_water_renderer(view, projection, waterVAO);
+
 		
 		//wall
 
@@ -417,7 +405,7 @@ int main()
 		wall.setmat4("projection", projection);
 
 
-		glBindVertexArray(floorVAO);
+		glBindVertexArray(CUBEVAO);
 		for (glm::vec3& i : wallcoors)
 		{
 			glm::mat4 model = glm::mat4(1.0f);

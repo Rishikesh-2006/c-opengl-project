@@ -11,7 +11,7 @@ out vec2 texcoord;
 out vec4 worldpos;
 void main()
 {
-    vec4 worldpos = model * vec4(aPos,1.0);
+    worldpos = model * vec4(aPos,1.0);
     gl_Position = projection * view * model * vec4(aPos, 1.0);
     texcoord = vec2(aTex.x,aTex.y);
 }
