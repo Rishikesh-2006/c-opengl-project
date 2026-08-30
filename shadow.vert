@@ -5,6 +5,7 @@ uniform mat4 model;
 uniform mat4 lightprojection;
 
 void main()
-{
+{   
+
     gl_Position = lightprojection * model * vec4(aPos, 1.0);
 }

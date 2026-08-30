@@ -448,10 +448,13 @@ void water::set_water_renderer(glm::mat4 view , glm::mat4 projection,unsigned in
 
     
     useshader();
+
+    glBindVertexArray(VAO);
+
+
     setmat4("view", view);
     setmat4("projection", projection);
     setvec3("color", glm::vec3(0.0f, 0.0f, 1.0f));
-    glBindVertexArray(VAO);
 
     glm::mat4 wmodel = glm::mat4(1.0f);
 
@@ -465,4 +468,9 @@ void water::set_water_renderer(glm::mat4 view , glm::mat4 projection,unsigned in
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(water_indices.size()), GL_UNSIGNED_INT, 0);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+}
+
+void water::set_clipPlane(glm::vec4 plane)
+{
+    setvec4("plane", plane);
 }

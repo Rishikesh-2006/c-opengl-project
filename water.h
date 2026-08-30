@@ -54,19 +54,20 @@ public:
     GLuint createDepthBufferAttachment(int width,
         int height);
     
-
     void set_water_renderer(glm::mat4 view, glm::mat4 projection, unsigned int VAO);
+
+    void set_clipPlane(glm::vec4 plane);
 
 protected:
 
     unsigned int set_shader(const char* vertexpath, const char* fragmentpath);
 
 private:
-    unsigned int reflectionFrameBuffer = 0;
+    unsigned int reflectionFrameBuffer = createFrameBuffer();
     unsigned int reflectionTexture = 0;
     unsigned int reflectionDepthBuffer = 0;
 
-    unsigned int refractionFrameBuffer = 0;
+    unsigned int refractionFrameBuffer = createFrameBuffer();
     unsigned int refractionTexture = 0;
     unsigned int refractionDepthTexture = 0;
 

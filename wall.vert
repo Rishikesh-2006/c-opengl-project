@@ -12,6 +12,8 @@ uniform mat4 view;
 uniform vec3 lightpos;
 uniform mat4 projection;
 uniform mat4 lightprojection;
+uniform vec4 plane;
+
 
 out vec3 ourColor;
 out vec2 TexCoord;
@@ -20,9 +22,13 @@ out vec3 Normal;
 out vec3 fragpos;
 out vec4 fragposlight;
 
+
+
 void main()
 {// temporary to check rotation --> transform*vec4(aPos, 1.0);
-	fragpos = vec3(model * vec4(aPos, 1.0));
+	vec4 worldpos = model * vec4(aPos,1.0);
+	gl_ClipDistance[0] = dot(plane,worldpos);
+	fragpos = worldpos.xyz;
 	ourColor = aColor;
 	TexCoord = vec2(aTexCoord.x, aTexCoord.y);
 
@@ -30,5 +36,5 @@ void main()
 
 	fragposlight = lightprojection * vec4(fragpos,1.0);
 	
-	gl_Position = projection*view*vec4(fragpos, 1.0);
+	gl_Position = projection*view*worldpos;
 }

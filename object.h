@@ -129,7 +129,7 @@ public:
 private:
 	//light object 
 	float lightscale = 1.0f;
-	float multiplier = 3.0f;
+	float multiplier = 7.0f;
 	glm::vec3 lightobjectcolor = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	//vertex data

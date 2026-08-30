@@ -66,7 +66,9 @@ mat3 TBNCALC(vec3 Normal)
 
 void main()
 {	   
-  
+	
+	
+		
 	//Blinn-phong calc
 	float ambientstrength = 0.15;
 	vec3 ambient = ambientstrength*lightColor;
@@ -102,6 +104,7 @@ void main()
 	float shadow = shadowcalc(fragposlight,norm,lightDir);
 
 	vec3 result = (ambient +(1.0-shadow)*( diffuse + specularlight )) * objectColor;
+
 	FragColor = texture(ourTexture, TexCoord)*vec4(result*lightscale*lightmultiplier, 1.0)*vec4(0.2,0.2,0.2,1.0);
 
 

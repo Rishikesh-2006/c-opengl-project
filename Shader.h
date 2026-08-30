@@ -36,5 +36,7 @@ public:
 	void settexture(const std::string& name,  int loc);
 
 	void setvec2(const std::string& name, const glm::vec2& value);
+
+	void setvec4(const std::string& name, const glm::vec4& value);
 };
 

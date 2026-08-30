@@ -40,5 +40,6 @@ public:
 
 	void set_caminputs(GLFWwindow* window);
 
+	void invert_pitch();
 };
 

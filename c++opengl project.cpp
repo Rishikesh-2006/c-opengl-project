@@ -167,6 +167,7 @@ int main()
 	object shadow("shadow.vert", "shadow.frag");
 	object phy("phy_obj.vert", "phy_obj.frag");
 	water water("water.vert", "water.frag");
+	//water.WaterFrameBuffers();
 	camera camera;
 
 	camera.set_caminputs(window);
@@ -224,6 +225,18 @@ int main()
 	int grid_size = 50;
 
 	float size = 1.0f;
+
+
+	glBindTexture(GL_TEXTURE_2D, water.getReflectionTexture());
+	glActiveTexture(GL_TEXTURE8);
+
+	glBindTexture(GL_TEXTURE_2D, water.getRefractionTexture());
+	glActiveTexture(GL_TEXTURE9);
+
+	//water.settexture("reflection_texture", 8);
+	//water.settexture("refraction_texture", 9);
+
+
 	for (int i = 0; i <= grid_size; ++i)
 	{
 		for (int j = 0; j <= grid_size; ++j)
@@ -232,7 +245,7 @@ int main()
 			float zpos = ((static_cast<float> (j) / static_cast<float> (grid_size)) - 0.5f) * size;
 
 			water_vertices.push_back(xpos);
-			water_vertices.push_back(1.0f);
+			water_vertices.push_back(0.0f);
 			water_vertices.push_back(zpos);
 
 			water_vertices.push_back(0.0f);
@@ -329,7 +342,7 @@ int main()
 	glActiveTexture(GL_TEXTURE7);
 	glBindTexture(GL_TEXTURE_2D, water2);
 
-	std::cout << water_vertices.size()<<" "<< water_indices.size();
+	std::cout << water_vertices.size()<<" "<< water_indices.size()<<endl;
 
 
 	glm::vec3 gravity = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -359,11 +372,13 @@ int main()
 		//std::cout << camera.camerapos.y;
 
 		//shadow
+
 		glm::mat4 shadowprojection = glm::ortho(-30.0, 30.0, -30.00, 30.00, 0.1, 60.0);
 		glm::mat4 shadowview = glm::lookAt(lightpos, glm::vec3(15.0f, 7.5f, 15.0f), glm::vec3(0.0, 1.0, 0.0));
 		glm::mat4 sh_projection = shadowprojection * shadowview;
 
 		//shadow
+
 
 		glBindFramebuffer(GL_FRAMEBUFFER, depthmapFBO);
 		glViewport(0, 0, depthwidth, depthheight);
@@ -380,6 +395,7 @@ int main()
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
+		//clearing screen , rendering objects MUST be after this!!!
 
 		glViewport(0, 0, scwidth, scheight);
 		glClearColor(background_light.x, background_light.y,
@@ -387,23 +403,15 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-		//water
-
-		water.set_water_renderer(view, projection, waterVAO);
-
 		
 		//wall
-
 
 		wall.set_in_loop("ourTexture", 4, lightpos, camera.camerapos);
 		wall.setmat4("lightprojection", sh_projection);
 
-
-		//camera
 		wall.setmat4("view", view);
-
 		wall.setmat4("projection", projection);
-
+		wall.setvec4("plane", glm::vec4(0.0f, 1.0f, 0.0f, 1000.0f));
 
 		glBindVertexArray(CUBEVAO);
 		for (glm::vec3& i : wallcoors)
@@ -429,6 +437,7 @@ int main()
 
 		floor.setmat4("view", view);
 		floor.setmat4("projection", projection);
+		floor.setvec4("plane", glm::vec4(0.0f, 1.0f, 0.0f, 1000.0f));
 
 		glBindVertexArray(floorVAO);
 
@@ -471,6 +480,7 @@ int main()
 		//light object
 
 		light.set_light_in_loop(lightpos, lightVAO, view, projection);
+		light.setvec4("plane", glm::vec4(0.0f, 1.0f, 0.0f, 1000.0f));
 
 			if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 			{
@@ -504,6 +514,59 @@ int main()
 			}
 
 
+
+			
+			//glEnable(GL_CLIP_DISTANCE0);
+
+			//water
+			
+			/*cout << "waterVAO" << waterVAO << endl;
+			water.bindReflectionFrameBuffer();
+			GLint fbo;
+			glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &fbo);
+
+			std::cout << "Reflection FBO = " << fbo << std::endl;
+
+			float distance = 2 * ((camera.camerapos.y) - (-3.0f));
+			camera.camerapos.y -= distance;
+			camera.invert_pitch();
+
+			glm::mat4 reflectionview = camera.set_view();
+
+			wall.setmat4("view", reflectionview);
+			wall.setmat4("projection",projection);
+			wall.setvec4("plane",glm::vec4(0.0f, 1.0f, 0.0f, 3.0f));
+			shadowcalc(wallcoors, wall, CUBEVAO, wall.index_size);
+			camera.camerapos.y += distance;
+			camera.invert_pitch();
+
+
+			
+
+			water.bindRefractionFrameBuffer();
+			
+			glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &fbo);
+
+			std::cout << "Refraction FBO = " << fbo << std::endl;
+
+			wall.setmat4("view", view);
+			wall.setmat4("projection", projection);
+			wall.setvec4("plane",glm::vec4(0.0f, -1.0f, 0.0f, -3.0f));
+			shadowcalc(wallcoors, wall, CUBEVAO, wall.index_size);
+
+			//glDisable(GL_CLIP_DISTANCE0);
+			water.unbindCurrentFrameBuffer();
+			glDisable(GL_CLIP_DISTANCE0);*/
+
+			glEnable(GL_DEPTH_TEST);
+			glDepthFunc(GL_ALWAYS);
+			glDepthMask(GL_FALSE);
+
+			water.set_water_renderer(view, projection, waterVAO);
+			
+
+			glDepthMask(GL_TRUE);
+			glDepthFunc(GL_LESS);
 			camera.processInput(window,speed,deltatime);
 
 

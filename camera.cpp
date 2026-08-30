@@ -121,3 +121,8 @@ void camera::set_caminputs(GLFWwindow* window)
 	glfwSetScrollCallback(window, scroll_callback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
+
+void camera::invert_pitch()
+{
+	this->pitch = -this->pitch;
+}

@@ -6,12 +6,15 @@ layout (location = 2) in vec2 aTex;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform vec4 plane;
+
 
 out vec2 texcoord;
-out vec4 worldpos;
 void main()
 {
-    worldpos = model * vec4(aPos,1.0);
-    gl_Position = projection * view * model * vec4(aPos, 1.0);
+    vec4 worldpos = model * vec4(aPos,1.0);
+    gl_ClipDistance[0] = dot(plane,worldpos);
+
+    gl_Position = projection * view * worldpos;
     texcoord = vec2(aTex.x,aTex.y);
 }
